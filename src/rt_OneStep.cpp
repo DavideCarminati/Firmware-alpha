@@ -95,7 +95,7 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
 
     int elapsed = timer.read_us();
     wdgTime = watchdog.get_timeout();
-    printf("\033[3;1Hwdg: %lu (timer: %d)",wdgTime,elapsed);
+    // printf("\033[3;1Hwdg: %lu (timer: %d)",wdgTime,elapsed);
     watchdog.kick();
     
     ThisThread::sleep_until(epoch+50); // 50ms is the step time!!

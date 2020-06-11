@@ -40,7 +40,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     accmagValues = accmag.get_values(); 
     feedback_control_U.reference = (accmagValues.ax + 1)/2; // Normalized between 0 and 1
     feedback_control_U.estimated = 0;//servo1.read();
-    printf("\033[2;1H");
-    printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
+    // printf("\033[2;1H");
+    // printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
 }
 

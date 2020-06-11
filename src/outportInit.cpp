@@ -29,6 +29,6 @@ void Servo1Write(void)
     // TODO add semaphore in here!
     pos = feedback_control_Y.u;//*180;
     servo1.write(pos);
-    printf("\033[1;1H");
-    printf("pos given to pwm port: %f\n",pos);
+    // printf("\033[1;1H");
+    // printf("pos given to pwm port: %f\n",pos);
 }

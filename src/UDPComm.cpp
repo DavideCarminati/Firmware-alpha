@@ -1,3 +1,17 @@
+/*! @file UDPComm.cpp
+
+    @brief Enables UDP communication between the target board and an external PC to perform Processor-In-the-Loop.
+
+    @details Processor-In-the-Loop validation uses the external PC to simulate the physical model, its actuators and
+    its sensors. The target board runs the firmware with full functionalities plus this thread that is responsible for
+    sending/receiving simulation data to/from the external PC. The target board controls the model just as it was controlling 
+    the physical system.
+
+    @note The used communication protocol is Mavlink v2.0.
+
+
+*/
+
 #include <UDPComm.hpp>
 
 static const char*          mbedIP       = "192.168.1.55";  //IP 

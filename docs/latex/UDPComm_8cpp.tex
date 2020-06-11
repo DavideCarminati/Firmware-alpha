@@ -1,0 +1,68 @@
+\hypertarget{UDPComm_8cpp}{}\section{src/\+U\+D\+P\+Comm.cpp File Reference}
+\label{UDPComm_8cpp}\index{src/\+U\+D\+P\+Comm.\+cpp@{src/\+U\+D\+P\+Comm.\+cpp}}
+
+
+Enables U\+DP communication between the target board and an external PC to perform Processor-\/\+In-\/the-\/\+Loop.  
+
+
+{\ttfamily \#include $<$U\+D\+P\+Comm.\+hpp$>$}\newline
+Include dependency graph for U\+D\+P\+Comm.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=183pt]{UDPComm_8cpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{UDPComm_8cpp_a3a7725567b61c6b80243a548036bf6ca}\label{UDPComm_8cpp_a3a7725567b61c6b80243a548036bf6ca}} 
+void {\bfseries U\+D\+P\+Comm} (void)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{UDPComm_8cpp_a6c3cca4bacec6b4aeb5cdaa86740614e}\label{UDPComm_8cpp_a6c3cca4bacec6b4aeb5cdaa86740614e}} 
+uint8\+\_\+t {\bfseries in\+\_\+data} \mbox{[}M\+A\+V\+L\+I\+N\+K\+\_\+\+M\+A\+X\+\_\+\+P\+A\+C\+K\+E\+T\+\_\+\+L\+EN\mbox{]}
+\item 
+\mbox{\Hypertarget{UDPComm_8cpp_a4d0be1f983ac16fea15e5f5b3ca13f87}\label{UDPComm_8cpp_a4d0be1f983ac16fea15e5f5b3ca13f87}} 
+uint8\+\_\+t {\bfseries out\+\_\+buf} \mbox{[}M\+A\+V\+L\+I\+N\+K\+\_\+\+M\+A\+X\+\_\+\+P\+A\+C\+K\+E\+T\+\_\+\+L\+EN\mbox{]}
+\item 
+\mbox{\Hypertarget{UDPComm_8cpp_a58a6aeee6d580249371bb554f6aeb6b1}\label{UDPComm_8cpp_a58a6aeee6d580249371bb554f6aeb6b1}} 
+mavlink\+\_\+message\+\_\+t {\bfseries pos\+\_\+decoded}
+\item 
+\mbox{\Hypertarget{UDPComm_8cpp_a48be6085a723f7ef309f7f85875a4bcd}\label{UDPComm_8cpp_a48be6085a723f7ef309f7f85875a4bcd}} 
+mavlink\+\_\+message\+\_\+t {\bfseries msg}
+\item 
+\mbox{\Hypertarget{UDPComm_8cpp_acdef7b92239f1e607ef6caa33a16d2ed}\label{UDPComm_8cpp_acdef7b92239f1e607ef6caa33a16d2ed}} 
+mavlink\+\_\+status\+\_\+t {\bfseries status}
+\item 
+mavlink\+\_\+attitude\+\_\+t \hyperlink{UDPComm_8cpp_a66611ecc414fa1c6fe5e014703d796cc}{att}
+\item 
+\mbox{\Hypertarget{UDPComm_8cpp_a026404ba6f5a46eec468d3d538880b4a}\label{UDPComm_8cpp_a026404ba6f5a46eec468d3d538880b4a}} 
+uint8\+\_\+t {\bfseries S\+Y\+S\+\_\+\+ID} = 1
+\item 
+\mbox{\Hypertarget{UDPComm_8cpp_ac78b977fae65f295acbf4ffc5e50b1e1}\label{UDPComm_8cpp_ac78b977fae65f295acbf4ffc5e50b1e1}} 
+uint8\+\_\+t {\bfseries C\+O\+M\+P\+\_\+\+ID} = 1
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Enables U\+DP communication between the target board and an external PC to perform Processor-\/\+In-\/the-\/\+Loop. 
+
+Processor-\/\+In-\/the-\/\+Loop validation uses the external PC to simulate the physical model, its actuators and its sensors. The target board runs the firmware with full functionalities plus this thread that is responsible for sending/receiving simulation data to/from the external PC. The target board controls the model just as it was controlling the physical system.
+
+\begin{DoxyNote}{Note}
+The used communication protocol is Mavlink v2.\+0. 
+\end{DoxyNote}
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{UDPComm_8cpp_a66611ecc414fa1c6fe5e014703d796cc}\label{UDPComm_8cpp_a66611ecc414fa1c6fe5e014703d796cc}} 
+\index{U\+D\+P\+Comm.\+cpp@{U\+D\+P\+Comm.\+cpp}!att@{att}}
+\index{att@{att}!U\+D\+P\+Comm.\+cpp@{U\+D\+P\+Comm.\+cpp}}
+\subsubsection{\texorpdfstring{att}{att}}
+{\footnotesize\ttfamily mavlink\+\_\+attitude\+\_\+t att}
+
+Declaration and definition of used mavlink structs 

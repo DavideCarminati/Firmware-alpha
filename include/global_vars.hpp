@@ -29,12 +29,12 @@
 #define CONTROLLER_TASK_IO
 
 /**
- * The I/O variables of the controller are used as global since their name is the same if a Simulink project is used. 
+ * The I/O variables of the controller are used as extern since their name is the same if a Simulink project is used. 
  * This allows to keep the Firmware unchanged.
  */
-// Volatile because are changed by different threads!!
-extern ExtU_feedback_control_T feedback_control_U;/**< External inputs */
-extern ExtY_feedback_control_T feedback_control_Y;/**< External outputs */
+
+extern ExtU_feedback_control_T feedback_control_U;      /**< External inputs */
+extern ExtY_feedback_control_T feedback_control_Y;      /**< External outputs */
 
 #endif
 

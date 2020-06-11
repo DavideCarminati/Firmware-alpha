@@ -1,0 +1,96 @@
+\hypertarget{main_8cpp}{}\section{src/main.cpp File Reference}
+\label{main_8cpp}\index{src/main.\+cpp@{src/main.\+cpp}}
+
+
+Entry point for mbed OS.  
+
+
+{\ttfamily \#include $<$mbed.\+h$>$}\newline
+{\ttfamily \#include $<$Serial.\+h$>$}\newline
+{\ttfamily \#include $<$Ethernet\+Interface.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}global\+\_\+vars.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}common/mavlink.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}cntr\+Init.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}sens\+Init.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}outport\+Init.\+hpp\char`\"{}}\newline
+Include dependency graph for main.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{main_8cpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{main_8cpp_a091f8e8f031b31038f4453d6b17daf1c}\label{main_8cpp_a091f8e8f031b31038f4453d6b17daf1c}} 
+Serial {\bfseries serial} (U\+S\+B\+TX, U\+S\+B\+RX)
+\item 
+\mbox{\Hypertarget{main_8cpp_a6237719cadf8824ab1a36b9a78d88986}\label{main_8cpp_a6237719cadf8824ab1a36b9a78d88986}} 
+Thread {\bfseries Controller\+Init} (os\+Priority\+High, 8092, nullptr, cntr\+Init\+\_\+thread\+\_\+name)
+\item 
+\mbox{\Hypertarget{main_8cpp_aac5d8940e207417ae60a9d7a150eb256}\label{main_8cpp_aac5d8940e207417ae60a9d7a150eb256}} 
+Thread {\bfseries Sensor\+Init} (os\+Priority\+Normal, 8092, nullptr, sens\+Init\+\_\+thread\+\_\+name)
+\item 
+\mbox{\Hypertarget{main_8cpp_af5e9ce7a8e9454ad6fd882d21c7ab7a6}\label{main_8cpp_af5e9ce7a8e9454ad6fd882d21c7ab7a6}} 
+Thread {\bfseries Output\+Port\+Init} (os\+Priority\+Normal, 8092, nullptr, outport\+Init\+\_\+thread\+\_\+name)
+\item 
+\mbox{\Hypertarget{main_8cpp_a2ffaa7cdbdee40a0bbc68f4e6aebf445}\label{main_8cpp_a2ffaa7cdbdee40a0bbc68f4e6aebf445}} 
+Semaphore {\bfseries sem\+Decode} (0)
+\item 
+\mbox{\Hypertarget{main_8cpp_a14f607bc1b9a1ab8c2a688ba80570d88}\label{main_8cpp_a14f607bc1b9a1ab8c2a688ba80570d88}} 
+Semaphore {\bfseries sem\+Encode} (0)
+\item 
+\mbox{\Hypertarget{main_8cpp_a2afe7b1fdbb2d3a8522fb33347abf3c6}\label{main_8cpp_a2afe7b1fdbb2d3a8522fb33347abf3c6}} 
+Servo {\bfseries servo1} (P\+T\+C10)
+\item 
+\mbox{\Hypertarget{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}\label{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}} 
+int {\bfseries main} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{main_8cpp_ae8b51f9514ec6f8bd96f70fd38f05168}\label{main_8cpp_ae8b51f9514ec6f8bd96f70fd38f05168}} 
+const char $\ast$ {\bfseries U\+D\+P\+\_\+thread\+\_\+name} = \char`\"{}U\+D\+P\+IO\char`\"{}
+\item 
+\mbox{\Hypertarget{main_8cpp_a7022b224adfce7df8dbb43f0d0b54fce}\label{main_8cpp_a7022b224adfce7df8dbb43f0d0b54fce}} 
+const char $\ast$ {\bfseries cntr\+Init\+\_\+thread\+\_\+name} = \char`\"{}cntr\+Init\char`\"{}
+\item 
+\mbox{\Hypertarget{main_8cpp_a66a0b4942403c49653c9b698ea19ab49}\label{main_8cpp_a66a0b4942403c49653c9b698ea19ab49}} 
+const char $\ast$ {\bfseries sens\+Init\+\_\+thread\+\_\+name} = \char`\"{}sens\+Init\char`\"{}
+\item 
+\mbox{\Hypertarget{main_8cpp_a50323c6b92d1b5bec387e97114e0a217}\label{main_8cpp_a50323c6b92d1b5bec387e97114e0a217}} 
+const char $\ast$ {\bfseries outport\+Init\+\_\+thread\+\_\+name} = \char`\"{}outport\+Init\char`\"{}
+\item 
+\mbox{\Hypertarget{main_8cpp_a67dff6a575ed109239b78cc36974045e}\label{main_8cpp_a67dff6a575ed109239b78cc36974045e}} 
+File\+Handle $\ast$ {\bfseries fh} = \&serial
+\item 
+\mbox{\Hypertarget{main_8cpp_ac158b76bc8e2f8f232c4b8a73d1a2cb2}\label{main_8cpp_ac158b76bc8e2f8f232c4b8a73d1a2cb2}} 
+Event\+Queue {\bfseries queue}
+\item 
+Ext\+U\+\_\+feedback\+\_\+control\+\_\+T \hyperlink{main_8cpp_a1bfda025b86a8da3a44e6b0923a256f2}{feedback\+\_\+control\+\_\+U}
+\item 
+Ext\+Y\+\_\+feedback\+\_\+control\+\_\+T \hyperlink{main_8cpp_ae01be5449c13f73da04804c6c995d2ea}{feedback\+\_\+control\+\_\+Y}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Entry point for mbed OS. 
+
+This script creates and spawns threads and declare global variables defined in the header \hyperlink{global__vars_8hpp}{global\+\_\+vars.\+hpp}. 
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{main_8cpp_a1bfda025b86a8da3a44e6b0923a256f2}\label{main_8cpp_a1bfda025b86a8da3a44e6b0923a256f2}} 
+\index{main.\+cpp@{main.\+cpp}!feedback\+\_\+control\+\_\+U@{feedback\+\_\+control\+\_\+U}}
+\index{feedback\+\_\+control\+\_\+U@{feedback\+\_\+control\+\_\+U}!main.\+cpp@{main.\+cpp}}
+\subsubsection{\texorpdfstring{feedback\+\_\+control\+\_\+U}{feedback\_control\_U}}
+{\footnotesize\ttfamily Ext\+U\+\_\+feedback\+\_\+control\+\_\+T feedback\+\_\+control\+\_\+U}
+
+The I/O variables of the controller are used as extern since their name is the same if a Simulink project is used. This allows to keep the Firmware unchanged.\+External inputs \mbox{\Hypertarget{main_8cpp_ae01be5449c13f73da04804c6c995d2ea}\label{main_8cpp_ae01be5449c13f73da04804c6c995d2ea}} 
+\index{main.\+cpp@{main.\+cpp}!feedback\+\_\+control\+\_\+Y@{feedback\+\_\+control\+\_\+Y}}
+\index{feedback\+\_\+control\+\_\+Y@{feedback\+\_\+control\+\_\+Y}!main.\+cpp@{main.\+cpp}}
+\subsubsection{\texorpdfstring{feedback\+\_\+control\+\_\+Y}{feedback\_control\_Y}}
+{\footnotesize\ttfamily Ext\+Y\+\_\+feedback\+\_\+control\+\_\+T feedback\+\_\+control\+\_\+Y}
+
+External outputs 
