@@ -49,8 +49,8 @@ Servo servo1(PTC10);
 
 EventQueue queue;
 
-ExtU_feedback_control_T feedback_control_U;/* External inputs */
-ExtY_feedback_control_T feedback_control_Y;/* External outputs */
+ExtU_feedback_control_T feedback_control_U;
+ExtY_feedback_control_T feedback_control_Y;
 
 int main() 
 {

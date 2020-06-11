@@ -1,71 +1,33 @@
 #include "cli2.hpp"
-// #include <iostream>
 
-// std::string cli_buff;
-// std::string *ptr = &cli_buff;
 int ii;
-
-// Timer tim;
-// bool exit_flag;
 
 const char* prompt = "user@k64f >> ";
 
 char cli_buff[128];
 
-// std::string top_str = "top", info_str = "info", thread_str = "thread";
-
 __command cmd_enum, command;
 
 void cli2(Serial *serial)
 {
-    // tim.reset();
-    
     serial->getc();
     printf("\033[2J\033[1;1H");
     printf(GREEN_B("New Terminal\n"));
-    // printf("Write a command (info,top,thread)\n");
     printf("%s",prompt);
 
     while (1)
     {
-        // printf("awaiting command...");
         command = handleInput(serial);
 
         switch (command)
         {
         case cmd_top:
-            // exit_flag = 0;
-            // printf("\033[2J\033[1;1H"); // Clear terminal (2J) and set cursor to 1,1 (1;1H) --> CSI codes wikipedia!!!
-            // printf(GREEN("|||||||||||||||||||||||||||||||||||||||||||||||||||| CPU  MONITOR |||||||||||||||||||||||||||||||||||||||||||||||||||||\n"));
-            // printf(GREEN("||"));
-            // printf("\033[5;1H"); // Set cursor to 5,1
-            // printf(GREEN("|||||||||||||||||||||||||||||||||||||||||||||||||||| ~~~~~~~~~~~~ |||||||||||||||||||||||||||||||||||||||||||||||||||||\n"));
-            // while(!exit_flag)
-            // {
-                
-                // printf("\033[2;1H\033[2K"); // Set cursor to row 2 column 1 and clear that line
-                printf("\033[8m"); // Blink off
-                top(serial);
-                
-                // tim.start();
-                // while (tim.read() < 0.5 && !exit_flag)
-                // {
-                //     if (serial->readable())
-                //     {
-                //         char k = serial->getc();
-                //         exit_flag = 1;
-                //         printf("\n%s",prompt);
-                //         break;
-                //     }
-                //     ThisThread::sleep_for(10);
-                // }
-                // tim.reset();
-            // }
+            printf("\033[8m"); // Blink off
+            top(serial);
             printf("\033[28m"); // Blink on
             printf("\n%s",prompt);
             break;
             
-
         case cmd_sys_info:
             sysinfo();
             printf("\n%s",prompt);
@@ -104,45 +66,22 @@ void cli2(Serial *serial)
 // define a function in the sensor values struct that prints its fields
 __command handleInput(Serial *serial)
 {
-    
-    // scanf("%s", &cli_buff);
     memset(cli_buff,'\0', sizeof(cli_buff));
     cmd_enum = cmd_return; // By default, the enter command is set.
     ii = 0;
-        while (ii < 127 /*cli_buff[ii] != '\n' || cli_buff[ii] != ' '*/)
+        while (ii < 127)
         {
             char byte = serial->getc();
             serial->putc(byte);
             
-            
             if (byte == '\r') // if pressed enter do:
             {
-                // if (!strcmp(cli_buff,"\0") ) // given an empty enter now it works!
-                // {
-                //     printf("riprova\n");
-                //     break;
-                // }
-
                 ii = 0;
                 break;
             }
-            cli_buff[ii] = (char)byte;//serial->getc();
+            cli_buff[ii] = (char)byte;
             ii++;
         }
-        // printf("cazzo2");
-
-        // if (cli_buff[ii-1] == ' ') // handling arguments of commands
-        // {
-        //     ThisThread::sleep_for(10); /* parse command arguments */
-        // };
-
-        // cmd_enum = resolveCmd(ptr, serial);
-        // cmd_enum = cmd_sys_info;
-
-        // cout << cli_buff << endl;
-
-        // printf("%d\n", strcmp(cli_buff,"top"));
-        // printf("%d\n", cli_buff.compare(top_str));
         if(!strcmp(cli_buff,"top"))                     cmd_enum = cmd_top;
         else if(!strcmp(cli_buff,"info"))               cmd_enum = cmd_sys_info;
         else if(!strcmp(cli_buff,"thread"))             cmd_enum = cmd_thread_info;
@@ -210,22 +149,3 @@ void help(void)
 
     printf(GREEN("##=================================================== ~~~~~~~~~~~ ===================================================##\n"));
 }
-
-// __command resolveCmd(std::string *inString, Serial *serial)
-// {
-//     printf("instring:\n");
-//     if(!(inString->compare("info")))      return cmd_sys_info;
-//     if(!inString->compare("top"))       return cmd_top;
-//     if(!inString->compare("thread"))    return cmd_thread_info;
-//     if(!inString->compare("\n"))        return cmd_return;
-//     // fh->write((const void*)&inString, sizeof(inString));
-//     std::string cazzo = *inString;
-//     int len = sizeof(cazzo);
-//     while (len--)
-//                 {
-//                     serial->putc(cazzo[len]);
-//                 }
-//     // printf("%s", inString);
-//     printf("\nfine instring\n");
-//     // write("%s",&cli_buff);
-// }

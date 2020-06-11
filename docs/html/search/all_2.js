@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['global_5fmsgs_2ehpp',['global_msgs.hpp',['../global__msgs_8hpp.html',1,'']]],
-  ['global_5fvars_2ehpp',['global_vars.hpp',['../global__vars_8hpp.html',1,'']]]
+  ['in_5fdata',['in_data',['../UDPComm_8cpp.html#a6c3cca4bacec6b4aeb5cdaa86740614e',1,'UDPComm.cpp']]]
 ];

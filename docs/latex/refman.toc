@@ -1,22 +1,20 @@
 \contentsline {chapter}{\numberline {1}File Index}{1}{chapter.1}%
 \contentsline {section}{\numberline {1.1}File List}{1}{section.1.1}%
 \contentsline {chapter}{\numberline {2}File Documentation}{3}{chapter.2}%
-\contentsline {section}{\numberline {2.1}include/global\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}msgs.hpp File Reference}{3}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Variable Documentation}{3}{subsection.2.1.1}%
-\contentsline {subsubsection}{\numberline {2.1.1.1}att}{3}{subsubsection.2.1.1.1}%
-\contentsline {section}{\numberline {2.2}include/global\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}vars.hpp File Reference}{4}{section.2.2}%
+\contentsline {section}{\numberline {2.1}include/global\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}vars.hpp File Reference}{3}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Detailed Description}{3}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Variable Documentation}{4}{subsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.2.1}feedback\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}control\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}U}{4}{subsubsection.2.1.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.2.2}feedback\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}control\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Y}{4}{subsubsection.2.1.2.2}%
+\contentsline {section}{\numberline {2.2}src/main.cpp File Reference}{4}{section.2.2}%
 \contentsline {subsection}{\numberline {2.2.1}Detailed Description}{4}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Variable Documentation}{4}{subsection.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.2.1}feedback\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}control\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}U}{4}{subsubsection.2.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Variable Documentation}{5}{subsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.2.1}feedback\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}control\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}U}{5}{subsubsection.2.2.2.1}%
 \contentsline {subsubsection}{\numberline {2.2.2.2}feedback\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}control\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Y}{5}{subsubsection.2.2.2.2}%
-\contentsline {section}{\numberline {2.3}src/main.cpp File Reference}{5}{section.2.3}%
+\contentsline {section}{\numberline {2.3}src/sens\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Init.cpp File Reference}{5}{section.2.3}%
 \contentsline {subsection}{\numberline {2.3.1}Detailed Description}{5}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Variable Documentation}{6}{subsection.2.3.2}%
-\contentsline {subsubsection}{\numberline {2.3.2.1}feedback\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}control\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}U}{6}{subsubsection.2.3.2.1}%
-\contentsline {subsubsection}{\numberline {2.3.2.2}feedback\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}control\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Y}{6}{subsubsection.2.3.2.2}%
-\contentsline {section}{\numberline {2.4}src/sens\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Init.cpp File Reference}{6}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}Detailed Description}{7}{subsection.2.4.1}%
-\contentsline {section}{\numberline {2.5}src/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}U\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}D\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}P\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Comm.cpp File Reference}{7}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}Detailed Description}{8}{subsection.2.5.1}%
-\contentsline {subsection}{\numberline {2.5.2}Variable Documentation}{8}{subsection.2.5.2}%
-\contentsline {subsubsection}{\numberline {2.5.2.1}att}{8}{subsubsection.2.5.2.1}%
+\contentsline {section}{\numberline {2.4}src/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}U\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}D\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}P\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Comm.cpp File Reference}{6}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Detailed Description}{6}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Variable Documentation}{6}{subsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.2.1}in\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}data}{6}{subsubsection.2.4.2.1}%
+\contentsline {subsubsection}{\numberline {2.4.2.2}out\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}buf}{6}{subsubsection.2.4.2.2}%

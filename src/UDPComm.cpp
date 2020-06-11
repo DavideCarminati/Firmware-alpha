@@ -21,7 +21,8 @@ static const char*          mbedGateway  = "192.168.1.254";    //Gateway
 static const char*          recvIP = "192.168.1.203";// */ "192.168.1.249";
 static const char*          localIP = "0.0.0.0";
 
-uint8_t in_data[MAVLINK_MAX_PACKET_LEN], out_buf[MAVLINK_MAX_PACKET_LEN];
+uint8_t in_data[MAVLINK_MAX_PACKET_LEN];    /*!< Buffer in which incoming data is stored */
+uint8_t out_buf[MAVLINK_MAX_PACKET_LEN];    /*!< Buffer in which outgoing data is stored */
 
 mavlink_message_t pos_decoded, msg;
 mavlink_status_t status;

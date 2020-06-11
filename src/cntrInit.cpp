@@ -8,7 +8,7 @@ DigitalOut initLED(LED1);
 
 const char* Controller_thread_name = "controller";
 
-Thread Controller(osPriorityRealtime,CONTROLLER_STACK_SIZE,nullptr,nullptr);
+Thread Controller(osPriorityRealtime,CONTROLLER_STACK_SIZE,nullptr,Controller_thread_name);
 
 void cntrInit(void)
 {
