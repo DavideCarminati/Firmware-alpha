@@ -3,10 +3,15 @@
 
     Creates a timer that calls an interrupt with the given frequency
 */
+#include <mbed.h>
+#include "FXOS8700CQ.h"
+#include "global_vars.hpp"
 
 #include "sensInit.hpp"
 #include "EventQueue.h"
 #include "Event.h"
+
+#define FXOS8700CQ_FREQ 50 //!< Frequency at which the sensor is interrogated
 
 FXOS8700CQ accmag(PTE25,PTE24);
 

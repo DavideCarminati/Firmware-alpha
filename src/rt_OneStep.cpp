@@ -1,3 +1,9 @@
+/*! @file rt_OneStep.cpp
+    
+    @brief It performs a time step of the controller algorithm checking whether it respects the Real-Time deadline.
+
+*/
+
 /*
  * Academic License - for use in teaching, academic research, and meeting
  * course requirements at degree granting institutions only.  Not for
@@ -16,6 +22,14 @@
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
+#include <stddef.h>
+#include <stdio.h>              /* This ert_main.c example uses printf/fflush */
+#include "feedback_control.h"          /* Model's header file */
+#include "rtwtypes.h"
+
+#include "global_vars.hpp"
+#include "common/mavlink.h"
+
 #include "rt_OneStep.hpp"
 
 // Semaphore semDecode(0), semEncode(0);

@@ -14,6 +14,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+#include <mbed.h>
+#include "cli_appereance.hpp"
+
 #include "threadinfo.hpp"
  
 #if !defined(MBED_THREAD_STATS_ENABLED)

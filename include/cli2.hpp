@@ -1,10 +1,10 @@
 #include <mbed.h>
 
-#include "sysinfo.hpp"
-#include "top.hpp"
-#include "threadinfo.hpp"
+// #include "sysinfo.hpp"
+// #include "top.hpp"
+// #include "threadinfo.hpp"
 
-#include "cli_appereance.hpp"
+// #include "cli_appereance.hpp"
 
 #ifndef COMMAND_LINE
 #define COMMAND_LINE
@@ -24,7 +24,6 @@ enum __command
 
 __command handleInput(Serial *serial);
 void help(void);
-// __command resolveCmd(std::string *inString, Serial *serial);
 
 
 

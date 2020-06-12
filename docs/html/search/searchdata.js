@@ -1,21 +1,27 @@
 var indexSectionsWithContent =
 {
-  0: "fgimosu",
-  1: "gmsu",
-  2: "fio"
+  0: "cfgimoprsu",
+  1: "cgmorsu",
+  2: "ops",
+  3: "fio",
+  4: "f"
 };
 
 var indexSectionNames =
 {
   0: "all",
   1: "files",
-  2: "variables"
+  2: "functions",
+  3: "variables",
+  4: "defines"
 };
 
 var indexSectionLabels =
 {
   0: "All",
   1: "Files",
-  2: "Variables"
+  2: "Functions",
+  3: "Variables",
+  4: "Macros"
 };
 

@@ -1,4 +1,26 @@
+/*! @file cli2.cpp
+
+    @brief Command line interface for hardware resource inspection.
+
+    @details The command line interface (cli) allows the developer to check the CPU and memory usage, the number of
+    active threads and display the main variables.
+    The available commands are:
+        - top           Display CPU usage;
+        - info          Display hardware information;
+        - thread        Show active threads state, priority and their resources;
+        - clear         Clear screen;
+        - help          Show available commands.
+
+    
+*/
+
 #include "cli2.hpp"
+
+#include "sysinfo.hpp"
+#include "top.hpp"
+#include "threadinfo.hpp"
+
+#include "cli_appereance.hpp"
 
 int ii;
 

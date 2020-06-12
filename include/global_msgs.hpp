@@ -1,4 +1,4 @@
-/** \file global_msgs.hpp */
+/** file global_msgs.hpp */
 /**
  * Declaration and definition of used mavlink structs
  * 

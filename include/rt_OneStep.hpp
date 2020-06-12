@@ -3,7 +3,7 @@
 #include "feedback_control.h"          /* Model's header file */
 #include "rtwtypes.h"
 
-#include "global_vars.hpp"
-#include "common/mavlink.h"
+// #include "global_vars.hpp"
+// #include "common/mavlink.h"
 
 void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M);

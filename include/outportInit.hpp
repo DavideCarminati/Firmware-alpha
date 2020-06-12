@@ -1,6 +1,6 @@
-#include <mbed.h>
-#include "Servo.h"
-#include "global_vars.hpp"
+// #include <mbed.h>
+// #include "Servo.h"
+// #include "global_vars.hpp"
 
 void outportInit(void);
 void postServoEvent(void);

@@ -14,6 +14,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+#include <mbed.h>
+#include "cli_appereance.hpp"
+
 #include "sysinfo.hpp"
 
 #if !defined(MBED_SYS_STATS_ENABLED)

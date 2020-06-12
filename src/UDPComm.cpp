@@ -11,6 +11,12 @@
 
 
 */
+#pragma once
+#include <mbed.h>
+#include <EthernetInterface.h>
+#include "common/mavlink.h"
+#include "global_vars.hpp"
+#include "global_msgs.hpp"
 
 #include <UDPComm.hpp>
 
@@ -60,7 +66,7 @@ void UDPComm(void)
                 }
             }
             semDecode.release();
-            ThisThread::sleep_for(250);
+            // ThisThread::sleep_for(250);
         } else
         {
             feedback_control_U.estimated = 0;
@@ -85,7 +91,7 @@ void UDPComm(void)
                 printf("Data sent!\n");
             }
 
-            ThisThread::sleep_for(250);
+            // ThisThread::sleep_for(250);
         
     }
 
