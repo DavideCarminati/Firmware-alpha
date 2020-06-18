@@ -39,7 +39,7 @@ Serial* serial = new Serial(USBTX,USBRX,115200);
 
 Thread ControllerInit(osPriorityHigh,8092,nullptr,cntrInit_thread_name);
 Thread SensorInit(osPriorityNormal,8092,nullptr,sensInit_thread_name);
-Thread OutputPortInit(osPriorityNormal,8092,nullptr,outportInit_thread_name);
+Thread OutputPortInit(osPriorityNormal,16184,nullptr,outportInit_thread_name);
 Thread CommandLineInterface(osPriorityNormal,8092,nullptr,cli_thread_name);
 
 // TODO Include semaphores for synchronizing sensor read/controller/pwm write

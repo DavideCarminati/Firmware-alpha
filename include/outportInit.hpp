@@ -5,3 +5,4 @@
 void outportInit(void);
 void postServoEvent(void);
 void Servo1Write(void);
+void MotorWrite(void);

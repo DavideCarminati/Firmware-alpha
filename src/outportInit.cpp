@@ -12,6 +12,7 @@
 #include <mbed.h>
 #include "Servo.h"
 #include "global_vars.hpp"
+#include "TankMotor.hpp"
 
 #include "outportInit.hpp"
 
@@ -22,8 +23,11 @@ float pos = 0.0;
 
 // EventQueue queue;
 Event<void(void)> servowriteEvent(&queue,Servo1Write);
+Event<void(void)> motorwriteEvent(&queue,MotorWrite);
 
 Thread ServoWrite(osPriorityNormal,8092,nullptr,"servoWrite");
+
+TankMotor leftMotor(PTC10,PTC16,PTC17), rightMotor(PTC11,PTB9,PTA1);
 
 // CRITICAL Also in here I have to protect the read of the output of the controller algorithm with a mutex!!!
 
@@ -44,6 +48,10 @@ void postServoEvent(void)
     servowriteEvent.period(50);
     servowriteEvent.delay(500);
     servowriteEvent.post();
+
+    motorwriteEvent.delay(5000);
+    motorwriteEvent.period(15000);
+    motorwriteEvent.post();
 }
 
 /** The event is simply a method writing the computed duty cycle to the enabled pin port. The duty cycle is directly dependent on the output of the
@@ -57,4 +65,35 @@ void Servo1Write(void)
     servo1.write(pos);
     // printf("\033[1;1H");
     // printf("pos given to pwm port: %f\n",pos);
+}
+
+void MotorWrite(void)
+{
+    
+    
+    leftMotor.Move(7000);
+    rightMotor.Move(7000);
+    ThisThread::sleep_for(1000);
+
+    leftMotor.Move(10000);
+    rightMotor.Move(10000);
+    ThisThread::sleep_for(3000);
+
+    leftMotor.Move(15000);
+    rightMotor.Move(15000);
+    ThisThread::sleep_for(3000);
+
+    leftMotor.Move(10000);
+    rightMotor.Move(-10000);
+    ThisThread::sleep_for(1000);
+
+    leftMotor.Move(-10000);
+    rightMotor.Move(-10000);
+    ThisThread::sleep_for(1000);
+
+    leftMotor.Move(0);
+    rightMotor.Move(0);
+    
+
+
 }
