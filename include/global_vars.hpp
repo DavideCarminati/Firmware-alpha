@@ -9,6 +9,7 @@
 #include "common/mavlink.h"
 #include "feedback_control.h"
 #include "Servo.h"
+#include "EthernetInterface.h"
 
 #ifndef UDP_BUFFER
 #define UDP_BUFFER
@@ -59,3 +60,11 @@ extern EventQueue queue;
 
 #endif
 
+
+#ifndef ETH_COMM
+#define ETH_COMM
+
+extern EthernetInterface eth;
+extern UDPSocket socket;
+
+#endif

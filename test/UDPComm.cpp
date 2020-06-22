@@ -20,12 +20,12 @@
 
 #include <UDPComm.hpp>
 
-static const char*          mbedIP       = "192.168.1.55";  //IP 
-static const char*          mbedMask     = "255.255.255.0";  // Mask
-static const char*          mbedGateway  = "192.168.1.254";    //Gateway
+// static const char*          mbedIP       = "192.168.1.55";  //IP 
+// static const char*          mbedMask     = "255.255.255.0";  // Mask
+// static const char*          mbedGateway  = "192.168.1.254";    //Gateway
 
-static const char*          recvIP = "192.168.1.203";// */ "192.168.1.249";
-static const char*          localIP = "0.0.0.0";
+// static const char*          recvIP = "192.168.1.203";// */ "192.168.1.249";
+// static const char*          localIP = "0.0.0.0";
 
 uint8_t in_data[MAVLINK_MAX_PACKET_LEN];    /*!< Buffer in which incoming data is stored */
 uint8_t out_buf[MAVLINK_MAX_PACKET_LEN];    /*!< Buffer in which outgoing data is stored */
@@ -39,18 +39,18 @@ uint8_t COMP_ID = 1;
 
 void UDPComm(void) 
 {
-    EthernetInterface eth;
-    eth.set_network(mbedIP, mbedMask, mbedGateway);
-    eth.EthernetInterface::connect();
+    // EthernetInterface eth;
+    // eth.set_network(mbedIP, mbedMask, mbedGateway);
+    // eth.EthernetInterface::connect();
 
-    UDPSocket socket;
-    socket.open(&eth);
-    // Setting up server to listen to port 8150
-    SocketAddress sockAddr_in(localIP,8050);
-    socket.bind(8150);
-    socket.set_timeout(2000);
-    // Setting up client to speak to port 8151 of external PC
-    SocketAddress sockAddr(recvIP, 8151);
+    // UDPSocket socket;
+    // socket.open(&eth);
+    // // Setting up server to listen to port 8150
+    // SocketAddress sockAddr_in(localIP,8050);
+    // socket.bind(8150);
+    // socket.set_timeout(2000);
+    // // Setting up client to speak to port 8151 of external PC
+    // SocketAddress sockAddr(recvIP, 8151);
 
     while (true)
     {   
@@ -62,21 +62,21 @@ void UDPComm(void)
                 uint8_t byte = in_data[ii];
                 if(mavlink_parse_char(MAVLINK_COMM_0, byte, &pos_decoded, &status))
                 {
-                    feedback_control_U.estimated = mavlink_msg_local_position_ned_get_x(&pos_decoded);
+                    // feedback_control_U.estimated = mavlink_msg_local_position_ned_get_x(&pos_decoded);
                 }
             }
             semDecode.release();
             // ThisThread::sleep_for(250);
         } else
         {
-            feedback_control_U.estimated = 0;
+            // feedback_control_U.estimated = 0;
             semDecode.release();
         }
         
 
         // sending data...
         semEncode.acquire();
-        att.roll = feedback_control_Y.u;
+        // att.roll = feedback_control_Y.u;
         time_t sec = 0;//time(NULL);
         att.time_boot_ms = sec;
 

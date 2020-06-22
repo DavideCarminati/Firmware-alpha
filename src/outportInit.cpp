@@ -38,7 +38,7 @@ void outportInit()
 {
     servo1.calibrate(0.0005,90); // 0.0005 s from center (1.5ms) to max/min
     ServoWrite.start(postServoEvent);
-    queue.dispatch();
+    // queue.dispatch();
 }
 
 /** The period and the initial delay of the PWM write event are set. Then it is posted in the queue.
@@ -50,7 +50,7 @@ void postServoEvent(void)
     servowriteEvent.post();
 
     motorwriteEvent.delay(5000);
-    motorwriteEvent.period(15000);
+    motorwriteEvent.period(50);
     motorwriteEvent.post();
 }
 
@@ -61,8 +61,8 @@ void postServoEvent(void)
 void Servo1Write(void)
 {
     // TODO add semaphore in here!
-    pos = feedback_control_Y.u;//*180;
-    servo1.write(pos);
+    // pos = feedback_control_Y.u;//*180;
+    // servo1.write(pos);
     // printf("\033[1;1H");
     // printf("pos given to pwm port: %f\n",pos);
 }
@@ -70,29 +70,32 @@ void Servo1Write(void)
 void MotorWrite(void)
 {
     
-    
-    leftMotor.Move(7000);
-    rightMotor.Move(7000);
-    ThisThread::sleep_for(1000);
+    leftMotor.Move(feedback_control_Y.pwm_left);
+    rightMotor.Move(feedback_control_Y.pwm_right);
+    // printf("%f", feedback_control_Y.pwm_left);
 
-    leftMotor.Move(10000);
-    rightMotor.Move(10000);
-    ThisThread::sleep_for(3000);
+    // leftMotor.Move(7000);
+    // rightMotor.Move(7000);
+    // ThisThread::sleep_for(1000);
 
-    leftMotor.Move(15000);
-    rightMotor.Move(15000);
-    ThisThread::sleep_for(3000);
+    // leftMotor.Move(10000);
+    // rightMotor.Move(10000);
+    // ThisThread::sleep_for(3000);
 
-    leftMotor.Move(10000);
-    rightMotor.Move(-10000);
-    ThisThread::sleep_for(1000);
+    // leftMotor.Move(15000);
+    // rightMotor.Move(15000);
+    // ThisThread::sleep_for(3000);
 
-    leftMotor.Move(-10000);
-    rightMotor.Move(-10000);
-    ThisThread::sleep_for(1000);
+    // leftMotor.Move(10000);
+    // rightMotor.Move(-10000);
+    // ThisThread::sleep_for(1000);
 
-    leftMotor.Move(0);
-    rightMotor.Move(0);
+    // leftMotor.Move(-10000);
+    // rightMotor.Move(-10000);
+    // ThisThread::sleep_for(1000);
+
+    // leftMotor.Move(0);
+    // rightMotor.Move(0);
     
 
 

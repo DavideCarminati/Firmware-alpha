@@ -26,14 +26,30 @@ void feedback_control_step(RT_MODEL_feedback_control_T *const feedback_control_M
 {
   DW_feedback_control_T *feedback_control_DW = ((DW_feedback_control_T *)
     feedback_control_M->dwork);
-  real32_T rtb_error;
+  real32_T psi_error, v_error, v_cmd, psi_cmd;
   real32_T rtb_TSamp;
 
   // Sum: '<Root>/Sum' incorporates:
   //   Inport: '<Root>/est'
   //   Inport: '<Root>/ref'
 
-  rtb_error = feedback_control_U->reference - feedback_control_U->estimated;
+  psi_error = feedback_control_U->psi_ref - feedback_control_U->psi_est;
+  v_error = feedback_control_U->v_ref - feedback_control_U->v_est;
+
+  psi_cmd = psi_error*10;
+  v_cmd = v_error*1;
+
+  psi_cmd = psi_error/180; // gradi
+  v_cmd = v_cmd/1; // m/s
+
+  if(psi_cmd > 1)     psi_cmd = 1;
+  if(psi_cmd < -1)    psi_cmd = -1;
+  if(v_cmd > 1)       v_cmd = 1;
+  if(v_cmd < -1)      v_cmd = -1;
+
+  feedback_control_Y->pwm_left = 20000*(v_cmd - psi_cmd);
+  feedback_control_Y->pwm_right = 20000*(v_cmd + psi_cmd);
+
 
   // SampleTimeMath: '<S26>/TSamp' incorporates:
   //   Gain: '<S25>/Derivative Gain'
@@ -41,28 +57,28 @@ void feedback_control_step(RT_MODEL_feedback_control_T *const feedback_control_M
   //  About '<S26>/TSamp':
   //   y = u * K where K = 1 / ( w * Ts )
 
-  rtb_TSamp = 0.2F * rtb_error * 20.0F;
+  // rtb_TSamp = 0.2F * rtb_error * 20.0F;
 
-  // Outport: '<Root>/u' incorporates:
-  //   Delay: '<S26>/UD'
-  //   DiscreteIntegrator: '<S31>/Integrator'
-  //   Gain: '<S36>/Proportional Gain'
-  //   Sum: '<S26>/Diff'
-  //   Sum: '<S40>/Sum'
+  // // Outport: '<Root>/u' incorporates:
+  // //   Delay: '<S26>/UD'
+  // //   DiscreteIntegrator: '<S31>/Integrator'
+  // //   Gain: '<S36>/Proportional Gain'
+  // //   Sum: '<S26>/Diff'
+  // //   Sum: '<S40>/Sum'
 
-  feedback_control_Y->u = (0.8F * rtb_error +
-    feedback_control_DW->Integrator_DSTATE) + (rtb_TSamp -
-    feedback_control_DW->UD_DSTATE);
+  // feedback_control_Y->u = (0.8F * rtb_error +
+  //   feedback_control_DW->Integrator_DSTATE) + (rtb_TSamp -
+  //   feedback_control_DW->UD_DSTATE);
 
-  feedback_control_Y->u = feedback_control_U->reference;
+  // feedback_control_Y->u = feedback_control_U->reference;
 
-  // Update for DiscreteIntegrator: '<S31>/Integrator' incorporates:
-  //   Gain: '<S28>/Integral Gain'
+  // // Update for DiscreteIntegrator: '<S31>/Integrator' incorporates:
+  // //   Gain: '<S28>/Integral Gain'
 
-  feedback_control_DW->Integrator_DSTATE += 7.0F * rtb_error * 0.05F;
+  // feedback_control_DW->Integrator_DSTATE += 7.0F * rtb_error * 0.05F;
 
-  // Update for Delay: '<S26>/UD'
-  feedback_control_DW->UD_DSTATE = rtb_TSamp;
+  // // Update for Delay: '<S26>/UD'
+  // feedback_control_DW->UD_DSTATE = rtb_TSamp;
 }
 
 // Model initialize function
@@ -83,7 +99,7 @@ void feedback_control_initialize(RT_MODEL_feedback_control_T *const
   (void)memset(feedback_control_U, 0, sizeof(ExtU_feedback_control_T));
 
   // external outputs
-  feedback_control_Y->u = 0.0F;
+  // feedback_control_Y->u = 0.0F;
 }
 
 // Model terminate function
