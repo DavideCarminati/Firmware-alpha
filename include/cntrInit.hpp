@@ -3,7 +3,7 @@
 // #include "feedback_control.h"          /* Model's header file */
 // #include "rtwtypes.h"
 
-// #ifndef CONTROLLER_IO // TODO not needed in realta'
+// #ifndef CONTROLLER_IO 
 // #define CONTROLLER_IO
 // static RT_MODEL_feedback_control_T feedback_control_M_;
 // static RT_MODEL_feedback_control_T *const feedback_control_MPtr =

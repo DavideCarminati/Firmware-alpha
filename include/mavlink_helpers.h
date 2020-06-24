@@ -378,7 +378,6 @@ MAVLINK_HELPER void _mavlink_resend_uart(mavlink_channel_t chan, const mavlink_m
 
 	ck[0] = (uint8_t)(msg->checksum & 0xFF);
 	ck[1] = (uint8_t)(msg->checksum >> 8);
-	// XXX use the right sequence here
 
         uint8_t header_len;
         uint8_t signature_len;
@@ -1053,7 +1052,7 @@ MAVLINK_HELPER uint8_t put_bitfield_n_by_index(int32_t b, uint8_t bits, uint8_t 
 
 		// First pack everything we can into the current 'open' byte
 		//curr_bits_n = bits_remain << 3; // Equals  bits_remain mod 8
-		//FIXME
+
 		if (bits_remain <= (uint8_t)(8 - i_bit_index))
 		{
 			// Enough space
