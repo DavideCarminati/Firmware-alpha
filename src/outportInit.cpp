@@ -25,9 +25,9 @@ float pos = 0.0;
 Event<void(void)> servowriteEvent(&queue,Servo1Write);
 Event<void(void)> motorwriteEvent(&queue,MotorWrite);
 
-Thread ServoWrite(osPriorityNormal,8092,nullptr,"servoWrite");
+Thread ServoWrite(osPriorityNormal,16184,nullptr,"servoWrite");
 
-TankMotor leftMotor(PTC10,PTC16,PTC17), rightMotor(PTC11,PTB9,PTA1);
+// TankMotor leftMotor(PTC10,PTC16,PTC17), rightMotor(PTC11,PTB9,PTA1);
 
 // CRITICAL Also in here I have to protect the read of the output of the controller algorithm with a mutex!!!
 
@@ -45,13 +45,14 @@ void outportInit()
  */
 void postServoEvent(void)
 {
-    servowriteEvent.period(50);
-    servowriteEvent.delay(500);
-    servowriteEvent.post();
+    // servowriteEvent.period(50);
+    // servowriteEvent.delay(500);
+    // servowriteEvent.post();
 
-    motorwriteEvent.delay(5000);
-    motorwriteEvent.period(50);
-    motorwriteEvent.post();
+    // motorwriteEvent.delay(4000);
+    // motorwriteEvent.period(200);
+    // motorwriteEvent.post();
+    // printf("\033[2;60Hpost");
 }
 
 /** The event is simply a method writing the computed duty cycle to the enabled pin port. The duty cycle is directly dependent on the output of the
@@ -69,10 +70,12 @@ void Servo1Write(void)
 
 void MotorWrite(void)
 {
+    // printf("\033[2;50Hout1");
+    // semContrPWM.acquire();
+    // printf("\033[2;50Hout2");
+    // leftMotor.Move(feedback_control_Y.pwm_left);
+    // rightMotor.Move(feedback_control_Y.pwm_right);
     
-    leftMotor.Move(feedback_control_Y.pwm_left);
-    rightMotor.Move(feedback_control_Y.pwm_right);
-    // printf("%f", feedback_control_Y.pwm_left);
 
     // leftMotor.Move(7000);
     // rightMotor.Move(7000);

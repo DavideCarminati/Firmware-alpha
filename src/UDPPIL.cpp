@@ -5,6 +5,8 @@
 
 #include "UDPPIL.hpp"
 
+#if PIL_MODE
+
 static const char*          mbedIP       = "192.168.1.10";  //IP 
 static const char*          mbedMask     = "255.255.255.0";  // Mask
 static const char*          mbedGateway  = "192.168.1.1";    //Gateway
@@ -66,3 +68,5 @@ void UDPPIL()
             printf("Data sent!\n");
         }
 }
+
+#endif

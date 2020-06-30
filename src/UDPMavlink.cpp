@@ -2,6 +2,7 @@
 #include <EthernetInterface.h>
 #include "global_vars.hpp"
 #include "common/mavlink.h"
+#include "global_msgs.hpp"
 
 #include "UDPMavlink.hpp"
 
@@ -21,10 +22,9 @@ mavlink_message_t msgIn;
 mavlink_status_t status;
 mavlink_attitude_t att;
 
+
 uint8_t SYS_ID = 1;
 uint8_t COMP_ID = 1;
-
-float odometryx;
 
 Timer timerUDP;
 
@@ -32,7 +32,7 @@ uint64_t epochUDP;
 
 void UDPMavlink()
 {
-    printf("qui thread\n");
+    // printf("qui thread\n");
     eth.set_network(mbedIP, mbedMask, mbedGateway);
     eth.EthernetInterface::connect(); // Done to avoid methods ambiguity!
 
@@ -42,7 +42,7 @@ void UDPMavlink()
     
     socket.bind(8150);
     
-    printf("qui processo start\n");
+    // printf("qui processo start\n");
 
     timerUDP.start();
     while(1)
@@ -50,7 +50,7 @@ void UDPMavlink()
         epochUDP = Kernel::get_ms_count();
         timerUDP.reset();
         // receiving data...
-        printf("qui UDPMAV\n");
+        // printf("qui UDPMAV\n");
         if(socket.recvfrom(&sockAddr_in, &in_data, MAVLINK_MAX_PACKET_LEN) != NSAPI_ERROR_WOULD_BLOCK) // now act as a server and receive from simulink data back
         {
             for(int ii = 0; ii < MAVLINK_MAX_PACKET_LEN; ii++) 
@@ -58,9 +58,11 @@ void UDPMavlink()
                 uint8_t byte = in_data[ii];
                 if(mavlink_parse_char(MAVLINK_COMM_0, byte, &msgIn, &status))
                 {
-                    odometryx = mavlink_msg_odometry_get_x(&msgIn); // TODO cambiare nome alle variabili per thread navigazione
-                    // int tempo = timer.read_us();
-                    printf("%f\n",odometryx);
+                    mavlink_msg_odometry_decode(&msgIn,&odom);
+                    // printf("\033[4;1H");
+                    // printf("%f, %f, %f, %f, %f", odom.x, odom.q[0], odom.q[1], odom.q[2], odom.q[3]);
+                    // semUDPNav.release();
+                    flagMavlink = true;
                 }
             }
         } else
@@ -68,6 +70,6 @@ void UDPMavlink()
             printf("problema connessione udp\n");
         }
         // int elapsed = timerUDP.read_us();
-        ThisThread::sleep_until(epochUDP+500);
+        ThisThread::sleep_until(epochUDP+200);
     }
 }

@@ -42,7 +42,8 @@ extern ExtY_feedback_control_T feedback_control_Y;      /**< External outputs */
 #ifndef SEMAPHORES
 #define SEMAPHORES
 
-extern Semaphore semDecode, semEncode;
+extern Semaphore semDecode, semEncode, semUDPNav, semNavContr, semContrPWM;
+extern bool flagMavlink;
 
 #endif
 

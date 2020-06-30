@@ -10,4 +10,5 @@
 #ifndef MAVLINK_ATT
 #define MAVLINK_ATT
 extern mavlink_attitude_t att;
+extern mavlink_odometry_t odom;
 #endif

@@ -26,29 +26,57 @@ void feedback_control_step(RT_MODEL_feedback_control_T *const feedback_control_M
 {
   DW_feedback_control_T *feedback_control_DW = ((DW_feedback_control_T *)
     feedback_control_M->dwork);
-  real32_T psi_error, v_error, v_cmd, psi_cmd;
+  real32_T psi_error, X_error, X_cmd, psi_cmd;
   real32_T rtb_TSamp;
 
   // Sum: '<Root>/Sum' incorporates:
   //   Inport: '<Root>/est'
   //   Inport: '<Root>/ref'
 
+  // float modq = 0;
+  // for(int ii=0; ii<4; ii++) 
+  // {
+  //   modq += feedback_control_U->q_est[ii]*feedback_control_U->q_est[ii]; // quaternion module
+  // }
+  // feedback_control_U->q_est[0] =  feedback_control_U->q_est[0]/modq;
+  // for(int ii = 1; ii<4; ii++)
+  // {
+  //   feedback_control_U->q_est[ii] = -feedback_control_U->q_est[ii]/modq; // quaternion inversion
+  // }
+
+
+  // real32_T q0_error = feedback_control_U->q_est[0]*feedback_control_U->q_ref[0] - feedback_control_U->q_est[1]*feedback_control_U->q_ref[1] \
+  //                     - feedback_control_U->q_est[2]*feedback_control_U->q_ref[2] - feedback_control_U->q_est[3]*feedback_control_U->q_ref[3];
+
+  // real32_T q1_error = feedback_control_U->q_est[1]*feedback_control_U->q_ref[0] + feedback_control_U->q_est[0]*feedback_control_U->q_ref[1] \
+  //                     - feedback_control_U->q_est[3]*feedback_control_U->q_ref[2] + feedback_control_U->q_est[2]*feedback_control_U->q_ref[3];
+
+  // real32_T q2_error = feedback_control_U->q_est[2]*feedback_control_U->q_ref[0] + feedback_control_U->q_est[3]*feedback_control_U->q_ref[1] \
+  //                     + feedback_control_U->q_est[0]*feedback_control_U->q_ref[2] - feedback_control_U->q_est[1]*feedback_control_U->q_ref[3];
+
+  // real32_T q3_error = feedback_control_U->q_est[3]*feedback_control_U->q_ref[0] - feedback_control_U->q_est[2]*feedback_control_U->q_ref[1] \
+  //                     + feedback_control_U->q_est[1]*feedback_control_U->q_ref[2] + feedback_control_U->q_est[0]*feedback_control_U->q_ref[3];
+
+  // real32_T q_error[4] = {q0_error, q1_error, q2_error, q3_error};
+
+  X_error = feedback_control_U->X_ref - feedback_control_U->X_est;
   psi_error = feedback_control_U->psi_ref - feedback_control_U->psi_est;
-  v_error = feedback_control_U->v_ref - feedback_control_U->v_est;
+  // for(int ii=0; ii<4; ii++) q_cmd[ii] = q_error[ii]*10;
+  
+  X_cmd = X_error*0.25;
+  psi_cmd = psi_error*0.3;
 
-  psi_cmd = psi_error*10;
-  v_cmd = v_error*1;
+  psi_cmd = psi_cmd/180; // gradi
+  X_cmd = X_cmd/1; // m
 
-  psi_cmd = psi_error/180; // gradi
-  v_cmd = v_cmd/1; // m/s
+  if(psi_cmd > 0.5)     psi_cmd = 0.5;
+  if(psi_cmd < -0.5)    psi_cmd = -0.5;
+  if(X_cmd > 1)       X_cmd = 1;
+  if(X_cmd < -1)      X_cmd = -1;
 
-  if(psi_cmd > 1)     psi_cmd = 1;
-  if(psi_cmd < -1)    psi_cmd = -1;
-  if(v_cmd > 1)       v_cmd = 1;
-  if(v_cmd < -1)      v_cmd = -1;
+  feedback_control_Y->pwm_left = 20000*(X_cmd - psi_cmd);
+  feedback_control_Y->pwm_right = 20000*(X_cmd + psi_cmd);
 
-  feedback_control_Y->pwm_left = 20000*(v_cmd - psi_cmd);
-  feedback_control_Y->pwm_right = 20000*(v_cmd + psi_cmd);
 
 
   // SampleTimeMath: '<S26>/TSamp' incorporates:

@@ -12,17 +12,17 @@
 #include <EthernetInterface.h>
 
 #include "global_vars.hpp"
+#include "global_msgs.hpp"
 #include "common/mavlink.h"
 #include "cntrInit.hpp"
 #include "sensInit.hpp"
 #include "outportInit.hpp"
 #include "cli2.hpp"
 #include "UDPMavlink.hpp"
+#include "navigator.hpp"
 
 #include "Thread.h"
 
-
-const char* UDP_PIL_thread_name = "UDPIO_PIL";
 const char* cntrInit_thread_name = "cntrInit";
 const char* sensInit_thread_name = "sensInit";
 const char* outportInit_thread_name = "outportInit";
@@ -49,14 +49,15 @@ Thread SensorInit(osPriorityNormal,8092,nullptr,sensInit_thread_name);
 Thread OutputPortInit(osPriorityNormal,16184,nullptr,outportInit_thread_name);
 Thread CommandLineInterface(osPriorityNormal,8092,nullptr,cli_thread_name);
 Thread UDPMavlinkComm(osPriorityNormal,16184,nullptr,UDPMavlink_thread_name);
-Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name)
+Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
 // TODO aggiungere thread navigazione
 
 // TODO Include semaphores for synchronizing sensor read/controller/pwm write
 /** Defining semaphores for synchronization purposes
  * 
  */
-Semaphore semDecode(0), semEncode(0);
+Semaphore semDecode(0), semEncode(0), semUDPNav(0), semNavContr(0), semContrPWM(0);
+bool flagMavlink = false;
 
 Servo servo1(PTC10);
 
@@ -70,6 +71,11 @@ EventQueue queue(32);
  */ 
 ExtU_feedback_control_T feedback_control_U;
 ExtY_feedback_control_T feedback_control_Y;
+
+/** Defining global mavlink messages declared in global_msgs.hpp
+ * 
+ */
+mavlink_odometry_t odom;
 
 /** Initializing ethernet interface and the socket to enable UDP communications in threads UDPMavlink.cpp and UDPPIL.cpp
  * 
@@ -91,7 +97,7 @@ int main()
   SensorInit.start(sensInit);
   OutputPortInit.start(outportInit);
   UDPMavlinkComm.start(UDPMavlink);
-  Navigator.start(/* TODO add here */);
+  Navigator.start(navigator);
   CommandLineInterface.start(callback(cli2,serial));
   ControllerInit.join();
   SensorInit.join();

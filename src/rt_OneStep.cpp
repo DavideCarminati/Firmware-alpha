@@ -29,6 +29,8 @@
 
 #include "global_vars.hpp"
 #include "common/mavlink.h"
+#include "TankMotor.hpp"
+
 
 #include "rt_OneStep.hpp"
 
@@ -42,6 +44,7 @@ uint32_t wdgTime;
 
 Timer timer;
 
+TankMotor leftMotor(PTC10,PTB23,PTA2), rightMotor(PTC11,PTB9,PTA1);
 /*
  * Associating rt_OneStep with a real-time clock or interrupt service routine
  * is what makes the generated code "real-time".  The function rt_OneStep is
@@ -58,7 +61,7 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
 {
   
   Watchdog &watchdog = Watchdog::get_instance();
-  watchdog.start(200);
+  watchdog.start(20000);
   timer.start();
   while (1)
   {
@@ -86,6 +89,7 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     #if PIL_MODE
       semDecode.acquire(); 
     #endif
+    semNavContr.acquire();
 
     // CRITICAL: Includo la codifica e decodifica dei msg mavlink nel controllore anche se forse sarebbe piu' comodo metterla in UDPComm!
 
@@ -98,6 +102,12 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     #if PIL_MODE
       semEncode.release();
     #endif
+    semContrPWM.release();
+
+    leftMotor.Move(feedback_control_Y.pwm_left);
+    rightMotor.Move(feedback_control_Y.pwm_right);
+    // printf("\033[2;1H");
+    // printf("pwm: %f, %f", feedback_control_Y.pwm_left, feedback_control_Y.pwm_right);
 
     /* Indicate task complete */
     // OverrunFlag = false;

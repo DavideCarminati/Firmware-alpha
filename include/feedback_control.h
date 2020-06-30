@@ -47,9 +47,9 @@ typedef struct {
 // External inputs (root inport signals with default storage)
 typedef struct {
   real32_T psi_ref;                  // '<Root>/ref'
-  real32_T v_ref;                     // reference velocity
+  real32_T X_ref;                     // reference velocity
   real32_T psi_est;                  // '<Root>/est'
-  real32_T v_est;
+  real32_T X_est;
 } ExtU_feedback_control_T;
 
 // External outputs (root outports fed by signals with default storage)
