@@ -21,9 +21,9 @@ float pos = 0.0;
 
 // PwmOut servo2(PTC10); ///< The PIN enable for PWM is PTC10.
 
-// EventQueue queue;
-Event<void(void)> servowriteEvent(&queue,Servo1Write);
-Event<void(void)> motorwriteEvent(&queue,MotorWrite);
+EventQueue queuePWM;
+Event<void(void)> servowriteEvent(&queuePWM,Servo1Write);
+Event<void(void)> motorwriteEvent(&queuePWM,MotorWrite);
 
 Thread ServoWrite(osPriorityNormal,16184,nullptr,"servoWrite");
 
@@ -38,7 +38,7 @@ void outportInit()
 {
     servo1.calibrate(0.0005,90); // 0.0005 s from center (1.5ms) to max/min
     ServoWrite.start(postServoEvent);
-    // queue.dispatch();
+    // queuePWM.dispatch(); // Also here the queue has to be started in this thread!!! otherwise doesn't dispatch
 }
 
 /** The period and the initial delay of the PWM write event are set. Then it is posted in the queue.

@@ -10,6 +10,7 @@
 #include "feedback_control.h"
 #include "Servo.h"
 #include "EthernetInterface.h"
+#include "FXOS8700CQ.h"
 
 #ifndef UDP_BUFFER
 #define UDP_BUFFER
@@ -54,12 +55,12 @@ extern Servo servo1;
 
 #endif
 
-#ifndef QUEUE_IO
-#define QUEUE_IO  
+// #ifndef QUEUE_IO IT DOESN'T WORK!!!
+// #define QUEUE_IO  
 
-extern EventQueue queue;
+// extern EventQueue queue;
 
-#endif
+// #endif
 
 
 #ifndef ETH_COMM
@@ -67,5 +68,12 @@ extern EventQueue queue;
 
 extern EthernetInterface eth;
 extern UDPSocket socket;
+
+#endif
+
+#ifndef ACCMAG_VALUES
+#define ACCMAG_VALUES
+
+extern Data accmagValues;
 
 #endif

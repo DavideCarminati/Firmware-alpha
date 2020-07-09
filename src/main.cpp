@@ -53,9 +53,7 @@ Thread CommandLineInterface(osPriorityNormal,8092,nullptr,cli_thread_name);
 Thread UDPMavlinkComm(osPriorityNormal,16184,nullptr,UDPMavlink_thread_name);
 Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
 Thread Prognostic(osPriorityNormal,8092,nullptr,prognostic_thread_name);
-// TODO aggiungere thread navigazione
 
-// TODO Include semaphores for synchronizing sensor read/controller/pwm write
 /** Defining semaphores for synchronization purposes
  * 
  */
@@ -67,7 +65,7 @@ Servo servo1(PTC10);
 /** Defining global queue in which sensor/actuators event run
  * 
  */
-EventQueue queue(32);
+// EventQueue queue(32);
 
 /** Defining global inputs/outputs of the controller feedback_control.cpp
  * 
@@ -79,6 +77,14 @@ ExtY_feedback_control_T feedback_control_Y;
  * 
  */
 mavlink_odometry_t odom;
+
+/** Defining global onboard accelerometer and magnetometer values
+ * 
+ */
+
+Data accmagValues;
+
+// Data accmagValues;
 
 /** Initializing ethernet interface and the socket to enable UDP communications in threads UDPMavlink.cpp and UDPPIL.cpp
  * 
@@ -99,14 +105,16 @@ int main()
   ControllerInit.start(cntrInit);
   SensorInit.start(sensInit);
   OutputPortInit.start(outportInit);
-  UDPMavlinkComm.start(UDPMavlink);
-  Navigator.start(navigator);
+  // UDPMavlinkComm.start(UDPMavlink);
+  // Navigator.start(navigator);
   Prognostic.start(prognostic);
   CommandLineInterface.start(callback(cli2,serial));
   ControllerInit.join();
-  SensorInit.join();
+  // SensorInit.join();
 
-  queue.dispatch();
+  // queue.dispatch();
+  
+  
   while(1) {
     ThisThread::sleep_for(900);
   }

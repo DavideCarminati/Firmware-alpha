@@ -26,6 +26,7 @@
 #include <stdio.h>              /* This ert_main.c example uses printf/fflush */
 #include "feedback_control.h"          /* Model's header file */
 #include "rtwtypes.h"
+#include "math.h"
 
 #include "global_vars.hpp"
 #include "common/mavlink.h"
@@ -41,6 +42,7 @@ DigitalOut led(LED3,1);
 
 uint64_t epoch;
 uint32_t wdgTime;
+// float pitch, roll;
 
 Timer timer;
 
@@ -61,7 +63,7 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
 {
   
   Watchdog &watchdog = Watchdog::get_instance();
-  watchdog.start(20000);
+  watchdog.start(200);
   timer.start();
   while (1)
   {
@@ -89,7 +91,7 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     #if PIL_MODE
       semDecode.acquire(); 
     #endif
-    semNavContr.acquire();
+    // semNavContr.acquire();
 
     // CRITICAL: Includo la codifica e decodifica dei msg mavlink nel controllore anche se forse sarebbe piu' comodo metterla in UDPComm!
 
@@ -102,10 +104,10 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     #if PIL_MODE
       semEncode.release();
     #endif
-    semContrPWM.release();
+    // semContrPWM.release();
 
-    leftMotor.Move(feedback_control_Y.pwm_left);
-    rightMotor.Move(feedback_control_Y.pwm_right);
+    // leftMotor.Move(feedback_control_Y.pwm_left);
+    // rightMotor.Move(feedback_control_Y.pwm_right);
     // printf("\033[2;1H");
     // printf("pwm: %f, %f", feedback_control_Y.pwm_left, feedback_control_Y.pwm_right);
 
@@ -122,7 +124,7 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     // printf("\033[3;1Hwdg: %lu (timer: %d)",wdgTime,elapsed);
     watchdog.kick();
     
-    ThisThread::sleep_until(epoch+50); // 50ms is the step time!!
+    ThisThread::sleep_until(epoch+200); // 50ms is the step time!!
   }
   
 //   /* Disable rt_OneStep() here */

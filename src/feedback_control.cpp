@@ -59,6 +59,7 @@ void feedback_control_step(RT_MODEL_feedback_control_T *const feedback_control_M
 
   // real32_T q_error[4] = {q0_error, q1_error, q2_error, q3_error};
 
+  feedback_control_U->X_est = 0; // No feedback on the velocity for now
   X_error = feedback_control_U->X_ref - feedback_control_U->X_est;
   psi_error = feedback_control_U->psi_ref - feedback_control_U->psi_est;
   // for(int ii=0; ii<4; ii++) q_cmd[ii] = q_error[ii]*10;

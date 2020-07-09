@@ -8,7 +8,7 @@ float R1 = 33000.0;             // Upper resistor voltage divider
 float R2 = 8200.0;              // lower resistor voltage divider
 float vout = 0.0;               // voltage divider output voltage - sensed by the board
 float vin = 0.0;                // voltage divider input voltage  - battery voltage
-float MIN_VOLTAGE = 14.8;       // minimum battery voltage
+float MIN_VOLTAGE = 14.9;       // minimum battery voltage
 
 void prognostic()
 {
@@ -22,9 +22,9 @@ void prognostic()
                 while(1)                        // warning to the user
                 {
                     warnLed = 1;
-                    wait(0.2);
+                    wait(0.5);
                     warnLed = 0;
-                    wait(0.2);
+                    wait(0.5);
                 }
                 
             }

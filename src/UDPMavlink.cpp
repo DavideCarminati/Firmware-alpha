@@ -21,6 +21,7 @@ uint8_t in_data[MAVLINK_MAX_PACKET_LEN], out_buf[MAVLINK_MAX_PACKET_LEN];
 mavlink_message_t msgIn;
 mavlink_status_t status;
 mavlink_attitude_t att;
+// mavlink_raw_imu_t raw_imu;
 
 
 uint8_t SYS_ID = 1;
@@ -62,7 +63,7 @@ void UDPMavlink()
                     // printf("\033[4;1H");
                     // printf("%f, %f, %f, %f, %f", odom.x, odom.q[0], odom.q[1], odom.q[2], odom.q[3]);
                     // semUDPNav.release();
-                    flagMavlink = true;
+                    // flagMavlink = true;
                 }
             }
         } else
