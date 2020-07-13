@@ -1,3 +1,9 @@
+/*! @file UDPMavlink.cpp
+
+    @brief Send and receive Mavlink messages from/to the companion computer messages 
+
+*/
+
 #include <mbed.h>
 #include <EthernetInterface.h>
 #include "global_vars.hpp"
