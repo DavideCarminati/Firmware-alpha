@@ -21,6 +21,7 @@
 #include "UDPMavlink.hpp"
 #include "navigator.hpp"
 #include "prognostic.hpp"
+#include "massStorage.hpp"
 
 #include "Thread.h"
 
@@ -32,6 +33,7 @@ const char* UDPMavlink_thread_name = "UDPMavlink";
 const char* UDP_PIL_thread_name = "UDPPIL";
 const char* Navi_thread_name = "Navigator";
 const char* prognostic_thread_name = "Prognostic";
+const char* sdcard_thread_name = "SDStorage";
 
 
 Serial* serial = new Serial(USBTX,USBRX,115200);
@@ -53,6 +55,7 @@ Thread CommandLineInterface(osPriorityNormal,8092,nullptr,cli_thread_name);
 Thread UDPMavlinkComm(osPriorityNormal,16184,nullptr,UDPMavlink_thread_name);
 Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
 Thread Prognostic(osPriorityNormal,8092,nullptr,prognostic_thread_name);
+Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name);
 
 /** Defining semaphores for synchronization purposes
  * 
@@ -109,6 +112,7 @@ int main()
   // Navigator.start(navigator);
   Prognostic.start(prognostic);
   CommandLineInterface.start(callback(cli2,serial));
+  SDStorage.start(massStorage);
   ControllerInit.join();
   // SensorInit.join();
 

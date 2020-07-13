@@ -62,7 +62,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     //                             + accmagValues.my*sin(pitch)*sin(roll) - accmagValues.mz*sin(pitch)*cos(roll))*180/3.14;
     feedback_control_U.psi_est = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
     // printf("yaw: %f\n",feedback_control_U.psi_est);
-    printf("ax: %.2f ay: %.2f az: %.2f pitch: %.2f roll: %.2f yaw: %.2f mx: %.2f my: %.2f mz: %.2f\n", \ 
+    // printf("ax: %.2f ay: %.2f az: %.2f pitch: %.2f roll: %.2f yaw: %.2f mx: %.2f my: %.2f mz: %.2f\n", \ 
             accmagValues.ax, accmagValues.ay, accmagValues.az, pitch*180/3.14, roll*180/3.14, feedback_control_U.psi_est, accmagValues.mx, accmagValues.my, accmagValues.mz);
     // feedback_control_U.reference = (accmagValues.ax + 1)/2; // Normalized between 0 and 1
     // feedback_control_U.estimated = 0;//servo1.read();
