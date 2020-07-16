@@ -29,6 +29,7 @@
 #include "math.h"
 
 #include "global_vars.hpp"
+#include "global_msgs.hpp"
 #include "common/mavlink.h"
 #include "TankMotor.hpp"
 
@@ -88,12 +89,13 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     /* Re-enable timer or interrupt here */
     /* Set model inputs here */
     
+    feedback_control_U.X_ref = odom.y;
+    feedback_control_U.psi_ref = odom.x;
+    
     #if PIL_MODE
       semDecode.acquire(); 
     #endif
     // semNavContr.acquire();
-
-    // CRITICAL: Includo la codifica e decodifica dei msg mavlink nel controllore anche se forse sarebbe piu' comodo metterla in UDPComm!
 
     // /* Step the model for base rate */
     feedback_control_step(feedback_control_M, &feedback_control_U,
