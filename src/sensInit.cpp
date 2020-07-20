@@ -19,9 +19,11 @@ FXOS8700CQ accmag(PTE25,PTE24);
 CalibrateMagneto magCal;
 DigitalOut calib_led(LED_GREEN,1);
 
+FILE *f_calib;
+
 float roll,pitch,mag_norm;
 float magValues[3], magValues_filt[3], minMag[3], maxMag[3];
-int measurements_count = 0;
+int measurements_count = 0, id_calib;
 char f_buff[100];
 
 EventQueue queue;
@@ -81,48 +83,70 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
 void calib_irq_handle(void)
 {
     calibrationEvent.period(FXOS8700CQ_FREQ);
-    int id_calib = calibrationEvent.post();
+    id_calib = calibrationEvent.post();
 }
 
 // Calibration event
 void calibration(void)
 {
     calib_led = 0;
+    printf("break queue\n");
     queue.break_dispatch();         // Stop the dispatch of sensor queue while calibrating
     measurements_count++;
+    printf("measurm %d\n",measurements_count);
     magCal.run(magValues,magValues_filt);
     // When reached the number of initial points the calibration is complete
     if (measurements_count == INITIAL_POINTS)
     {
-        magCal.getExtremes(minMag, maxMag); 
-        // magCal.setExtremes(minMag, maxMag);
-        FILE *f_calib = fopen("/fs/params/calib.txt","w+");
-        while(fgetc(f_calib) != EOF) // Now writing into the file on the SD card
-        {
-            if (fgetc(f_calib) == '#')
-            {
-                do
-                {
-                    long f_pos = ftell(f_calib);
-                    fseek(f_calib,f_pos++,SEEK_CUR);
-                } while (fgetc(f_calib) == '\n');
-                
-            }
-            else
-            {
-                fgets(f_buff, 100, f_calib);
-                if (f_buff == "Magnetometer extremes")
-                {
-                    fprintf(f_calib,"minXYZ %.3f %.3f %.3f\n",minMag[0], minMag[1], minMag[2]);
-                    fprintf(f_calib,"maxXYZ %.3f %.3f %.3f\n", maxMag[0], maxMag[1], maxMag[2]);
-
-                }
-            }
-        }
-        calib_led = 1;
-        queue.dispatch();           // Re-dispatch the sensor queue
-        calibrationEvent.cancel();  // Cancel this event
+        
+        // calibrationEvent.cancel();  // Cancel this event
+        mbed_event_queue()->call(writeOnSD);
     }
     
+}
+void writeOnSD(void)
+{
+    mbed_event_queue()->cancel(id_calib);
+    printf("Writing vals...\n");
+    magCal.getExtremes(minMag, maxMag); 
+    // magCal.setExtremes(minMag, maxMag);
+    fflush(stdout);
+    f_calib = fopen("/fs/calib.txt","w+");
+    printf("%s\n", (!f_calib ? "Fail :(" : "OK"));
+    printf("%d\n",fgetc(f_calib));
+    while(1/*fgetc(f_calib) != EOF*/) // Now writing into the file on the SD card
+    {
+        printf("Getting char... \n");
+        fflush(stdout);
+        if (fgetc(f_calib) == '#')
+        {
+            do
+            {
+                long f_pos = ftell(f_calib);
+                fseek(f_calib,f_pos++,SEEK_CUR);
+                printf("Skipping char\n");
+                fflush(stdout);
+            } while (fgetc(f_calib) != '\n');
+            
+        }
+        else
+        {
+            long f_pos = ftell(f_calib);
+            fseek(f_calib,f_pos-1,SEEK_CUR);
+            fgets(f_buff, 100, f_calib);
+            printf(f_buff);
+            if (f_buff == "Magnetometer extremes")
+            {
+                fprintf(f_calib,"minXYZ %.3f %.3f %.3f\n",minMag[0], minMag[1], minMag[2]);
+                fprintf(f_calib,"maxXYZ %.3f %.3f %.3f\n", maxMag[0], maxMag[1], maxMag[2]);
+                fflush(stdout);
+                printf("done\n");
+                break;
+
+            }
+        }
+    }
+    calib_led = 1;
+    queue.dispatch();           // Re-dispatch the sensor queue
 }
 

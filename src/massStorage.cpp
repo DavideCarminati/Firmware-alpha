@@ -255,13 +255,20 @@ void massStorage() {
 
 void populate(void)
 {
+    printf("Creating folder structure...\n");
+    mkdir("params",0777);
+    printf("Opening folder params\n");
     DIR *param = opendir("/fs/params/");
-    FILE *calib = fopen("/fs/params/calib.txt","w+");
+    printf("Opening file...\n");
+    fflush(stdout);
+    FILE *calib = fopen("/fs/calib.txt","w+");
+    printf("Writing...\n");
     fprintf(calib, "## AUTOMATICALLY GENERATED FILE ##\n");
     fprintf(calib, "## This file stores the calibration parameters\n");
+    fprintf(calib,"Magnetometer extremes\n");
     fflush(calib);
     fclose(calib);
     fflush(stdout);
-    closedir(param);
+    // closedir(param);
 
 }
