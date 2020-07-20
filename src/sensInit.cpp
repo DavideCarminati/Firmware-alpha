@@ -24,7 +24,7 @@ FILE *f_calib;
 float roll,pitch,mag_norm;
 float magValues[3], magValues_filt[3], minMag[3], maxMag[3];
 int measurements_count = 0, id_calib;
-char f_buff[100];
+char f_buff[100], f_buff_disc[100], temp_char;
 
 EventQueue queue;
 Event<void(void)> accmagreadEvent(&queue,AccMagRead);
@@ -82,6 +82,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
 // Interrupt handler that starts the calibration
 void calib_irq_handle(void)
 {
+    queue.break_dispatch();  
     calibrationEvent.period(FXOS8700CQ_FREQ);
     id_calib = calibrationEvent.post();
 }
@@ -91,9 +92,13 @@ void calibration(void)
 {
     calib_led = 0;
     printf("break queue\n");
-    queue.break_dispatch();         // Stop the dispatch of sensor queue while calibrating
+    // queue.break_dispatch();         // Stop the dispatch of sensor queue while calibrating
     measurements_count++;
     printf("measurm %d\n",measurements_count);
+    accmagValues = accmag.get_values();
+    magValues[0] = accmagValues.mx;
+    magValues[1] = accmagValues.my;
+    magValues[2] = accmagValues.mz;
     magCal.run(magValues,magValues_filt);
     // When reached the number of initial points the calibration is complete
     if (measurements_count == INITIAL_POINTS)
@@ -111,41 +116,54 @@ void writeOnSD(void)
     magCal.getExtremes(minMag, maxMag); 
     // magCal.setExtremes(minMag, maxMag);
     fflush(stdout);
-    f_calib = fopen("/fs/calib.txt","w+");
+    f_calib = fopen("/fs/calib.txt","a+");
     printf("%s\n", (!f_calib ? "Fail :(" : "OK"));
-    printf("%d\n",fgetc(f_calib));
-    while(1/*fgetc(f_calib) != EOF*/) // Now writing into the file on the SD card
+    fflush(stdout);
+    rewind(f_calib);
+    // printf("%d\n",fgetc(f_calib));
+    long line_begin = ftell(f_calib); // Beginning of the file
+    while(!feof(f_calib)) // Now writing into the file on the SD card
     {
         printf("Getting char... \n");
+        temp_char = fgetc(f_calib);
         fflush(stdout);
-        if (fgetc(f_calib) == '#')
+        if (temp_char == '#' || temp_char == '\t')  // Skip the line
         {
-            do
-            {
-                long f_pos = ftell(f_calib);
-                fseek(f_calib,f_pos++,SEEK_CUR);
-                printf("Skipping char\n");
-                fflush(stdout);
-            } while (fgetc(f_calib) != '\n');
+            fgets(f_buff_disc,100,f_calib); // Discard the line
+            line_begin = ftell(f_calib);
+            printf("Line discarded\n");
+            // memset(f_buff,0,sizeof(f_buff));
+            fflush(stdout);
+            // do
+            // {
+            //     // long f_pos = ftell(f_calib);
+            //     // fseek(f_calib,f_pos++,SEEK_CUR);
+            //     printf("Skipping char\n");
+            //     fflush(stdout);
+            // } while (fgetc(f_calib) != '\n');
             
         }
         else
         {
-            long f_pos = ftell(f_calib);
-            fseek(f_calib,f_pos-1,SEEK_CUR);
+            fseek(f_calib,line_begin,SEEK_SET);
             fgets(f_buff, 100, f_calib);
             printf(f_buff);
-            if (f_buff == "Magnetometer extremes")
+            printf("qui\n");
+            fflush(stdout);
+            if (!strcmp(f_buff,"Magnetometer extremes\n"))
             {
-                fprintf(f_calib,"minXYZ %.3f %.3f %.3f\n",minMag[0], minMag[1], minMag[2]);
-                fprintf(f_calib,"maxXYZ %.3f %.3f %.3f\n", maxMag[0], maxMag[1], maxMag[2]);
-                fflush(stdout);
+                fprintf(f_calib,"\tminXYZ %.3e %.3e %.3e\n",minMag[0], minMag[1], minMag[2]);
+                fprintf(f_calib,"\tmaxXYZ %.3e %.3e %.3e\n", maxMag[0], maxMag[1], maxMag[2]);
+                line_begin = ftell(f_calib);
+                // fflush(stdout);
                 printf("done\n");
+                fflush(stdout);
                 break;
 
             }
         }
     }
+    fclose(f_calib); // Important!
     calib_led = 1;
     queue.dispatch();           // Re-dispatch the sensor queue
 }

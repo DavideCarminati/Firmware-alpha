@@ -256,9 +256,9 @@ void massStorage() {
 void populate(void)
 {
     printf("Creating folder structure...\n");
-    mkdir("params",0777);
-    printf("Opening folder params\n");
-    DIR *param = opendir("/fs/params/");
+    // mkdir("params",0777);
+    // printf("Opening folder params\n");
+    // DIR *param = opendir("/fs/params/");
     printf("Opening file...\n");
     fflush(stdout);
     FILE *calib = fopen("/fs/calib.txt","w+");
