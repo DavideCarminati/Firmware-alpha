@@ -25,6 +25,11 @@
 
 #include "Thread.h"
 
+using namespace events;
+using namespace rtos;
+using namespace ThisThread;
+using namespace mbed;
+
 const char* cntrInit_thread_name = "cntrInit";
 const char* sensInit_thread_name = "sensInit";
 const char* outportInit_thread_name = "outportInit";
@@ -105,18 +110,22 @@ int main()
     UDPIO_PIL.start(UDPPIL);
   #endif
   
+  printf("Spawning threads...\n");
+  SDStorage.start(massStorage);
+  printf("%s thread started\n", sdcard_thread_name);
+  SDStorage.join();
+  printf("Mass storage initialized\n");
   ControllerInit.start(cntrInit);
+  printf("%s thread started\n", cntrInit_thread_name);
   SensorInit.start(sensInit);
   OutputPortInit.start(outportInit);
-  // UDPMavlinkComm.start(UDPMavlink);
+  UDPMavlinkComm.start(UDPMavlink);
   // Navigator.start(navigator);
   Prognostic.start(prognostic);
   CommandLineInterface.start(callback(cli2,serial));
-  SDStorage.start(massStorage);
-  ControllerInit.join();
-  // SensorInit.join();
+  printf("Command line available\n");
 
-  // queue.dispatch();
+  ControllerInit.join();
   
   
   while(1) {

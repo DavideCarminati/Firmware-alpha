@@ -6,14 +6,23 @@
 #include <mbed.h>
 #include "FXOS8700CQ.h"
 #include "global_vars.hpp"
+#include "massStorage.hpp"
 
 #include "sensInit.hpp"
 #include "EventQueue.h"
 #include "Event.h"
 #include "math.h"
 #include "magCalibrate.hpp"
+#include <ThisThread.h>
+#include <Thread.h>
+
 
 #define FXOS8700CQ_FREQ 200 //!< Frequency at which the sensor is interrogated
+
+using namespace events;
+using namespace rtos;
+using namespace ThisThread;
+using namespace mbed;
 
 FXOS8700CQ accmag(PTE25,PTE24);
 CalibrateMagneto magCal;
@@ -22,9 +31,10 @@ DigitalOut calib_led(LED_GREEN,1);
 FILE *f_calib;
 
 float roll,pitch,mag_norm;
-float magValues[3], magValues_filt[3], minMag[3], maxMag[3];
+float magValues[3], magValues_filt[3], minMag[3], maxMag[3], minExtremes[3], maxExtremes[3];
 int measurements_count = 0, id_calib;
 char f_buff[100], f_buff_disc[100], temp_char;
+float mag_extremes[6];
 
 EventQueue queue;
 Event<void(void)> accmagreadEvent(&queue,AccMagRead);
@@ -37,6 +47,27 @@ Thread SensorRead(osPriorityNormal,8092,nullptr,"sensRead");
 void sensInit()
 {
     accmag.init();
+    // Open file with params and get them...
+    if (readFromSD(mag_extremes, "Magnetometer extremes [minXYZ; maxXYZ]\n") < 0)
+    {
+        // MBED_WARNING(MBED_MAKE_ERROR(MBED_MODULE_APPLICATION, MBED_ERROR_CODE_FAILED_OPERATION),"SD card has no calib.txt file to open! Please format the SD card and calibrate\n");
+        printf("SD card has no calib.txt file to open! Please format the SD card and calibrate\n");
+    }
+    else
+    {
+        minExtremes[0] = mag_extremes[0];
+        minExtremes[1] = mag_extremes[1];
+        minExtremes[2] = mag_extremes[2];
+        maxExtremes[0] = mag_extremes[3];
+        maxExtremes[1] = mag_extremes[4];
+        maxExtremes[2] = mag_extremes[5];
+        magCal.setExtremes(minExtremes,maxExtremes);
+        for (int ii = 0; ii < 6; ii++)
+        {
+            printf("data out %f\n", mag_extremes[ii]);
+        }
+    }
+    
     SensorRead.start(postSensorEvent);
     queue.dispatch(); // Start the queue; queue has to be started in this thread!!!
 }
@@ -82,7 +113,8 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
 // Interrupt handler that starts the calibration
 void calib_irq_handle(void)
 {
-    queue.break_dispatch();  
+    // printf("break queue\n");
+    queue.break_dispatch();                         // Stop the dispatch of sensor queue while calibrating
     calibrationEvent.period(FXOS8700CQ_FREQ);
     id_calib = calibrationEvent.post();
 }
@@ -91,8 +123,6 @@ void calib_irq_handle(void)
 void calibration(void)
 {
     calib_led = 0;
-    printf("break queue\n");
-    // queue.break_dispatch();         // Stop the dispatch of sensor queue while calibrating
     measurements_count++;
     printf("measurm %d\n",measurements_count);
     accmagValues = accmag.get_values();
@@ -103,8 +133,6 @@ void calibration(void)
     // When reached the number of initial points the calibration is complete
     if (measurements_count == INITIAL_POINTS)
     {
-        
-        // calibrationEvent.cancel();  // Cancel this event
         mbed_event_queue()->call(writeOnSD);
     }
     
@@ -113,15 +141,13 @@ void writeOnSD(void)
 {
     mbed_event_queue()->cancel(id_calib);
     printf("Writing vals...\n");
-    magCal.getExtremes(minMag, maxMag); 
-    // magCal.setExtremes(minMag, maxMag);
+    magCal.getExtremes(minMag, maxMag);
     fflush(stdout);
     f_calib = fopen("/fs/calib.txt","a+");
     printf("%s\n", (!f_calib ? "Fail :(" : "OK"));
     fflush(stdout);
     rewind(f_calib);
-    // printf("%d\n",fgetc(f_calib));
-    long line_begin = ftell(f_calib); // Beginning of the file
+    long line_begin = ftell(f_calib); // Beginning of the line
     while(!feof(f_calib)) // Now writing into the file on the SD card
     {
         printf("Getting char... \n");
@@ -130,30 +156,22 @@ void writeOnSD(void)
         if (temp_char == '#' || temp_char == '\t')  // Skip the line
         {
             fgets(f_buff_disc,100,f_calib); // Discard the line
-            line_begin = ftell(f_calib);
+            line_begin = ftell(f_calib);    // Set new beginning of the line
             printf("Line discarded\n");
             // memset(f_buff,0,sizeof(f_buff));
             fflush(stdout);
-            // do
-            // {
-            //     // long f_pos = ftell(f_calib);
-            //     // fseek(f_calib,f_pos++,SEEK_CUR);
-            //     printf("Skipping char\n");
-            //     fflush(stdout);
-            // } while (fgetc(f_calib) != '\n');
-            
         }
-        else
+        else // Here I look for the field I'm interested in and I fill it with data
         {
             fseek(f_calib,line_begin,SEEK_SET);
             fgets(f_buff, 100, f_calib);
             printf(f_buff);
             printf("qui\n");
             fflush(stdout);
-            if (!strcmp(f_buff,"Magnetometer extremes\n"))
+            if (!strcmp(f_buff,"Magnetometer extremes [minXYZ; maxXYZ]\n"))
             {
-                fprintf(f_calib,"\tminXYZ %.3e %.3e %.3e\n",minMag[0], minMag[1], minMag[2]);
-                fprintf(f_calib,"\tmaxXYZ %.3e %.3e %.3e\n", maxMag[0], maxMag[1], maxMag[2]);
+                fprintf(f_calib,"\t%.3e %.3e %.3e\n",minMag[0], minMag[1], minMag[2]);
+                fprintf(f_calib,"\t%.3e %.3e %.3e\n", maxMag[0], maxMag[1], maxMag[2]);
                 line_begin = ftell(f_calib);
                 // fflush(stdout);
                 printf("done\n");

@@ -16,6 +16,7 @@
 #include "mbed.h"
 #include <stdio.h>
 #include <errno.h>
+// #include <fstream>
 
 #include "SDBlockDevice.h"
 
@@ -23,7 +24,7 @@
 
 // Maximum number of elements in buffer
 #define BUFFER_MAX_LEN 10
-#define FORCE_REFORMAT true
+#define FORCE_REFORMAT false
 // This will take the system's default block device
 SDBlockDevice sd(PTE3, PTE1, PTE2, PTE4);
 
@@ -41,6 +42,14 @@ SDBlockDevice sd(PTE3, PTE1, PTE2, PTE4);
 // Uncomment the following two lines and comment the previous two to use FAT file system.
 #include "FATFileSystem.h"
 FATFileSystem fs("fs");
+
+FILE *f_calib_read;
+
+// ifstream calibration_file;
+
+char f_read_buff[100], f_read_temp[100], values_str[100], data_out_str[100], temp_char_read;
+char *values_str_buf;
+int space_count = 0;
 
 
 // Set up the button to trigger an erase
@@ -271,4 +280,87 @@ void populate(void)
     fflush(stdout);
     // closedir(param);
 
+}
+
+int readFromSD(float *data_out, const char *field_name)
+{
+    // calibration_file.open("calib.txt");
+    f_calib_read = fopen("/fs/calib.txt","r");
+    printf("Opening file in read mode... ");
+    if (f_calib_read == NULL)
+    {
+        printf("Fail :(\n");
+        return -1;
+    }
+    printf("OK\n");
+    fflush(stdout);
+    rewind(f_calib_read);
+    long line_begin = ftell(f_calib_read); // Beginning of the line
+    while(!feof(f_calib_read)) // Now writing into the file on the SD card
+    {
+        printf("Getting char... \n");
+        temp_char_read = fgetc(f_calib_read);
+        fflush(stdout);
+        if (temp_char_read == '#' || temp_char_read == '\t')  // Skip the line
+        {
+            fgets(f_read_temp,100,f_calib_read); // Discard the line
+            line_begin = ftell(f_calib_read);    // Set new beginning of the line
+            printf("Line discarded\n");
+            // memset(f_buff,0,sizeof(f_buff));
+            fflush(stdout);
+        }
+        else // Here I look for the field I'm interested in and I read data
+        {
+            fseek(f_calib_read,line_begin,SEEK_SET);
+            fgets(f_read_buff, 100, f_calib_read);
+            printf(f_read_buff);
+            printf("qui\n");
+            fflush(stdout);
+            if (!strcmp(f_read_buff,field_name))
+            {
+                line_begin = ftell(f_calib_read);
+                char field_char = fgetc(f_calib_read);
+
+                if (field_char == '\n' || field_char == EOF)    // No value in the field I'm reading, returning...
+                {
+                    printf("No value in file!\n");
+                    return -1;
+                }
+                else if (field_char == '\t')                    // I have a tab that indicates I have a value to read
+                {
+                    while(field_char == '\t')                       // I read as many set of values as tabs in the next lines of the txt
+                    {
+                        fgets(values_str, 100, f_calib_read);
+                        printf(values_str);
+                        fflush(stdout);
+                        for (uint ii = 0; ii < sizeof(values_str); ii++)
+                        {
+                            if (isspace(values_str[ii]))
+                            {
+                                space_count++;      // Counting how many whitespaces in the line to know how many values I got
+                                printf("whtspaces: %d\n",space_count);
+                                fflush(stdout);
+                            }
+                        }
+                        for (int ii = 0; ii < space_count; ii++)    // discard the first \t by doing a -1 on the numb of whitespaces
+                        {
+                            // sscanf(values_str,"%s", data_out_str);
+                            data_out[ii] = strtof(values_str,&values_str_buf);
+                            strcpy(values_str,values_str_buf);
+                            printf("data out: %f\n",data_out[ii]);
+                        }
+                        field_char = fgetc(f_calib_read); // checking if also the next line has values to be taken!
+                    }
+                }
+                
+                // fflush(stdout);
+                printf("done reading\n");
+                fflush(stdout);
+                break;
+
+            }
+        }
+    }
+    fclose(f_calib_read);
+    return MBED_SUCCESS;
 }

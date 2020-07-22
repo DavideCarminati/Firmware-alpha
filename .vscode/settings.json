@@ -4,6 +4,8 @@
         "mstd_mutex": "cpp",
         "memory": "cpp",
         "cmath": "cpp",
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "iosfwd": "cpp",
+        "fstream": "cpp"
     }
 }
