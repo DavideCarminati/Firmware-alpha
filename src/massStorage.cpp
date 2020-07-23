@@ -274,7 +274,7 @@ void populate(void)
     printf("Writing...\n");
     fprintf(calib, "## AUTOMATICALLY GENERATED FILE ##\n");
     fprintf(calib, "## This file stores the calibration parameters\n");
-    fprintf(calib,"Magnetometer extremes\n");
+    fprintf(calib,"Magnetometer extremes [minXYZ; maxXYZ]\n");
     fflush(calib);
     fclose(calib);
     fflush(stdout);
@@ -296,7 +296,7 @@ int readFromSD(float *data_out, const char *field_name)
     fflush(stdout);
     rewind(f_calib_read);
     long line_begin = ftell(f_calib_read); // Beginning of the line
-    while(!feof(f_calib_read)) // Now writing into the file on the SD card
+    while(1) // Now writing into the file on the SD card
     {
         printf("Getting char... \n");
         temp_char_read = fgetc(f_calib_read);
@@ -308,6 +308,11 @@ int readFromSD(float *data_out, const char *field_name)
             printf("Line discarded\n");
             // memset(f_buff,0,sizeof(f_buff));
             fflush(stdout);
+        }
+        else if (feof(f_calib_read) != 0)
+        {
+            printf("File is empty!\n");
+            return -1;
         }
         else // Here I look for the field I'm interested in and I read data
         {
@@ -321,13 +326,15 @@ int readFromSD(float *data_out, const char *field_name)
                 line_begin = ftell(f_calib_read);
                 char field_char = fgetc(f_calib_read);
 
-                if (field_char == '\n' || field_char == EOF)    // No value in the field I'm reading, returning...
+                if (field_char == '\n' || feof(f_calib_read) != 0 )    // No value in the field I'm reading, returning...
                 {
                     printf("No value in file!\n");
                     return -1;
                 }
                 else if (field_char == '\t')                    // I have a tab that indicates I have a value to read
                 {
+                    printf("Found a tab\n");
+                    fflush(stdout);
                     while(field_char == '\t')                       // I read as many set of values as tabs in the next lines of the txt
                     {
                         fgets(values_str, 100, f_calib_read);
@@ -351,16 +358,17 @@ int readFromSD(float *data_out, const char *field_name)
                         }
                         field_char = fgetc(f_calib_read); // checking if also the next line has values to be taken!
                     }
+                    printf("done reading\n");
+                    fflush(stdout);
+                    fclose(f_calib_read);
+                    return MBED_SUCCESS;
                 }
-                
-                // fflush(stdout);
-                printf("done reading\n");
-                fflush(stdout);
-                break;
-
+                else
+                {
+                    printf("Unexpected(?) error\n");
+                    return -1;
+                }
             }
         }
     }
-    fclose(f_calib_read);
-    return MBED_SUCCESS;
 }

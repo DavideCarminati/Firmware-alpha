@@ -15,14 +15,15 @@
 #include "magCalibrate.hpp"
 #include <ThisThread.h>
 #include <Thread.h>
+#include <rtos.h>
 
 
 #define FXOS8700CQ_FREQ 200 //!< Frequency at which the sensor is interrogated
 
-using namespace events;
-using namespace rtos;
-using namespace ThisThread;
-using namespace mbed;
+// using namespace events;
+// using namespace rtos;
+// using namespace ThisThread;
+// using namespace mbed;
 
 FXOS8700CQ accmag(PTE25,PTE24);
 CalibrateMagneto magCal;
@@ -64,7 +65,7 @@ void sensInit()
         magCal.setExtremes(minExtremes,maxExtremes);
         for (int ii = 0; ii < 6; ii++)
         {
-            printf("data out %f\n", mag_extremes[ii]);
+            printf("data out mag extr %f\n", mag_extremes[ii]);
         }
     }
     

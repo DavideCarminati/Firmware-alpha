@@ -123,7 +123,7 @@ int main()
   // Navigator.start(navigator);
   Prognostic.start(prognostic);
   CommandLineInterface.start(callback(cli2,serial));
-  printf("Command line available\n");
+  // printf("Command line available\n");
 
   ControllerInit.join();
   
