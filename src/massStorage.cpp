@@ -307,7 +307,7 @@ void populate(void)
 int parametersUpdate(float *data_in, const char *field_name)
 {
     ifstream calibration_file("/fs/calib.txt");
-    std::string line, data_in_str;//, temp_buffer;
+    std::string line;//, data_in_str;//, temp_buffer;
     // Make a copy of the original calib file into a string buffer that'll be modified
     // while(!calibration_file.eof())
     // {
@@ -367,12 +367,13 @@ int parametersUpdate(float *data_in, const char *field_name)
             // data_in_str.append(" ");
             // ss.flush();
         }
+        std::string data_in_str(ss.str());
         // std::string s_temp(ss.str());
         printf("qui\n");
         // data_in_str.erase(data_in_str.end()); // Erase last whitespace
         data_in_str.insert(data_in_str.begin(),'\t');
         // Overwriting file with new values
-        temp_buffer.replace(posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n"), sizeof(data_in_str), data_in_str);
+        temp_buffer.replace(posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n") - 1 , sizeof(data_in_str), data_in_str);
         printf("qui\n");
         printf("Content of the file:\n");
         printf(temp_buffer.c_str());
