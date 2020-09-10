@@ -75,6 +75,8 @@ $(function() {
 <code>#include &quot;common/mavlink.h&quot;</code><br />
 <code>#include &quot;feedback_control.h&quot;</code><br />
 <code>#include &quot;Servo.h&quot;</code><br />
+<code>#include &quot;EthernetInterface.h&quot;</code><br />
+<code>#include &quot;FXOS8700CQ.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
@@ -84,7 +86,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <area shape="rect" id="node3" href="outportInit_8cpp.html" title="This thread creates the periodic task sending the pulse&#45;width modulated signals to the enabled pins..." alt="" coords="127,80,253,107"/>
 <area shape="rect" id="node4" href="rt__OneStep_8cpp.html" title="It performs a time step of the controller algorithm checking whether it respects the Real&#45;Time deadli..." alt="" coords="277,80,412,107"/>
 <area shape="rect" id="node5" href="sensInit_8cpp.html" title="Thread initializing sensors read at the given frequency. " alt="" coords="437,80,551,107"/>
-<area shape="rect" id="node6" href="UDPComm_8cpp.html" title="Enables UDP communication between the target board and an external PC to perform Processor&#45;In&#45;the&#45;Loo..." alt="" coords="576,80,713,107"/>
+<area shape="rect" id="node6" href="UDPMavlink_8cpp.html" title="Send and receive Mavlink messages from/to the companion computer messages. " alt="" coords="576,80,719,107"/>
 </map>
 </div>
 </div>
@@ -96,11 +98,45 @@ Variables</h2></td></tr>
 <tr class="separator:a1bfda025b86a8da3a44e6b0923a256f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae01be5449c13f73da04804c6c995d2ea"><td class="memItemLeft" align="right" valign="top">ExtY_feedback_control_T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="global__vars_8hpp.html#ae01be5449c13f73da04804c6c995d2ea">feedback_control_Y</a></td></tr>
 <tr class="separator:ae01be5449c13f73da04804c6c995d2ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1bb6eb7017ba348b90527a4037d86cf"><td class="memItemLeft" align="right" valign="top">EthernetInterface&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="global__vars_8hpp.html#ad1bb6eb7017ba348b90527a4037d86cf">eth</a></td></tr>
+<tr class="separator:ad1bb6eb7017ba348b90527a4037d86cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad26935b01fdf3611747d1feeff5c5353"><td class="memItemLeft" align="right" valign="top">Data&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="global__vars_8hpp.html#ad26935b01fdf3611747d1feeff5c5353">accmagValues</a></td></tr>
+<tr class="separator:ad26935b01fdf3611747d1feeff5c5353"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Header gathering the global variables used in the Firmware. </p>
 <p>Global variables are chosen upon uORB because yes. </p>
 </div><h2 class="groupheader">Variable Documentation</h2>
+<a id="ad26935b01fdf3611747d1feeff5c5353"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad26935b01fdf3611747d1feeff5c5353">&#9670;&nbsp;</a></span>accmagValues</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Data accmagValues</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Defining global onboard accelerometer and magnetometer values </p>
+
+</div>
+</div>
+<a id="ad1bb6eb7017ba348b90527a4037d86cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1bb6eb7017ba348b90527a4037d86cf">&#9670;&nbsp;</a></span>eth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EthernetInterface eth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initializing ethernet interface and the socket to enable UDP communications in threads <a class="el" href="UDPMavlink_8cpp.html" title="Send and receive Mavlink messages from/to the companion computer messages. ">UDPMavlink.cpp</a> and UDPPIL.cpp </p>
+
+</div>
+</div>
 <a id="a1bfda025b86a8da3a44e6b0923a256f2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1bfda025b86a8da3a44e6b0923a256f2">&#9670;&nbsp;</a></span>feedback_control_U</h2>
 
@@ -112,7 +148,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The I/O variables of the controller are used as extern since their name is the same if a Simulink project is used. This allows to keep the Firmware unchanged.External inputs </p>
+<p>The I/O variables of the controller are used as extern since their name is the same if a Simulink project is used. This allows to keep the Firmware unchanged.External inputs</p>
+<p>Defining global queue in which sensor/actuators event runDefining global inputs/outputs of the controller feedback_control.cpp </p>
 
 </div>
 </div>

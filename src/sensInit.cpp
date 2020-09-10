@@ -32,14 +32,18 @@ DigitalOut calib_led(LED_GREEN,1);
 FILE *f_calib;
 
 float roll,pitch,mag_norm;
-float magValues[3], magValues_filt[3], minMag[3], maxMag[3], minExtremes[3], maxExtremes[3];
+float magValues[3], magValues_filt[3], minExtremes[3], maxExtremes[3], minMag[3], maxMag[3];
 int measurements_count = 0, id_calib;
 char f_buff[100], f_buff_disc[100], temp_char;
 float mag_extremes[6];
 
 EventQueue queue;
+// EventQueue SDaccessQueue(8096);
 Event<void(void)> accmagreadEvent(&queue,AccMagRead);
 Event<void(void)> calibrationEvent(mbed_event_queue(),calibration);
+
+const char* sdcard_access_thread_name = "SDStorageAccess";
+Thread SDStorageAccess(osPriorityNormal,16184,nullptr,sdcard_access_thread_name);
 
 InterruptIn irq(PTA4);
 
@@ -71,6 +75,7 @@ void sensInit()
     
     SensorRead.start(postSensorEvent);
     queue.dispatch(); // Start the queue; queue has to be started in this thread!!!
+    // SDaccessQueue.dispatch();
 }
 
 void postSensorEvent(void)
@@ -108,7 +113,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     // printf("\033[2;1H");
     // printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
     // printf("%f\n", accmagValues.ax);
-    irq.fall(calib_irq_handle);
+    irq.rise(calib_irq_handle);
 }
 
 // Interrupt handler that starts the calibration
@@ -123,6 +128,7 @@ void calib_irq_handle(void)
 // Calibration event
 void calibration(void)
 {
+    // printf("Thread name: %s; Thread id: %d", ThisThread::get_name(), ThisThread::get_id());
     calib_led = 0;
     measurements_count++;
     printf("measurm %d\n",measurements_count);
@@ -134,9 +140,27 @@ void calibration(void)
     // When reached the number of initial points the calibration is complete
     if (measurements_count == INITIAL_POINTS)
     {
-        mbed_event_queue()->call(writeOnSD);
+        // mbed_event_queue()->call(writeOnSD);
+        // It means the magnetometer is calibrated, so I raise a flag signaling that
+        // SDaccessQueue.call(refreshParamFileSD);
+
+        SDStorageAccess.start(refreshParamFileSD);
     }
     
+}
+void refreshParamFileSD(void)
+{
+    mbed_event_queue()->cancel(id_calib);
+    printf("Updating the parameters file on the SD card...\n");
+    magCal.getExtremes(minMag, maxMag);
+    float magData_in[6] = {minMag[0], minMag[1], minMag[2], maxMag[0], maxMag[1], maxMag[2]};
+    if(parametersUpdate(magData_in, "Magnetometer extremes [minXYZ; maxXYZ]\n") == MBED_SUCCESS)
+    {
+        printf("Done updating params!\n");
+        calib_led = 1;
+        queue.dispatch();           // Re-dispatch the sensor queue
+        SDStorageAccess.join();
+    }
 }
 void writeOnSD(void)
 {
@@ -166,6 +190,9 @@ void writeOnSD(void)
         {
             fseek(f_calib,line_begin,SEEK_SET);
             fgets(f_buff, 100, f_calib);
+            // FIXME Since opening file as a+ allows output oper to file reposition the cursor at the end of the file, I have to do ftell() here and 
+            // a fseek() right before the fprintf which write on the file in the if below! BUT I cannot overwrite things... I can only append! So the
+            // best way is to completely rewrite the params file each time a modification occurs, implementing this function in mass storage.
             printf(f_buff);
             printf("qui\n");
             fflush(stdout);

@@ -63,6 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">main.cpp File Reference</div>  </div>
@@ -75,31 +76,90 @@ $(function() {
 <code>#include &lt;Serial.h&gt;</code><br />
 <code>#include &lt;EthernetInterface.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="global__vars_8hpp_source.html">global_vars.hpp</a>&quot;</code><br />
+<code>#include &quot;global_msgs.hpp&quot;</code><br />
 <code>#include &quot;common/mavlink.h&quot;</code><br />
 <code>#include &quot;cntrInit.hpp&quot;</code><br />
 <code>#include &quot;sensInit.hpp&quot;</code><br />
 <code>#include &quot;outportInit.hpp&quot;</code><br />
 <code>#include &quot;cli2.hpp&quot;</code><br />
-</div><div class="textblock"><div class="dynheader">
-Include dependency graph for main.cpp:</div>
-<div class="dyncontent">
-<div class="center"><img src="main_8cpp__incl.png" border="0" usemap="#src_2main_8cpp" alt=""/></div>
-<map name="src_2main_8cpp" id="src_2main_8cpp">
-<area shape="rect" id="node5" href="global__vars_8hpp.html" title="Header gathering the global variables used in the Firmware. " alt="" coords="274,80,387,107"/>
-</map>
-</div>
+<code>#include &quot;UDPMavlink.hpp&quot;</code><br />
+<code>#include &quot;navigator.hpp&quot;</code><br />
+<code>#include &quot;prognostic.hpp&quot;</code><br />
+<code>#include &quot;massStorage.hpp&quot;</code><br />
+<code>#include &quot;Thread.h&quot;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a2ffaa7cdbdee40a0bbc68f4e6aebf445"><td class="memItemLeft" align="right" valign="top">Semaphore&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#a2ffaa7cdbdee40a0bbc68f4e6aebf445">semDecode</a> (0)</td></tr>
+<tr class="separator:a2ffaa7cdbdee40a0bbc68f4e6aebf445"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a1bfda025b86a8da3a44e6b0923a256f2"><td class="memItemLeft" align="right" valign="top">ExtU_feedback_control_T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#a1bfda025b86a8da3a44e6b0923a256f2">feedback_control_U</a></td></tr>
 <tr class="separator:a1bfda025b86a8da3a44e6b0923a256f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae01be5449c13f73da04804c6c995d2ea"><td class="memItemLeft" align="right" valign="top">ExtY_feedback_control_T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#ae01be5449c13f73da04804c6c995d2ea">feedback_control_Y</a></td></tr>
 <tr class="separator:ae01be5449c13f73da04804c6c995d2ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa12737094f47f2d086387212e4a3c40d"><td class="memItemLeft" align="right" valign="top">mavlink_odometry_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#aa12737094f47f2d086387212e4a3c40d">odom</a></td></tr>
+<tr class="separator:aa12737094f47f2d086387212e4a3c40d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad26935b01fdf3611747d1feeff5c5353"><td class="memItemLeft" align="right" valign="top">Data&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#ad26935b01fdf3611747d1feeff5c5353">accmagValues</a></td></tr>
+<tr class="separator:ad26935b01fdf3611747d1feeff5c5353"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1bb6eb7017ba348b90527a4037d86cf"><td class="memItemLeft" align="right" valign="top">EthernetInterface&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#ad1bb6eb7017ba348b90527a4037d86cf">eth</a></td></tr>
+<tr class="separator:ad1bb6eb7017ba348b90527a4037d86cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Entry point for mbed OS. </p>
 <p>This script creates and spawns threads and declare global variables defined in the header <a class="el" href="global__vars_8hpp.html" title="Header gathering the global variables used in the Firmware. ">global_vars.hpp</a>. </p>
-</div><h2 class="groupheader">Variable Documentation</h2>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a2ffaa7cdbdee40a0bbc68f4e6aebf445"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ffaa7cdbdee40a0bbc68f4e6aebf445">&#9670;&nbsp;</a></span>semDecode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Semaphore semDecode </td>
+          <td>(</td>
+          <td class="paramtype">0&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Defining semaphores for synchronization purposes </p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ad26935b01fdf3611747d1feeff5c5353"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad26935b01fdf3611747d1feeff5c5353">&#9670;&nbsp;</a></span>accmagValues</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Data accmagValues</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Defining global onboard accelerometer and magnetometer values </p>
+
+</div>
+</div>
+<a id="ad1bb6eb7017ba348b90527a4037d86cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1bb6eb7017ba348b90527a4037d86cf">&#9670;&nbsp;</a></span>eth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EthernetInterface eth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initializing ethernet interface and the socket to enable UDP communications in threads <a class="el" href="UDPMavlink_8cpp.html" title="Send and receive Mavlink messages from/to the companion computer messages. ">UDPMavlink.cpp</a> and UDPPIL.cpp </p>
+
+</div>
+</div>
 <a id="a1bfda025b86a8da3a44e6b0923a256f2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1bfda025b86a8da3a44e6b0923a256f2">&#9670;&nbsp;</a></span>feedback_control_U</h2>
 
@@ -111,7 +171,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The I/O variables of the controller are used as extern since their name is the same if a Simulink project is used. This allows to keep the Firmware unchanged.External inputs </p>
+<p>Defining global queue in which sensor/actuators event runDefining global inputs/outputs of the controller feedback_control.cpp </p>
 
 </div>
 </div>
@@ -127,6 +187,21 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>External outputs </p>
+
+</div>
+</div>
+<a id="aa12737094f47f2d086387212e4a3c40d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa12737094f47f2d086387212e4a3c40d">&#9670;&nbsp;</a></span>odom</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mavlink_odometry_t odom</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Defining global mavlink messages declared in global_msgs.hpp </p>
 
 </div>
 </div>

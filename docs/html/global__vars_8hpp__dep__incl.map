@@ -3,5 +3,5 @@
 <area shape="rect" id="node3" href="$outportInit_8cpp.html" title="This thread creates the periodic task sending the pulse&#45;width modulated signals to the enabled pins..." alt="" coords="127,80,253,107"/>
 <area shape="rect" id="node4" href="$rt__OneStep_8cpp.html" title="It performs a time step of the controller algorithm checking whether it respects the Real&#45;Time deadli..." alt="" coords="277,80,412,107"/>
 <area shape="rect" id="node5" href="$sensInit_8cpp.html" title="Thread initializing sensors read at the given frequency. " alt="" coords="437,80,551,107"/>
-<area shape="rect" id="node6" href="$UDPComm_8cpp.html" title="Enables UDP communication between the target board and an external PC to perform Processor&#45;In&#45;the&#45;Loo..." alt="" coords="576,80,713,107"/>
+<area shape="rect" id="node6" href="$UDPMavlink_8cpp.html" title="Send and receive Mavlink messages from/to the companion computer messages. " alt="" coords="576,80,719,107"/>
 </map>

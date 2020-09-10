@@ -16,7 +16,10 @@
 #include "mbed.h"
 #include <stdio.h>
 #include <errno.h>
-// #include <fstream>
+#include <vector>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
 
 #include "SDBlockDevice.h"
 
@@ -25,9 +28,12 @@
 // Maximum number of elements in buffer
 #define BUFFER_MAX_LEN 10
 #define FORCE_REFORMAT false
+#define FILE_LINE_MAX_LENGTH 100
 // This will take the system's default block device
 SDBlockDevice sd(PTE3, PTE1, PTE2, PTE4);
-
+std::vector<int> myvector; // TODO use vectors!!!
+DigitalOut formatPinOut(D12,0); // Setting to high
+DigitalIn formatPinIn(D13);
 
 // Instead of the default block device, you can define your own block device.
 // For example: HeapBlockDevice with size of 2048 bytes, read size 1, write size 1 and erase size 512.
@@ -50,6 +56,7 @@ FILE *f_calib_read;
 char f_read_buff[100], f_read_temp[100], values_str[100], data_out_str[100], temp_char_read;
 char *values_str_buf;
 int space_count = 0;
+bool force_reformat = false;
 
 
 // Set up the button to trigger an erase
@@ -89,6 +96,13 @@ void massStorage() {
     // to avoid running in interrupt context
     // irq.fall(mbed_event_queue()->event(erase));
 
+    // Check if the format pin is enable
+    if(!formatPinIn.read())
+    {
+        force_reformat = true;
+        printf("Forcing format (pin = %d)\n",formatPinIn.read());
+    }
+
     // Call the SDBlockDevice instance initialisation method
     if (0 != sd.init()) {
         printf("Init failed \n");
@@ -109,7 +123,7 @@ void massStorage() {
     fflush(stdout);
     int err = fs.mount(&sd);
     printf("%s\n", (err ? "Fail :(" : "OK"));
-    if (err || FORCE_REFORMAT) {
+    if (err || FORCE_REFORMAT || force_reformat) {
         // Reformat if we can't mount the filesystem
         printf("formatting... ");
         fflush(stdout);
@@ -274,12 +288,103 @@ void populate(void)
     printf("Writing...\n");
     fprintf(calib, "## AUTOMATICALLY GENERATED FILE ##\n");
     fprintf(calib, "## This file stores the calibration parameters\n");
+    // Creating entry for magnetometer calibration values...
     fprintf(calib,"Magnetometer extremes [minXYZ; maxXYZ]\n");
+    // for(int ii = 0; ii < FILE_LINE_MAX_LENGTH; ii++)
+    // {
+    //     fprintf(calib," "); // These spaces are needed, they will be overwritten when updating parameters
+    // }
+    // fprintf(calib,"\n");
+
     fflush(calib);
     fclose(calib);
     fflush(stdout);
     // closedir(param);
 
+}
+
+// Deletes and rewrites the file in which parameters are stored updating their values e.g. after a calibration
+int parametersUpdate(float *data_in, const char *field_name)
+{
+    ifstream calibration_file("/fs/calib.txt");
+    std::string line, data_in_str;//, temp_buffer;
+    // Make a copy of the original calib file into a string buffer that'll be modified
+    // while(!calibration_file.eof())
+    // {
+    //     getline(calibration_file, line);
+    //     temp_buffer.append(line);
+    //     temp_buffer.append("\n");
+    // }
+
+    // PER QUALCHE CAZZO DI MOTIVO SE USO STRINGSTREAM LA MERDA DI K64F CRASHA --> forse perche' la queue in cui gira l'evento che contiene
+    // questo script ha solo 2kb di memoria???
+
+    std::stringstream buffer;
+    buffer << calibration_file.rdbuf();
+
+    std::string temp_buffer(buffer.str());
+
+    // printf("Content of the file:\n");
+    // std::string texteditor(buffer.str());
+    // printf(texteditor.c_str());
+    // printf("\n\nEnd content of the file.\n\n");
+
+    // string::iterator it1 = temp_buffer.end(); // don't use iterators...
+    printf("ecco\n");
+    // temp_buffer.erase(temp_buffer.length(),1); // Delete last \n
+    // temp_buffer.append(" "); // and append a whitespace
+    // temp_buffer.replace(temp_buffer.length(), 1, " ");
+    
+    // Here I find which is entry I'm interested in and I replace the values
+
+    /*
+    Magnetometer calibration values.
+    */
+
+    if(!strcmp(field_name, "Magnetometer extremes [minXYZ; maxXYZ]\n"))
+    {
+        // Checking if the required field exists
+        printf("cazzo\n");
+        size_t posMag = temp_buffer.find(field_name);
+        printf("cazzo2 %d\n", posMag);
+        if(posMag == string::npos)
+        {
+            printf("Required field doesn't exist. Try formatting.\n");
+            return -1;
+        }
+        // Converting floats to strings
+        
+        printf("qui -1\n");
+        std::ostringstream ss;
+        for(int kk = 0; kk < 6; kk++)
+        {
+            printf("qui %d", kk);
+            
+            ss << data_in[kk];
+            ss << " ";
+            // std::string s_temp(ss.str());
+            // data_in_str.append(s_temp);
+            // data_in_str.append(" ");
+            // ss.flush();
+        }
+        // std::string s_temp(ss.str());
+        printf("qui\n");
+        // data_in_str.erase(data_in_str.end()); // Erase last whitespace
+        data_in_str.insert(data_in_str.begin(),'\t');
+        // Overwriting file with new values
+        temp_buffer.replace(posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n"), sizeof(data_in_str), data_in_str);
+        printf("qui\n");
+        printf("Content of the file:\n");
+        printf(temp_buffer.c_str());
+        printf("END\n");
+    }
+    calibration_file.close();
+
+    // Create new empty calib.txt in which to copy the updated file temp_buff
+    ofstream updated_calibration_file("/fs/calib.txt");
+    updated_calibration_file << temp_buffer;
+    updated_calibration_file.close();
+    return MBED_SUCCESS;
 }
 
 int readFromSD(float *data_out, const char *field_name)
@@ -326,7 +431,7 @@ int readFromSD(float *data_out, const char *field_name)
                 line_begin = ftell(f_calib_read);
                 char field_char = fgetc(f_calib_read);
 
-                if (field_char == '\n' || feof(f_calib_read) != 0 )    // No value in the field I'm reading, returning...
+                if (field_char == '\n' || feof(f_calib_read) != 0 || field_char == ' ')    // No value in the field I'm reading, returning...
                 {
                     printf("No value in file!\n");
                     return -1;
@@ -340,6 +445,22 @@ int readFromSD(float *data_out, const char *field_name)
                         fgets(values_str, 100, f_calib_read);
                         printf(values_str);
                         fflush(stdout);
+                        /*
+                        // Here using strtok() fnct
+                        char * token = strtok(values_str, " ");
+                        data_out[0] = strtof(token, nullptr);
+                        printf("data out[0]: %f\n",data_out[0]);
+
+                        //In subsequent calls to strtok, the first argument is NULL
+                        int ii = 1;
+                        while((token = strtok(NULL, " ")) != NULL)
+                        {
+                            data_out[ii] = strtof(token, nullptr);
+                            printf("data out: %f\n",data_out[ii]);
+                            ii++;
+                        }
+                        */
+                        // Here old approach
                         for (uint ii = 0; ii < sizeof(values_str); ii++)
                         {
                             if (isspace(values_str[ii]))

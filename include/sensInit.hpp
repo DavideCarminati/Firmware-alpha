@@ -11,3 +11,4 @@ void calib_irq_handle(void);
 void calibration(void);
 void writeOnSD(void);
 void readFromSD(void);
+void refreshParamFileSD(void);

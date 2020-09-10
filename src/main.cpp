@@ -42,6 +42,7 @@ const char* sdcard_thread_name = "SDStorage";
 
 
 Serial* serial = new Serial(USBTX,USBRX,115200);
+// BufferedSerial* serial = new BufferedSerial(USBTX,USBRX,115200);
 // FileHandle *fh = &serial; // oppure FileHandle fh = new FileHandle(serial)
 
 #if PIL_MODE
@@ -60,7 +61,7 @@ Thread CommandLineInterface(osPriorityNormal,8092,nullptr,cli_thread_name);
 Thread UDPMavlinkComm(osPriorityNormal,16184,nullptr,UDPMavlink_thread_name);
 Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
 Thread Prognostic(osPriorityNormal,8092,nullptr,prognostic_thread_name);
-Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name);
+Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name); 
 
 /** Defining semaphores for synchronization purposes
  * 

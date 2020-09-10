@@ -8,10 +8,17 @@ Thread initializing sensors read at the given frequency.
 {\ttfamily \#include $<$mbed.\+h$>$}\newline
 {\ttfamily \#include \char`\"{}F\+X\+O\+S8700\+C\+Q.\+h\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}global\+\_\+vars.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}mass\+Storage.\+hpp\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}sens\+Init.\+hpp\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}Event\+Queue.\+h\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}Event.\+h\char`\"{}}\newline
-Include dependency graph for sens\+Init.\+cpp\+:\nopagebreak
+{\ttfamily \#include \char`\"{}math.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}mag\+Calibrate.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$This\+Thread.\+h$>$}\newline
+{\ttfamily \#include $<$Thread.\+h$>$}\newline
+{\ttfamily \#include $<$rtos.\+h$>$}\newline
+Include dependency graph for sens\+Init.\+cpp\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -22,7 +29,7 @@ Include dependency graph for sens\+Init.\+cpp\+:\nopagebreak
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\Hypertarget{sensInit_8cpp_afc65ba37dbbaa203d226e7fe6326adc5}\label{sensInit_8cpp_afc65ba37dbbaa203d226e7fe6326adc5}} 
-\#define \hyperlink{sensInit_8cpp_afc65ba37dbbaa203d226e7fe6326adc5}{F\+X\+O\+S8700\+C\+Q\+\_\+\+F\+R\+EQ}~50
+\#define \hyperlink{sensInit_8cpp_afc65ba37dbbaa203d226e7fe6326adc5}{F\+X\+O\+S8700\+C\+Q\+\_\+\+F\+R\+EQ}~200
 \begin{DoxyCompactList}\small\item\em Frequency at which the sensor is interrogated. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 

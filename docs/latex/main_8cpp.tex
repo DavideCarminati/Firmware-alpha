@@ -9,24 +9,34 @@ Entry point for mbed OS.
 {\ttfamily \#include $<$Serial.\+h$>$}\newline
 {\ttfamily \#include $<$Ethernet\+Interface.\+h$>$}\newline
 {\ttfamily \#include \char`\"{}global\+\_\+vars.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}global\+\_\+msgs.\+hpp\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}common/mavlink.\+h\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}cntr\+Init.\+hpp\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}sens\+Init.\+hpp\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}outport\+Init.\+hpp\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}cli2.\+hpp\char`\"{}}\newline
-Include dependency graph for main.\+cpp\+:\nopagebreak
-\begin{figure}[H]
-\begin{center}
-\leavevmode
-\includegraphics[width=350pt]{main_8cpp__incl}
-\end{center}
-\end{figure}
+{\ttfamily \#include \char`\"{}U\+D\+P\+Mavlink.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}navigator.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}prognostic.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}mass\+Storage.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Thread.\+h\char`\"{}}\newline
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+Semaphore \hyperlink{main_8cpp_a2ffaa7cdbdee40a0bbc68f4e6aebf445}{sem\+Decode} (0)
+\end{DoxyCompactItemize}
 \subsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
 Ext\+U\+\_\+feedback\+\_\+control\+\_\+T \hyperlink{main_8cpp_a1bfda025b86a8da3a44e6b0923a256f2}{feedback\+\_\+control\+\_\+U}
 \item 
 Ext\+Y\+\_\+feedback\+\_\+control\+\_\+T \hyperlink{main_8cpp_ae01be5449c13f73da04804c6c995d2ea}{feedback\+\_\+control\+\_\+Y}
+\item 
+mavlink\+\_\+odometry\+\_\+t \hyperlink{main_8cpp_aa12737094f47f2d086387212e4a3c40d}{odom}
+\item 
+Data \hyperlink{main_8cpp_ad26935b01fdf3611747d1feeff5c5353}{accmag\+Values}
+\item 
+Ethernet\+Interface \hyperlink{main_8cpp_ad1bb6eb7017ba348b90527a4037d86cf}{eth}
 \end{DoxyCompactItemize}
 
 
@@ -35,17 +45,44 @@ Entry point for mbed OS.
 
 This script creates and spawns threads and declare global variables defined in the header \hyperlink{global__vars_8hpp}{global\+\_\+vars.\+hpp}. 
 
+\subsection{Function Documentation}
+\mbox{\Hypertarget{main_8cpp_a2ffaa7cdbdee40a0bbc68f4e6aebf445}\label{main_8cpp_a2ffaa7cdbdee40a0bbc68f4e6aebf445}} 
+\index{main.\+cpp@{main.\+cpp}!sem\+Decode@{sem\+Decode}}
+\index{sem\+Decode@{sem\+Decode}!main.\+cpp@{main.\+cpp}}
+\subsubsection{\texorpdfstring{sem\+Decode()}{semDecode()}}
+{\footnotesize\ttfamily Semaphore sem\+Decode (\begin{DoxyParamCaption}\item[{0}]{ }\end{DoxyParamCaption})}
+
+Defining semaphores for synchronization purposes 
+
 \subsection{Variable Documentation}
-\mbox{\Hypertarget{main_8cpp_a1bfda025b86a8da3a44e6b0923a256f2}\label{main_8cpp_a1bfda025b86a8da3a44e6b0923a256f2}} 
+\mbox{\Hypertarget{main_8cpp_ad26935b01fdf3611747d1feeff5c5353}\label{main_8cpp_ad26935b01fdf3611747d1feeff5c5353}} 
+\index{main.\+cpp@{main.\+cpp}!accmag\+Values@{accmag\+Values}}
+\index{accmag\+Values@{accmag\+Values}!main.\+cpp@{main.\+cpp}}
+\subsubsection{\texorpdfstring{accmag\+Values}{accmagValues}}
+{\footnotesize\ttfamily Data accmag\+Values}
+
+Defining global onboard accelerometer and magnetometer values \mbox{\Hypertarget{main_8cpp_ad1bb6eb7017ba348b90527a4037d86cf}\label{main_8cpp_ad1bb6eb7017ba348b90527a4037d86cf}} 
+\index{main.\+cpp@{main.\+cpp}!eth@{eth}}
+\index{eth@{eth}!main.\+cpp@{main.\+cpp}}
+\subsubsection{\texorpdfstring{eth}{eth}}
+{\footnotesize\ttfamily Ethernet\+Interface eth}
+
+Initializing ethernet interface and the socket to enable U\+DP communications in threads \hyperlink{UDPMavlink_8cpp}{U\+D\+P\+Mavlink.\+cpp} and U\+D\+P\+P\+I\+L.\+cpp \mbox{\Hypertarget{main_8cpp_a1bfda025b86a8da3a44e6b0923a256f2}\label{main_8cpp_a1bfda025b86a8da3a44e6b0923a256f2}} 
 \index{main.\+cpp@{main.\+cpp}!feedback\+\_\+control\+\_\+U@{feedback\+\_\+control\+\_\+U}}
 \index{feedback\+\_\+control\+\_\+U@{feedback\+\_\+control\+\_\+U}!main.\+cpp@{main.\+cpp}}
 \subsubsection{\texorpdfstring{feedback\+\_\+control\+\_\+U}{feedback\_control\_U}}
 {\footnotesize\ttfamily Ext\+U\+\_\+feedback\+\_\+control\+\_\+T feedback\+\_\+control\+\_\+U}
 
-The I/O variables of the controller are used as extern since their name is the same if a Simulink project is used. This allows to keep the Firmware unchanged.\+External inputs \mbox{\Hypertarget{main_8cpp_ae01be5449c13f73da04804c6c995d2ea}\label{main_8cpp_ae01be5449c13f73da04804c6c995d2ea}} 
+Defining global queue in which sensor/actuators event run\+Defining global inputs/outputs of the controller feedback\+\_\+control.\+cpp \mbox{\Hypertarget{main_8cpp_ae01be5449c13f73da04804c6c995d2ea}\label{main_8cpp_ae01be5449c13f73da04804c6c995d2ea}} 
 \index{main.\+cpp@{main.\+cpp}!feedback\+\_\+control\+\_\+Y@{feedback\+\_\+control\+\_\+Y}}
 \index{feedback\+\_\+control\+\_\+Y@{feedback\+\_\+control\+\_\+Y}!main.\+cpp@{main.\+cpp}}
 \subsubsection{\texorpdfstring{feedback\+\_\+control\+\_\+Y}{feedback\_control\_Y}}
 {\footnotesize\ttfamily Ext\+Y\+\_\+feedback\+\_\+control\+\_\+T feedback\+\_\+control\+\_\+Y}
 
-External outputs 
+External outputs \mbox{\Hypertarget{main_8cpp_aa12737094f47f2d086387212e4a3c40d}\label{main_8cpp_aa12737094f47f2d086387212e4a3c40d}} 
+\index{main.\+cpp@{main.\+cpp}!odom@{odom}}
+\index{odom@{odom}!main.\+cpp@{main.\+cpp}}
+\subsubsection{\texorpdfstring{odom}{odom}}
+{\footnotesize\ttfamily mavlink\+\_\+odometry\+\_\+t odom}
+
+Defining global mavlink messages declared in global\+\_\+msgs.\+hpp 
