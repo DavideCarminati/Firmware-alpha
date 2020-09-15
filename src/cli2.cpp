@@ -14,6 +14,9 @@
     
 */
 
+// TODO Since Serial.h is deprecated in Mbed OS 6, the cli code has to be modified. read and write methods have to be used
+// to get and put char. These methods can be used with callbacks (handle_command) and events to stop reading (hitting enter key)
+
 #include "cli2.hpp"
 
 #include "sysinfo.hpp"
@@ -26,13 +29,14 @@ int ii;
 
 const char* prompt = "user@k64f >> ";
 
-char cli_buff[128];
+char cli_buff[128], byte[1], buff[32];
 
 __command cmd_enum, command;
 
 void cli2(Serial *serial)
 {
     serial->getc();
+    // serial->read(buff, sizeof(buff));
     printf("\033[2J\033[1;1H");
     printf(GREEN_B("New Terminal\n"));
     printf("%s",prompt);
@@ -94,7 +98,9 @@ __command handleInput(Serial *serial)
         while (ii < 127)
         {
             char byte = serial->getc();
+            // int num = serial->read(byte, sizeof(byte));
             serial->putc(byte);
+            // serial->write(byte, num);
             
             if (byte == '\r') // if pressed enter do:
             {
@@ -102,6 +108,7 @@ __command handleInput(Serial *serial)
                 break;
             }
             cli_buff[ii] = (char)byte;
+            // cli_buff[ii] = byte;
             ii++;
         }
         if(!strcmp(cli_buff,"top"))                     cmd_enum = cmd_top;

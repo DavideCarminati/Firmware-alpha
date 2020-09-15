@@ -77,3 +77,19 @@ extern UDPSocket socket;
 extern Data accmagValues;
 
 #endif
+
+// // Calibration flags are used to notify whether a sensor has undergone the process of calibration successfully
+// #ifndef CALIBRATION_FLAGS
+// #define CALIBRATION_FLAGS
+
+// extern bool magCalibFlag;
+
+// #endif
+
+// // Calibration values are used by the sensors at start up to correct errors
+// #ifndef CALIBRATION_VALUES
+// #define CALIBRATION_VALUES
+
+// extern float minMag[3], maxMag[3];
+
+// #endif

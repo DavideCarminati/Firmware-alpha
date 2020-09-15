@@ -21,8 +21,14 @@
 #include "UDPMavlink.hpp"
 #include "navigator.hpp"
 #include "prognostic.hpp"
+#include "massStorage.hpp"
 
 #include "Thread.h"
+
+using namespace events;
+using namespace rtos;
+using namespace ThisThread;
+using namespace mbed;
 
 const char* cntrInit_thread_name = "cntrInit";
 const char* sensInit_thread_name = "sensInit";
@@ -32,9 +38,11 @@ const char* UDPMavlink_thread_name = "UDPMavlink";
 const char* UDP_PIL_thread_name = "UDPPIL";
 const char* Navi_thread_name = "Navigator";
 const char* prognostic_thread_name = "Prognostic";
+const char* sdcard_thread_name = "SDStorage";
 
 
 Serial* serial = new Serial(USBTX,USBRX,115200);
+// BufferedSerial* serial = new BufferedSerial(USBTX,USBRX,115200);
 // FileHandle *fh = &serial; // oppure FileHandle fh = new FileHandle(serial)
 
 #if PIL_MODE
@@ -53,6 +61,7 @@ Thread CommandLineInterface(osPriorityNormal,8092,nullptr,cli_thread_name);
 Thread UDPMavlinkComm(osPriorityNormal,16184,nullptr,UDPMavlink_thread_name);
 Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
 Thread Prognostic(osPriorityNormal,8092,nullptr,prognostic_thread_name);
+Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name); 
 
 /** Defining semaphores for synchronization purposes
  * 
@@ -101,18 +110,24 @@ int main()
   #if PIL_MODE // Start UDP communtication only if in PIL mode!
     UDPIO_PIL.start(UDPPIL);
   #endif
-  
+  printf(" ====== Firmware is starting... ====== \n");
+
+  printf("Spawning threads...\n");
+  SDStorage.start(massStorage);
+  printf("%s thread started\n", sdcard_thread_name);
+  SDStorage.join();
+  printf("Mass storage initialized\n");
   ControllerInit.start(cntrInit);
+  printf("%s thread started\n", cntrInit_thread_name);
   SensorInit.start(sensInit);
   OutputPortInit.start(outportInit);
-  // UDPMavlinkComm.start(UDPMavlink);
+  UDPMavlinkComm.start(UDPMavlink);
   // Navigator.start(navigator);
   Prognostic.start(prognostic);
   CommandLineInterface.start(callback(cli2,serial));
-  ControllerInit.join();
-  // SensorInit.join();
+  // printf("Command line available\n");
 
-  // queue.dispatch();
+  ControllerInit.join();
   
   
   while(1) {

@@ -29,6 +29,7 @@
 #include "math.h"
 
 #include "global_vars.hpp"
+#include "global_msgs.hpp"
 #include "common/mavlink.h"
 #include "TankMotor.hpp"
 
@@ -63,13 +64,13 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
 {
   
   Watchdog &watchdog = Watchdog::get_instance();
-  watchdog.start(210);
+  watchdog.start(350);
   timer.start();
   while (1)
   {
     watchdog.kick();
     epoch = Kernel::get_ms_count();
-    timer.reset();
+    // timer.reset();
     // static boolean_T OverrunFlag = false;
 
     /* Disable interrupts here */
@@ -89,16 +90,17 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     /* Re-enable timer or interrupt here */
     /* Set model inputs here */
     
+    feedback_control_U.X_ref = odom.y;
+    feedback_control_U.psi_ref = odom.x;
+    
     #if PIL_MODE
       semDecode.acquire(); 
     #endif
     // semNavContr.acquire();
 
-    // CRITICAL: Includo la codifica e decodifica dei msg mavlink nel controllore anche se forse sarebbe piu' comodo metterla in UDPComm!
-
     // /* Step the model for base rate */
-    feedback_control_step(feedback_control_M, &feedback_control_U,
-                          &feedback_control_Y);
+    // feedback_control_step(feedback_control_M, &feedback_control_U,
+    //                       &feedback_control_Y);
 
     // /* Get model outputs here */
 
@@ -120,12 +122,13 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     /* Enable interrupts here */
     // __enable_irq();
 
-    int elapsed = timer.read_us();
-    wdgTime = watchdog.get_timeout();
+    // int elapsed = timer.read_us();
+    // wdgTime = watchdog.get_timeout();
+    // wdgTime = 0;
     // printf("\033[3;1Hwdg: %lu (timer: %d)",wdgTime,elapsed);
     watchdog.kick();
     
-    ThisThread::sleep_until(epoch+200); // 50ms is the step time!!
+    ThisThread::sleep_until(epoch+350); // 50ms is the step time!!
   }
   
 //   /* Disable rt_OneStep() here */
