@@ -110,7 +110,8 @@ int main()
   #if PIL_MODE // Start UDP communtication only if in PIL mode!
     UDPIO_PIL.start(UDPPIL);
   #endif
-  
+  printf(" ====== Firmware is starting... ====== \n");
+
   printf("Spawning threads...\n");
   SDStorage.start(massStorage);
   printf("%s thread started\n", sdcard_thread_name);

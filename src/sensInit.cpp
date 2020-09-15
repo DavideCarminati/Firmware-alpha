@@ -120,6 +120,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
 void calib_irq_handle(void)
 {
     // printf("break queue\n");
+    irq.rise(NULL);
     queue.break_dispatch();                         // Stop the dispatch of sensor queue while calibrating
     calibrationEvent.period(FXOS8700CQ_FREQ);
     id_calib = calibrationEvent.post();
@@ -140,10 +141,7 @@ void calibration(void)
     // When reached the number of initial points the calibration is complete
     if (measurements_count == INITIAL_POINTS)
     {
-        // mbed_event_queue()->call(writeOnSD);
         // It means the magnetometer is calibrated, so I raise a flag signaling that
-        // SDaccessQueue.call(refreshParamFileSD);
-
         SDStorageAccess.start(refreshParamFileSD);
     }
     
@@ -159,58 +157,61 @@ void refreshParamFileSD(void)
         printf("Done updating params!\n");
         calib_led = 1;
         queue.dispatch();           // Re-dispatch the sensor queue
+        irq.rise(calib_irq_handle); // Re/enable the rise interrupt on the button to avoid multiple calibrations
         SDStorageAccess.join();
     }
 }
-void writeOnSD(void)
-{
-    mbed_event_queue()->cancel(id_calib);
-    printf("Writing vals...\n");
-    magCal.getExtremes(minMag, maxMag);
-    fflush(stdout);
-    f_calib = fopen("/fs/calib.txt","a+");
-    printf("%s\n", (!f_calib ? "Fail :(" : "OK"));
-    fflush(stdout);
-    rewind(f_calib);
-    long line_begin = ftell(f_calib); // Beginning of the line
-    while(!feof(f_calib)) // Now writing into the file on the SD card
-    {
-        printf("Getting char... \n");
-        temp_char = fgetc(f_calib);
-        fflush(stdout);
-        if (temp_char == '#' || temp_char == '\t')  // Skip the line
-        {
-            fgets(f_buff_disc,100,f_calib); // Discard the line
-            line_begin = ftell(f_calib);    // Set new beginning of the line
-            printf("Line discarded\n");
-            // memset(f_buff,0,sizeof(f_buff));
-            fflush(stdout);
-        }
-        else // Here I look for the field I'm interested in and I fill it with data
-        {
-            fseek(f_calib,line_begin,SEEK_SET);
-            fgets(f_buff, 100, f_calib);
-            // FIXME Since opening file as a+ allows output oper to file reposition the cursor at the end of the file, I have to do ftell() here and 
-            // a fseek() right before the fprintf which write on the file in the if below! BUT I cannot overwrite things... I can only append! So the
-            // best way is to completely rewrite the params file each time a modification occurs, implementing this function in mass storage.
-            printf(f_buff);
-            printf("qui\n");
-            fflush(stdout);
-            if (!strcmp(f_buff,"Magnetometer extremes [minXYZ; maxXYZ]\n"))
-            {
-                fprintf(f_calib,"\t%.3e %.3e %.3e\n",minMag[0], minMag[1], minMag[2]);
-                fprintf(f_calib,"\t%.3e %.3e %.3e\n", maxMag[0], maxMag[1], maxMag[2]);
-                line_begin = ftell(f_calib);
-                // fflush(stdout);
-                printf("done\n");
-                fflush(stdout);
-                break;
 
-            }
-        }
-    }
-    fclose(f_calib); // Important!
-    calib_led = 1;
-    queue.dispatch();           // Re-dispatch the sensor queue
-}
+// FIXME DEAD CODE!!
+// void writeOnSD(void)
+// {
+//     mbed_event_queue()->cancel(id_calib);
+//     printf("Writing vals...\n");
+//     magCal.getExtremes(minMag, maxMag);
+//     fflush(stdout);
+//     f_calib = fopen("/fs/calib.txt","a+");
+//     printf("%s\n", (!f_calib ? "Fail :(" : "OK"));
+//     fflush(stdout);
+//     rewind(f_calib);
+//     long line_begin = ftell(f_calib); // Beginning of the line
+//     while(!feof(f_calib)) // Now writing into the file on the SD card
+//     {
+//         printf("Getting char... \n");
+//         temp_char = fgetc(f_calib);
+//         fflush(stdout);
+//         if (temp_char == '#' || temp_char == '\t')  // Skip the line
+//         {
+//             fgets(f_buff_disc,100,f_calib); // Discard the line
+//             line_begin = ftell(f_calib);    // Set new beginning of the line
+//             printf("Line discarded\n");
+//             // memset(f_buff,0,sizeof(f_buff));
+//             fflush(stdout);
+//         }
+//         else // Here I look for the field I'm interested in and I fill it with data
+//         {
+//             fseek(f_calib,line_begin,SEEK_SET);
+//             fgets(f_buff, 100, f_calib);
+//             // FIXME Since opening file as a+ allows output oper to file reposition the cursor at the end of the file, I have to do ftell() here and 
+//             // a fseek() right before the fprintf which write on the file in the if below! BUT I cannot overwrite things... I can only append! So the
+//             // best way is to completely rewrite the params file each time a modification occurs, implementing this function in mass storage.
+//             printf(f_buff);
+//             printf("qui\n");
+//             fflush(stdout);
+//             if (!strcmp(f_buff,"Magnetometer extremes [minXYZ; maxXYZ]\n"))
+//             {
+//                 fprintf(f_calib,"\t%.3e %.3e %.3e\n",minMag[0], minMag[1], minMag[2]);
+//                 fprintf(f_calib,"\t%.3e %.3e %.3e\n", maxMag[0], maxMag[1], maxMag[2]);
+//                 line_begin = ftell(f_calib);
+//                 // fflush(stdout);
+//                 printf("done\n");
+//                 fflush(stdout);
+//                 break;
+
+//             }
+//         }
+//     }
+//     fclose(f_calib); // Important!
+//     calib_led = 1;
+//     queue.dispatch();           // Re-dispatch the sensor queue
+// }
 
