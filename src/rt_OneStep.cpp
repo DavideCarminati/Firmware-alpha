@@ -68,6 +68,7 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
   timer.start();
   while (1)
   {
+    watchdog.kick();
     epoch = Kernel::get_ms_count();
     // timer.reset();
     // static boolean_T OverrunFlag = false;
