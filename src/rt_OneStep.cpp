@@ -83,7 +83,11 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
 
     // OverrunFlag = true;
     
-    led = !led;
+    if(led_lock.trylock())
+    {
+      led = !led;
+      led_lock.unlock();
+    }
 
     /* Save FPU context here (if necessary) */
     /* Re-enable timer or interrupt here */

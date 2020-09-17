@@ -18,7 +18,7 @@ static DW_feedback_control_T feedback_control_DW;/* Observable states */
 
 #endif
 
-DigitalOut initLED(LED1);
+DigitalOut initLED(LED1,1);
 
 const char* Controller_thread_name = "controller";
 
@@ -26,6 +26,7 @@ Thread Controller(osPriorityRealtime,CONTROLLER_STACK_SIZE,nullptr,Controller_th
 
 void cntrInit(void)
 {
+    led_lock.lock();
     initLED = 0;
     RT_MODEL_feedback_control_T *const feedback_control_M = feedback_control_MPtr;
 
@@ -41,5 +42,6 @@ void cntrInit(void)
     Controller.start(callback(rt_OneStep,feedback_control_M));
     
     initLED = !initLED;
+    led_lock.unlock();
 
 }

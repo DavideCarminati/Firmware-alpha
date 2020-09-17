@@ -137,6 +137,7 @@ int parametersUpdate(float *data_in, const char *field_name)
         }
         std::string data_in_str(ss.str()); // String in which num values are put
         data_in_str.insert(data_in_str.begin(),'\t');
+        data_in_str.append("\n");
         // Overwriting file with new values
         size_t posNewline = temp_buffer.find("\n", posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n"));
         if(posNewline == string::npos)
@@ -146,9 +147,11 @@ int parametersUpdate(float *data_in, const char *field_name)
         }
         else
         {
-            temp_buffer.replace(posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n"), \
-                posNewline - posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n"), " ");
-            temp_buffer.replace(posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n") - 1, sizeof(data_in_str), data_in_str);
+            // temp_buffer.replace(posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n"), \
+            //     posNewline - (posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n")), " ");
+            // temp_buffer.replace(posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n") - 1, sizeof(data_in_str), data_in_str);
+            temp_buffer.replace(posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n") - 1, \
+                    posNewline + 1 - (posMag + sizeof("Magnetometer extremes [minXYZ; maxXYZ]\n") - 1), data_in_str); // add +1 at posnewline!
         }
         printf("Content of the file:\n");
         printf(temp_buffer.c_str());

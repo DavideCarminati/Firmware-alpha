@@ -78,6 +78,13 @@ extern Data accmagValues;
 
 #endif
 
+#ifndef LED_MUTEX
+#define LED_MUTEX
+
+extern Mutex led_lock;
+
+#endif
+
 // // Calibration flags are used to notify whether a sensor has undergone the process of calibration successfully
 // #ifndef CALIBRATION_FLAGS
 // #define CALIBRATION_FLAGS

@@ -101,6 +101,11 @@ Data accmagValues;
 EthernetInterface eth;
 UDPSocket socket;
 
+/** Defining mutex locks
+ * 
+ */
+Mutex led_lock;
+
 
 int main() 
 {

@@ -27,7 +27,7 @@
 
 FXOS8700CQ accmag(PTE25,PTE24);
 CalibrateMagneto magCal;
-DigitalOut calib_led(LED_GREEN,1);
+DigitalOut calib_led(LED_GREEN,1), controllerLedSensorThread(LED_BLUE,1);
 
 FILE *f_calib;
 
@@ -130,6 +130,11 @@ void calib_irq_handle(void)
 void calibration(void)
 {
     // printf("Thread name: %s; Thread id: %d", ThisThread::get_name(), ThisThread::get_id());
+    if(measurements_count == 0)
+    {
+        controllerLedSensorThread = 1;
+        led_lock.lock();
+    }
     calib_led = 0;
     measurements_count++;
     printf("measurm %d\n",measurements_count);
@@ -142,7 +147,9 @@ void calibration(void)
     if (measurements_count == INITIAL_POINTS)
     {
         // It means the magnetometer is calibrated, so I raise a flag signaling that
+        measurements_count = 0;
         SDStorageAccess.start(refreshParamFileSD);
+        led_lock.unlock();
     }
     
 }
