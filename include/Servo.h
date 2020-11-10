@@ -81,7 +81,7 @@ public:
      * @param range Pulsewidth range from center (1.5ms) to maximum/minimum position in seconds
      * @param degrees Angle from centre to maximum/minimum position in degrees
      */
-    void calibrate(float range = 0.5, float degrees = 90.0); 
+    void calibrate(float range, float degrees); 
         
     /**  Shorthand for the write and read functions */
     Servo& operator= (float percent);

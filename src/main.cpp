@@ -69,7 +69,7 @@ Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name);
 Semaphore semDecode(0), semEncode(0), semUDPNav(0), semNavContr(0), semContrPWM(0);
 bool flagMavlink = false;
 
-Servo servo1(PTC10);
+Servo servo1(PTC2);
 
 /** Defining global queue in which sensor/actuators event run
  * 

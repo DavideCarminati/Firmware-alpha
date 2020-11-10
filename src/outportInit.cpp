@@ -17,9 +17,11 @@
 #include "outportInit.hpp"
 
 
-float pos = 0.0;
+float pos = 75.0/180;
+float delta_pos = 0.01;
 
-// PwmOut servo2(PTC10); ///< The PIN enable for PWM is PTC10.
+// Servo servo2(PTC3); ///< The PIN enable for PWM is PTC10.
+PwmOut servopwm(PTC3);
 
 EventQueue queuePWM;
 Event<void(void)> servowriteEvent(&queuePWM,Servo1Write);
@@ -37,17 +39,19 @@ Thread ServoWrite(osPriorityNormal,16184,nullptr,"servoWrite");
 void outportInit()
 {
     servo1.calibrate(0.0005,90); // 0.0005 s from center (1.5ms) to max/min
+    // servo2.calibrate(0.0005,90);
+    servopwm.pulsewidth_us(1500);
     ServoWrite.start(postServoEvent);
-    // queuePWM.dispatch(); // Also here the queue has to be started in this thread!!! otherwise doesn't dispatch
+    queuePWM.dispatch(); // Also here the queue has to be started in this thread!!! otherwise doesn't dispatch
 }
 
 /** The period and the initial delay of the PWM write event are set. Then it is posted in the queue.
  */
 void postServoEvent(void)
 {
-    // servowriteEvent.period(50);
-    // servowriteEvent.delay(500);
-    // servowriteEvent.post();
+    servowriteEvent.period(500);
+    servowriteEvent.delay(500);
+    servowriteEvent.post();
 
     // motorwriteEvent.delay(4000);
     // motorwriteEvent.period(200);
@@ -62,6 +66,21 @@ void postServoEvent(void)
 void Servo1Write(void)
 {
     // TODO add semaphore in here!
+    if (pos <= 75.0/180)
+    {
+        delta_pos = 0.01;
+    }
+    else if (pos >= 105.0/180)
+    {
+        delta_pos = -0.01;
+    }
+    printf("delta pos = %f  pos = %f\n", delta_pos, pos);
+    pos = pos + delta_pos;
+    servopwm.pulsewidth_us(pos*2000);
+    // servo1.write(pos);
+    // servo2.write(pos);
+    
+    
     // pos = feedback_control_Y.u;//*180;
     // servo1.write(pos);
     // printf("\033[1;1H");
