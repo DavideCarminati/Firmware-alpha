@@ -18,6 +18,7 @@
 //
 #include "feedback_control.h"
 #include "feedback_control_private.h"
+#include "mbed.h"
 
 // Model step function
 void feedback_control_step(RT_MODEL_feedback_control_T *const feedback_control_M,
@@ -75,10 +76,12 @@ void feedback_control_step(RT_MODEL_feedback_control_T *const feedback_control_M
   if(X_cmd > 1)       X_cmd = 1;
   if(X_cmd < -1)      X_cmd = -1;
 
+  // NOTE: H-bridge is controlled according to the table in https://wiki.dfrobot.com/7A_Dual_DC_Motor_Driver_SKU__DRI0041#target_1. DO NOT CONSIDER the image!
   feedback_control_Y->pwm_left = 20000*(X_cmd - psi_cmd);
   feedback_control_Y->pwm_right = 20000*(X_cmd + psi_cmd);
 
-
+  printf("x_error: %.3f, psi_error: %.3f, x_com: %.3f, psi_com: %.3f\n",X_error, psi_error,X_cmd,psi_cmd);
+  printf("x_des: %.3f, psi_des: %.3f, pwm_left: %.3f, pwm_right: %.3f\n\n",feedback_control_U->X_ref,feedback_control_U->psi_ref,feedback_control_Y->pwm_left, feedback_control_Y->pwm_right);
 
   // SampleTimeMath: '<S26>/TSamp' incorporates:
   //   Gain: '<S25>/Derivative Gain'

@@ -64,7 +64,7 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
 {
   
   Watchdog &watchdog = Watchdog::get_instance();
-  watchdog.start(350);
+  watchdog.start(500); //350
   timer.start();
   while (1)
   {
@@ -93,8 +93,9 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     /* Re-enable timer or interrupt here */
     /* Set model inputs here */
     
-    feedback_control_U.X_ref = odom.y;
-    feedback_control_U.psi_ref = odom.x;
+    // UNCOMMENT THIS TO USE MAVLINK MSGS
+    // feedback_control_U.X_ref = odom.y;
+    // feedback_control_U.psi_ref = odom.x;
     
     #if PIL_MODE
       semDecode.acquire(); 
@@ -102,8 +103,8 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     // semNavContr.acquire();
 
     // /* Step the model for base rate */
-    // feedback_control_step(feedback_control_M, &feedback_control_U,
-    //                       &feedback_control_Y);
+    feedback_control_step(feedback_control_M, &feedback_control_U,
+                          &feedback_control_Y);
 
     // /* Get model outputs here */
 
@@ -112,10 +113,10 @@ void rt_OneStep(RT_MODEL_feedback_control_T *const feedback_control_M)
     #endif
     // semContrPWM.release();
 
-    // leftMotor.Move(feedback_control_Y.pwm_left);
-    // rightMotor.Move(feedback_control_Y.pwm_right);
-    // printf("\033[2;1H");
-    // printf("pwm: %f, %f", feedback_control_Y.pwm_left, feedback_control_Y.pwm_right);
+    leftMotor.Move(feedback_control_Y.pwm_left);
+    rightMotor.Move(feedback_control_Y.pwm_right);
+    printf("\033[2;1H");
+    printf("pwm: %f, %f", feedback_control_Y.pwm_left, feedback_control_Y.pwm_right);
 
     /* Indicate task complete */
     // OverrunFlag = false;

@@ -125,10 +125,10 @@ int main()
   ControllerInit.start(cntrInit);
   printf("%s thread started\n", cntrInit_thread_name);
   SensorInit.start(sensInit);
-  OutputPortInit.start(outportInit);
+  // OutputPortInit.start(outportInit);
   UDPMavlinkComm.start(UDPMavlink);
   // Navigator.start(navigator);
-  Prognostic.start(prognostic);
+  //Prognostic.start(prognostic);
   CommandLineInterface.start(callback(cli2,serial));
   // printf("Command line available\n");
 
