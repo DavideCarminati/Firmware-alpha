@@ -5,11 +5,11 @@
 //
 // File: rt_defines.h
 //
-// Code generated for Simulink model 'feedback_control'.
+// Code generated for Simulink model 'PI_contr'.
 //
-// Model version                  : 1.85
+// Model version                  : 1.4
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Thu May 21 16:56:39 2020
+// C/C++ source code generated on : Tue Nov 17 12:12:33 2020
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex

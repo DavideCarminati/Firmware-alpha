@@ -7,7 +7,7 @@
 
 #include <mbed.h>
 #include "common/mavlink.h"
-#include "feedback_control.h"
+#include "PI_contr.h"
 #include "Servo.h"
 #include "EthernetInterface.h"
 #include "FXOS8700CQ.h"
@@ -35,8 +35,8 @@
  * This allows to keep the Firmware unchanged.
  */
 
-extern ExtU_feedback_control_T feedback_control_U;      /**< External inputs */
-extern ExtY_feedback_control_T feedback_control_Y;      /**< External outputs */
+extern ExtU_PI_contr_T PI_contr_U;     // External inputs
+extern ExtY_PI_contr_T PI_contr_Y;     // External outputs
 
 #endif
 
@@ -82,6 +82,13 @@ extern Data accmagValues;
 #define LED_MUTEX
 
 extern Mutex led_lock;
+
+#endif
+
+#ifndef TRAJECTORY_PLANNER_SETPOINTS
+#define TRAJECTORY_PLANNER_SETPOINTS
+
+extern mavlink_set_position_target_local_ned_t setpointsTrajectoryPlanner;
 
 #endif
 

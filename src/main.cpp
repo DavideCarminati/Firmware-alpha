@@ -79,13 +79,14 @@ Servo servo1(PTC2);
 /** Defining global inputs/outputs of the controller feedback_control.cpp
  * 
  */ 
-ExtU_feedback_control_T feedback_control_U;
-ExtY_feedback_control_T feedback_control_Y;
+ExtU_PI_contr_T PI_contr_U;     // External inputs
+ExtY_PI_contr_T PI_contr_Y;     // External outputs
 
 /** Defining global mavlink messages declared in global_msgs.hpp
  * 
  */
 mavlink_odometry_t odom;
+mavlink_set_position_target_local_ned_t setpointsTrajectoryPlanner;
 
 /** Defining global onboard accelerometer and magnetometer values
  * 
@@ -131,7 +132,7 @@ int main()
   //Prognostic.start(prognostic);
   CommandLineInterface.start(callback(cli2,serial));
   // printf("Command line available\n");
-
+  
   ControllerInit.join();
   
   

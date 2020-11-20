@@ -90,20 +90,20 @@ void navigator()
         
         // printf("Timer: %f\n",timerNav.read());
 
-        if(timerNav.read() < 5)
-        {
-            // printf("\033[1;1H");
-            // printf("manovra 0");
-            feedback_control_U.X_ref = 0;
-            feedback_control_U.psi_ref = 0;
-        }
-        else if(timerNav.read() >= 5 && timerNav.read() < 10)
-        {
-            // printf("\033[1;1H");
-            // printf("manovra 1");
-            feedback_control_U.X_ref = 0;
-            feedback_control_U.psi_ref = 0;
-        }
+        // if(timerNav.read() < 5)
+        // {
+        //     // printf("\033[1;1H");
+        //     // printf("manovra 0");
+        //     feedback_control_U.X_ref = 0;
+        //     feedback_control_U.psi_ref = 0;
+        // }
+        // else if(timerNav.read() >= 5 && timerNav.read() < 10)
+        // {
+        //     // printf("\033[1;1H");
+        //     // printf("manovra 1");
+        //     feedback_control_U.X_ref = 0;
+        //     feedback_control_U.psi_ref = 0;
+        // }
         // else if(timerNav.read() >= 8 && timerNav.read() < 11)
         // {
         //     // printf("\033[1;1H");
@@ -156,10 +156,10 @@ void navigator()
         //     feedback_control_U.psi_ref = 0;
         // }
 
-        else
-        {
-            timerNav.reset();
-        }        
+        // else
+        // {
+        //     timerNav.reset();
+        // }        
 
         // feedback_control_U.X_ref = 0;
         // feedback_control_U.psi_ref = timerNav.read()*36;

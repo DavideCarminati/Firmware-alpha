@@ -27,6 +27,7 @@ uint8_t in_data[MAVLINK_MAX_PACKET_LEN], out_buf[MAVLINK_MAX_PACKET_LEN];
 mavlink_message_t msgIn;
 mavlink_status_t status;
 mavlink_attitude_t att;
+
 // mavlink_raw_imu_t raw_imu;
 
 
@@ -65,7 +66,27 @@ void UDPMavlink()
                 uint8_t byte = in_data[ii];
                 if(mavlink_parse_char(MAVLINK_COMM_0, byte, &msgIn, &status))
                 {
-                    mavlink_msg_odometry_decode(&msgIn,&odom);
+                    switch (msgIn.msgid)
+                    {
+                    case MAVLINK_MSG_ID_SET_POSITION_TARGET_LOCAL_NED:
+                        mavlink_msg_set_position_target_local_ned_decode(&msgIn, &setpointsTrajectoryPlanner);
+                        printf("\033[10;1H");
+                        printf("setpoint: %f, %f, %f, %f, %f\n", setpointsTrajectoryPlanner.x, setpointsTrajectoryPlanner.y, \
+                            setpointsTrajectoryPlanner.vx, setpointsTrajectoryPlanner.vy, setpointsTrajectoryPlanner.yaw);
+                        break;
+
+                    case MAVLINK_MSG_ID_ODOMETRY:
+                        mavlink_msg_odometry_decode(&msgIn,&odom);
+                        printf("\033[11;1H");
+                        printf("odometry: %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy);
+                        break;
+                    
+                    default:
+                        printf("\033[4;1H");
+                        printf("Mavlink message not decoded!\n");
+                        break;
+                    }
+                    
                     // printf("\033[4;1H");
                     // printf("%f, %f, %f, %f, %f", odom.x, odom.q[0], odom.q[1], odom.q[2], odom.q[3]);
                     // semUDPNav.release();
@@ -74,6 +95,7 @@ void UDPMavlink()
             }
         } else
         {
+            printf("\033[15;1H");
             printf("problema connessione udp\n");
         }
         // int elapsed = timerUDP.read_us();

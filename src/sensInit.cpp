@@ -72,7 +72,7 @@ void sensInit()
             printf("data out mag extr %f\n", mag_extremes[ii]);
         }
     }
-    
+    printf("\033[2J");
     SensorRead.start(postSensorEvent);
     queue.dispatch(); // Start the queue; queue has to be started in this thread!!!
     // SDaccessQueue.dispatch();
@@ -104,7 +104,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     roll = atan2(-accmagValues.ay,sqrt(accmagValues.ax*accmagValues.ax + accmagValues.az*accmagValues.az));
     // feedback_control_U.psi_est = atan2(-accmagValues.my*cos(roll) - accmagValues.mz*sin(roll),accmagValues.mx*cos(pitch) \
     //                             + accmagValues.my*sin(pitch)*sin(roll) - accmagValues.mz*sin(pitch)*cos(roll))*180/3.14;
-    feedback_control_U.psi_est = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
+    PI_contr_U.psi_odom = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
     // printf("yaw: %f\n",feedback_control_U.psi_est);
     // printf("ax: %.2f ay: %.2f az: %.2f pitch: %.2f roll: %.2f yaw: %.2f mx: %.2f my: %.2f mz: %.2f\n", \ 
             // accmagValues.ax, accmagValues.ay, accmagValues.az, pitch*180/3.14, roll*180/3.14, feedback_control_U.psi_est, accmagValues.mx, accmagValues.my, accmagValues.mz);
