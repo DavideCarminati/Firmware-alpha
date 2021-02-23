@@ -22,6 +22,8 @@
 #include "navigator.hpp"
 #include "prognostic.hpp"
 #include "massStorage.hpp"
+#include "ekfInit.hpp"
+#include "apfInit.hpp"
 
 #include "Thread.h"
 
@@ -39,6 +41,8 @@ const char* UDP_PIL_thread_name = "UDPPIL";
 const char* Navi_thread_name = "Navigator";
 const char* prognostic_thread_name = "Prognostic";
 const char* sdcard_thread_name = "SDStorage";
+const char* ekfInit_thread_name = "ekfInit";
+const char* apfInit_thread_name = "apfInit";
 
 
 Serial* serial = new Serial(USBTX,USBRX,115200);
@@ -61,7 +65,9 @@ Thread CommandLineInterface(osPriorityNormal,8092,nullptr,cli_thread_name);
 Thread UDPMavlinkComm(osPriorityNormal,16184,nullptr,UDPMavlink_thread_name);
 Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
 Thread Prognostic(osPriorityNormal,8092,nullptr,prognostic_thread_name);
-Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name); 
+Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name);
+Thread EKFInit(osPriorityNormal,8092,nullptr,ekfInit_thread_name);
+Thread APFInit(osPriorityNormal,8092,nullptr,apfInit_thread_name);
 
 /** Defining semaphores for synchronization purposes
  * 
@@ -107,6 +113,13 @@ UDPSocket socket;
  */
 Mutex led_lock;
 
+ExtU_Kalman_filter_conv_T Kalman_filter_conv_U;// External inputs
+ExtY_Kalman_filter_conv_T Kalman_filter_conv_Y;// External outputs
+
+ExtU_APF_conver_T APF_conver_U; // External inputs
+ExtY_APF_conver_T APF_conver_Y; // External outputs
+
+
 
 int main() 
 {
@@ -123,13 +136,15 @@ int main()
   printf("%s thread started\n", sdcard_thread_name);
   SDStorage.join();
   printf("Mass storage initialized\n");
-  ControllerInit.start(cntrInit);
+  // ControllerInit.start(cntrInit);
   printf("%s thread started\n", cntrInit_thread_name);
   SensorInit.start(sensInit);
   // OutputPortInit.start(outportInit);
   UDPMavlinkComm.start(UDPMavlink);
-  Navigator.start(navigator);
+  // Navigator.start(navigator);
   //Prognostic.start(prognostic);
+  EKFInit.start(ekfInit);
+  APFInit.start(apfInit);
   CommandLineInterface.start(callback(cli2,serial));
   // printf("Command line available\n");
   

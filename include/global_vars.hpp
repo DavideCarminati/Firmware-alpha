@@ -11,6 +11,8 @@
 #include "Servo.h"
 #include "EthernetInterface.h"
 #include "FXOS8700CQ.h"
+#include "Kalman_filter_conv.h"
+#include "APF_conver.h"
 
 #ifndef UDP_BUFFER
 #define UDP_BUFFER
@@ -89,6 +91,22 @@ extern Mutex led_lock;
 #define TRAJECTORY_PLANNER_SETPOINTS
 
 extern mavlink_set_position_target_local_ned_t setpointsTrajectoryPlanner;
+
+#endif
+
+#ifndef EKF_TASK
+#define EKF_TASK
+
+extern ExtU_Kalman_filter_conv_T Kalman_filter_conv_U;// External inputs
+extern ExtY_Kalman_filter_conv_T Kalman_filter_conv_Y;// External outputs
+
+#endif
+
+#ifndef APF_TASK
+#define APF_TASK
+
+extern ExtU_APF_conver_T APF_conver_U; // External inputs
+extern ExtY_APF_conver_T APF_conver_Y; // External outputs
 
 #endif
 

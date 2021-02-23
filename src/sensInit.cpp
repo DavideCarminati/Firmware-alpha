@@ -103,6 +103,8 @@ void EncoderRead(void)
 {
     posL = encoderL.getPosition()*360/(2*1920);
     posR = encoderR.getPosition()*360/(2*1920);
+    Kalman_filter_conv_U.pos_l = posL;
+    Kalman_filter_conv_U.pos_r = posR;
     speedL = encoderL.getSpeed()*60; // rpm
     speedR = encoderR.getSpeed()*60;
     // printf("\033[13;1H");
@@ -138,6 +140,9 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     // printf("\033[2;1H");
     // printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
     // printf("%f\n", accmagValues.ax);
+    Kalman_filter_conv_U.psi = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
+    Kalman_filter_conv_U.ax = accmagValues.ax;
+    Kalman_filter_conv_U.ay = accmagValues.ay;
     irq.rise(calib_irq_handle);
 }
 
