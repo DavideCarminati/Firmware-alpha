@@ -7,6 +7,7 @@
 #include "FXOS8700CQ.h"
 #include "global_vars.hpp"
 #include "massStorage.hpp"
+#include "RotaryEncoder.h"
 
 #include "sensInit.hpp"
 #include "EventQueue.h"
@@ -29,6 +30,9 @@ FXOS8700CQ accmag(PTE25,PTE24);
 CalibrateMagneto magCal;
 DigitalOut calib_led(LED_GREEN,1), controllerLedSensorThread(LED_BLUE,1);
 
+Encoder encoderL(PTB18, PTB19, true);
+Encoder encoderR(PTC1, PTC8, true);
+
 FILE *f_calib;
 
 float roll,pitch,mag_norm;
@@ -37,10 +41,15 @@ int measurements_count = 0, id_calib;
 char f_buff[100], f_buff_disc[100], temp_char;
 float mag_extremes[6];
 
+int32_t posL, posR;
+float speedL, speedR;
+
+
 EventQueue queue;
 // EventQueue SDaccessQueue(8096);
 Event<void(void)> accmagreadEvent(&queue,AccMagRead);
 Event<void(void)> calibrationEvent(mbed_event_queue(),calibration);
+Event<void(void)> encoderEvent(&queue, EncoderRead);
 
 const char* sdcard_access_thread_name = "SDStorageAccess";
 Thread SDStorageAccess(osPriorityNormal,16184,nullptr,sdcard_access_thread_name);
@@ -85,6 +94,22 @@ void postSensorEvent(void)
     accmagreadEvent.delay(200);
     accmagreadEvent.post();
     // queue.call_every(200,AccMagRead);
+    encoderEvent.period(100);
+    encoderEvent.delay(200);
+    encoderEvent.post();
+}
+
+void EncoderRead(void)
+{
+    posL = encoderL.getPosition()*360/(2*1920);
+    posR = encoderR.getPosition()*360/(2*1920);
+    speedL = encoderL.getSpeed()*60; // rpm
+    speedR = encoderR.getSpeed()*60;
+    // printf("\033[13;1H");
+    printf("pwm left,right: %f, %f speed left,right: %f, %f  pos left, right %ld, %ld   ax, ay, %f %f  mx, my, %f, %f\n", \
+        PI_contr_Y.pwm_left, PI_contr_Y.pwm_right, -speedL, speedR, -posL, posR, accmagValues.ax, accmagValues.ay, accmagValues.mx, accmagValues.my);
+
+    
 }
 
 // TODO: add semaphore to protect the write-to-buffer operation in the following event!

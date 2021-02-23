@@ -94,19 +94,19 @@ void rt_OneStep(RT_MODEL_PI_contr_T *const PI_contr_M)
     /* Re-enable timer or interrupt here */
     /* Set model inputs here */
     
-    // UNCOMMENT THIS TO USE MAVLINK MSGS
-    PI_contr_U.vel_ref = sqrt(pow(setpointsTrajectoryPlanner.vx,2) + pow(setpointsTrajectoryPlanner.vy,2));
-    PI_contr_U.px_goal = setpointsTrajectoryPlanner.x;
-    PI_contr_U.psi_ref = setpointsTrajectoryPlanner.yaw;
-    PI_contr_U.vel_odom = sqrt(pow(odom.vx,2) + pow(odom.vy,2));
-    // PI_contr_U.psi_odom
-    PI_contr_U.py_goal = setpointsTrajectoryPlanner.y;
-    PI_contr_U.px_start = setpointsTrajectoryPlanner.afx;
-    PI_contr_U.py_start = setpointsTrajectoryPlanner.afy;
-    PI_contr_U.py_odom = odom.y;
-    PI_contr_U.px_odom = odom.x;
-    printf("\033[1;1H");
-    printf("vel ref: %f, vel odom: %f, odom x: %f, psi ref: %f\n", PI_contr_U.vel_ref, PI_contr_U.vel_odom, PI_contr_U.px_odom, PI_contr_U.psi_ref);
+    // // UNCOMMENT THIS TO USE MAVLINK MSGS
+    // PI_contr_U.vel_ref = sqrt(pow(setpointsTrajectoryPlanner.vx,2) + pow(setpointsTrajectoryPlanner.vy,2));
+    // PI_contr_U.px_goal = setpointsTrajectoryPlanner.x;
+    // PI_contr_U.psi_ref = setpointsTrajectoryPlanner.yaw;
+    // PI_contr_U.vel_odom = sqrt(pow(odom.vx,2) + pow(odom.vy,2));
+    // // PI_contr_U.psi_odom
+    // PI_contr_U.py_goal = setpointsTrajectoryPlanner.y;
+    // PI_contr_U.px_start = setpointsTrajectoryPlanner.afx;
+    // PI_contr_U.py_start = setpointsTrajectoryPlanner.afy;
+    // PI_contr_U.py_odom = odom.y;
+    // PI_contr_U.px_odom = odom.x;
+    // printf("\033[1;1H");
+    // printf("vel ref: %f, vel odom: %f, odom x: %f, psi ref: %f\n", PI_contr_U.vel_ref, PI_contr_U.vel_odom, PI_contr_U.px_odom, PI_contr_U.psi_ref);
     
     #if PIL_MODE
       semDecode.acquire(); 
@@ -114,7 +114,7 @@ void rt_OneStep(RT_MODEL_PI_contr_T *const PI_contr_M)
     // semNavContr.acquire();
 
     // /* Step the model for base rate */
-    PI_contr_step(PI_contr_M, &PI_contr_U, &PI_contr_Y);
+    // PI_contr_step(PI_contr_M, &PI_contr_U, &PI_contr_Y);
 
     // /* Get model outputs here */
 
@@ -125,8 +125,8 @@ void rt_OneStep(RT_MODEL_PI_contr_T *const PI_contr_M)
 
     leftMotor.Move(PI_contr_Y.pwm_left);
     rightMotor.Move(PI_contr_Y.pwm_right);
-    printf("\033[12;1H");
-    printf("pwm: %f, %f\n", PI_contr_Y.pwm_left, PI_contr_Y.pwm_right);
+    // printf("\033[12;1H");
+    // printf("pwm: %f, %f\n", PI_contr_Y.pwm_left, PI_contr_Y.pwm_right);
 
     /* Indicate task complete */
     // OverrunFlag = false;

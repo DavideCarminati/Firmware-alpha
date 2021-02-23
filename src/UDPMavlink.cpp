@@ -95,8 +95,8 @@ void UDPMavlink()
             }
         } else
         {
-            printf("\033[15;1H");
-            printf("problema connessione udp\n");
+            // printf("\033[15;1H");
+            // printf("problema connessione udp\n");
         }
         // int elapsed = timerUDP.read_us();
         ThisThread::sleep_until(epochUDP+200);

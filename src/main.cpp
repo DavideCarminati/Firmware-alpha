@@ -128,7 +128,7 @@ int main()
   SensorInit.start(sensInit);
   // OutputPortInit.start(outportInit);
   UDPMavlinkComm.start(UDPMavlink);
-  // Navigator.start(navigator);
+  Navigator.start(navigator);
   //Prognostic.start(prognostic);
   CommandLineInterface.start(callback(cli2,serial));
   // printf("Command line available\n");
