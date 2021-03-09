@@ -57,6 +57,7 @@ Thread SDStorageAccess(osPriorityNormal,16184,nullptr,sdcard_access_thread_name)
 InterruptIn irq(PTA4);
 
 Thread SensorRead(osPriorityNormal,8092,nullptr,"sensRead");
+Timer puttyTimer;
 
 void sensInit()
 {
@@ -97,20 +98,28 @@ void postSensorEvent(void)
     encoderEvent.period(100);
     encoderEvent.delay(200);
     encoderEvent.post();
+
+    puttyTimer.start();
 }
 
 void EncoderRead(void)
 {
-    posL = encoderL.getPosition()*360/(2*1920);
+    posL = -encoderL.getPosition()*360/(2*1920);
     posR = encoderR.getPosition()*360/(2*1920);
     Kalman_filter_conv_U.pos_l = posL;
     Kalman_filter_conv_U.pos_r = posR;
     speedL = encoderL.getSpeed()*60; // rpm
     speedR = encoderR.getSpeed()*60;
-    // printf("\033[13;1H");
-    printf("pwm left,right: %f, %f speed left,right: %f, %f  pos left, right %ld, %ld   ax, ay, %f %f  mx, my, %f, %f\n", \
-        PI_contr_Y.pwm_left, PI_contr_Y.pwm_right, -speedL, speedR, -posL, posR, accmagValues.ax, accmagValues.ay, accmagValues.mx, accmagValues.my);
+    // time_t secs = time(NULL);
+    int secs = puttyTimer.read_ms();
 
+    // printf("\033[13;1H");
+    printf("time %d, pwm left,right: %f, %f  pos left, right %ld, %ld   ax, ay, %f %f psi, %f X_est, Y_est, Vx_est, Vy_est, psi_est %f %f %f %f %f, dbg psi ref %f, dbg v ref %f, odometry: %f %f %f %f %f, cov %f %f %f %f %f\n", \
+        secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, posL, posR, accmagValues.ax*9.81, accmagValues.ay*9.81, Kalman_filter_conv_U.psi_mag*180/3.14, \
+        Kalman_filter_conv_Y.X, Kalman_filter_conv_Y.Y, Kalman_filter_conv_Y.Vx, Kalman_filter_conv_Y.Vy, Kalman_filter_conv_Y.psi, debug_psi_ref, \
+        debug_vel_ref, Kalman_filter_conv_U.X_rs, Kalman_filter_conv_U.Y_rs, Kalman_filter_conv_U.Vx_rs, Kalman_filter_conv_U.Vy_rs, atan2(2*Kalman_filter_conv_U.q0_rs*Kalman_filter_conv_U.q3_rs, 1 - 2*pow(Kalman_filter_conv_U.q3_rs,2)),\
+        Kalman_filter_conv_U.cov_X_rs, Kalman_filter_conv_U.cov_Y_rs, Kalman_filter_conv_U.cov_Vx_rs, Kalman_filter_conv_U.cov_Vy_rs, Kalman_filter_conv_U.cov_psi_rs);
+    
     
 }
 
@@ -127,7 +136,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     accmagValues.mx = accmagValues.mx/mag_norm;
     accmagValues.my = accmagValues.my/mag_norm;
     accmagValues.mz = accmagValues.mz/mag_norm;
-    pitch = atan2(accmagValues.ax,sqrt(accmagValues.ay*accmagValues.ay + accmagValues.az*accmagValues.az));
+    pitch = atan2(accmagValues.ax,sqrt(accmagValues.ay*accmagValues.ay + accmagValues.az*accmagValues.az)); // ax, ay in g e non in m/s^2!!!
     roll = atan2(-accmagValues.ay,sqrt(accmagValues.ax*accmagValues.ax + accmagValues.az*accmagValues.az));
     // feedback_control_U.psi_est = atan2(-accmagValues.my*cos(roll) - accmagValues.mz*sin(roll),accmagValues.mx*cos(pitch) \
     //                             + accmagValues.my*sin(pitch)*sin(roll) - accmagValues.mz*sin(pitch)*cos(roll))*180/3.14;
@@ -140,9 +149,10 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     // printf("\033[2;1H");
     // printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
     // printf("%f\n", accmagValues.ax);
-    Kalman_filter_conv_U.psi = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
-    Kalman_filter_conv_U.ax = accmagValues.ax;
-    Kalman_filter_conv_U.ay = accmagValues.ay;
+    Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);//*180/3.14;
+    Kalman_filter_conv_U.ax = accmagValues.ax*9.81;
+    Kalman_filter_conv_U.ay = accmagValues.ay*9.81;
+    
     irq.rise(calib_irq_handle);
 }
 

@@ -12,6 +12,7 @@
 static RT_MODEL_Kalman_filter_conv_T Kalman_filter_conv_M_;
 static RT_MODEL_Kalman_filter_conv_T *const Kalman_filter_conv_MPtr =
   &Kalman_filter_conv_M_;              // Real-time model
+static B_Kalman_filter_conv_T Kalman_filter_conv_B;// Observable signals
 static DW_Kalman_filter_conv_T Kalman_filter_conv_DW;// Observable states
 
 const char* ekf_thread_name = "EKF";
@@ -24,6 +25,7 @@ void ekfInit(void)
     Kalman_filter_conv_MPtr;
 
     // Pack model data into RTM
+    Kalman_filter_conv_M->blockIO = &Kalman_filter_conv_B;
     Kalman_filter_conv_M->dwork = &Kalman_filter_conv_DW;
 
     // Initialize model

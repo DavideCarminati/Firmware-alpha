@@ -119,6 +119,9 @@ ExtY_Kalman_filter_conv_T Kalman_filter_conv_Y;// External outputs
 ExtU_APF_conver_T APF_conver_U; // External inputs
 ExtY_APF_conver_T APF_conver_Y; // External outputs
 
+real_T debug_psi_ref;
+real_T debug_vel_ref;
+
 
 
 int main() 
@@ -141,8 +144,9 @@ int main()
   SensorInit.start(sensInit);
   // OutputPortInit.start(outportInit);
   UDPMavlinkComm.start(UDPMavlink);
-  // Navigator.start(navigator);
+  //Navigator.start(navigator);
   //Prognostic.start(prognostic);
+  ThisThread::sleep_for(5000);
   EKFInit.start(ekfInit);
   APFInit.start(apfInit);
   CommandLineInterface.start(callback(cli2,serial));

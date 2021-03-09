@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Kalman_filter_conv'.
 //
-// Model version                  : 1.51
+// Model version                  : 1.10
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Tue Feb 23 17:56:43 2021
+// C/C++ source code generated on : Thu Mar  4 16:30:35 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -19,23 +19,82 @@
 #include "Kalman_filter_conv.h"
 #include "Kalman_filter_conv_private.h"
 
-// Constant parameters (default storage)
-const ConstP_Kalman_filter_conv_T Kalman_filter_conv_ConstP = {
-  // Expression: Q
-  //  Referenced by: '<S2>/Constant'
+// Block parameters (default storage)
+P_Kalman_filter_conv_T Kalman_filter_conv_P = {
+  // Expression: 1e-3
+  //  Referenced by: '<Root>/cov_Vx_enc'
 
-  { 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 86700.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0066, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0086 },
+  1e-12,
 
-  // Expression: x0
-  //  Referenced by: '<S2>/Unit Delay'
+  // Expression: 1e-3
+  //  Referenced by: '<Root>/cov_psi_enc'
 
-  { 0.0, 0.0, -0.010074313846620008, 0.0, 0.0 },
+  1e-12,
 
-  // Expression: R
-  //  Referenced by: '<S2>/Constant1'
+  // Expression: 0.01
+  //  Referenced by: '<Root>/cov_psi_mag'
 
-  { 86700.0, 0.0, 0.0, 0.0, 0.0137, 0.0, 0.0, 0.0, 0.0147 }
+  1e-6,
+
+  // Expression: 1
+  //  Referenced by: '<Root>/cov_X'
+
+  1e-12,
+
+  // Expression: 1
+  //  Referenced by: '<Root>/cov_Y'
+
+  1e-12,
+
+  // Expression: 1
+  //  Referenced by: '<Root>/cov_Vx'
+
+  1e-6,
+
+  // Expression: 1
+  //  Referenced by: '<Root>/cov_Vy'
+
+  1e-3,
+
+  // Expression: 1
+  //  Referenced by: '<Root>/cov_psi'
+
+  1e-2,
+
+  // Expression: 0
+  //  Referenced by: '<Root>/Unit Delay2'
+
+  0.0,
+
+  // Expression: 2*pi*1920*2/360/1920/0.2
+  //  Referenced by: '<Root>/Gain3'
+
+  0.17453292519943295,
+
+  // Expression: 0
+  //  Referenced by: '<Root>/Unit Delay3'
+
+  0.0,
+
+  // Expression: 2*pi*2/360/0.2
+  //  Referenced by: '<Root>/Gain4'
+
+  0.17453292519943295,
+
+  // Expression: [0 0 0 0 0]
+  //  Referenced by: '<S1>/Unit Delay'
+
+  { 0.0, 0.0, 0.0, 0.0, 0.0 },
+
+  // Computed Parameter: DiscreteTimeIntegrator_gainval
+  //  Referenced by: '<Root>/Discrete-Time Integrator'
+
+  0.2,
+
+  // Expression: 0
+  //  Referenced by: '<Root>/Discrete-Time Integrator'
+
+  0.0
 };
 
 //

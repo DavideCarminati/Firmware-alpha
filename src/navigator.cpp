@@ -94,54 +94,54 @@ void navigator()
         {
             // printf("\033[1;1H");
             // printf("manovra 0");
-            PI_contr_Y.pwm_left = 0;
-            PI_contr_Y.pwm_right = 0;
+            APF_conver_Y.PWM_l = 0;
+            APF_conver_Y.PWM_r = 0;
         }
-        else if(timerNav.read() >= 10 && timerNav.read() < 17)
+        else if(timerNav.read() >= 10 && timerNav.read() < 13)
         {
             // printf("\033[1;1H");
             // printf("manovra 1");
-            PI_contr_Y.pwm_left = 7000;
-            PI_contr_Y.pwm_right = 7000;
+            APF_conver_Y.PWM_l = 15000;
+            APF_conver_Y.PWM_r = 15000;
         }
-        else if(timerNav.read() >= 17 && timerNav.read() < 18)
+        else if(timerNav.read() >= 13 && timerNav.read() < 18)
         {
             // printf("\033[1;1H");
             // printf("manovra 2");
-            PI_contr_Y.pwm_left = 0;
-            PI_contr_Y.pwm_right = 0;
+            APF_conver_Y.PWM_l = 0;
+            APF_conver_Y.PWM_r = 0;
         }
-           else if(timerNav.read() >= 18 && timerNav.read() < 21)
-           {
-               // printf("\033[1;1H");
-               // printf("manovra 3");
-               PI_contr_Y.pwm_left = 12000;
-               PI_contr_Y.pwm_right = -12000;
-           }
+        //    else if(timerNav.read() >= 18 && timerNav.read() < 21)
+        //    {
+        //        // printf("\033[1;1H");
+        //        // printf("manovra 3");
+        //        PI_contr_Y.pwm_left = 0;
+        //        PI_contr_Y.pwm_right = 0;
+        //    }
 
-           else if(timerNav.read() >= 21 && timerNav.read() < 22)
-           {
-               // printf("\033[1;1H");
-               // printf("manovra 3");
-               PI_contr_Y.pwm_left = 0;
-               PI_contr_Y.pwm_right = 0;
-           }
+        //    else if(timerNav.read() >= 21 && timerNav.read() < 22)
+        //    {
+        //        // printf("\033[1;1H");
+        //        // printf("manovra 3");
+        //        PI_contr_Y.pwm_left = 0;
+        //        PI_contr_Y.pwm_right = 0;
+        //    }
 
-           else if(timerNav.read() >= 22 && timerNav.read() < 25)
-           {
-               // printf("\033[1;1H");
-               // printf("manovra 3");
-               PI_contr_Y.pwm_left = 15000;
-               PI_contr_Y.pwm_right = 15000;
-           }
+        //    else if(timerNav.read() >= 22 && timerNav.read() < 25)
+        //    {
+        //        // printf("\033[1;1H");
+        //        // printf("manovra 3");
+        //        PI_contr_Y.pwm_left = 0;
+        //        PI_contr_Y.pwm_right = 0;
+        //    }
 
-           else if(timerNav.read() >= 25 && timerNav.read() < 28)
-           {
-               // printf("\033[1;1H");
-               // printf("manovra 1");
-               PI_contr_Y.pwm_left = 0;
-               PI_contr_Y.pwm_right = 0;
-           }
+        //    else if(timerNav.read() >= 25 && timerNav.read() < 28)
+        //    {
+        //        // printf("\033[1;1H");
+        //        // printf("manovra 1");
+        //        PI_contr_Y.pwm_left = 0;
+        //        PI_contr_Y.pwm_right = 0;
+        //    }
         //   else if(timerNav.read() >= 28 && timerNav.read() < 31)
         //   {
         //       // printf("\033[1;1H");

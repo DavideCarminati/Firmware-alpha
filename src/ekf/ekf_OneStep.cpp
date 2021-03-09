@@ -18,17 +18,17 @@ void ekf(RT_MODEL_Kalman_filter_conv_T *const Kalman_filter_conv_M)
     while (1)
     {
         ekf_epoch = Kernel::get_ms_count();
-        static boolean_T OverrunFlag = false;
+        // static boolean_T OverrunFlag = false;
 
         // Disable interrupts here
 
         // Check for overrun
-        if (OverrunFlag) {
-            rtmSetErrorStatus(Kalman_filter_conv_M, "Overrun");
-            return;
-        }
+        // if (OverrunFlag) {
+        //     rtmSetErrorStatus(Kalman_filter_conv_M, "Overrun");
+        //     return;
+        // }
 
-        OverrunFlag = true;
+        // OverrunFlag = true;
 
         // Save FPU context here (if necessary)
         // Re-enable timer or interrupt here
@@ -41,7 +41,7 @@ void ekf(RT_MODEL_Kalman_filter_conv_T *const Kalman_filter_conv_M)
         // Get model outputs here
 
         // Indicate task complete
-        OverrunFlag = false;
+        // OverrunFlag = false;
 
         // Disable interrupts here
         // Restore FPU context here (if necessary)

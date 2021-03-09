@@ -9,6 +9,8 @@
 #include "global_vars.hpp"
 #include "common/mavlink.h"
 #include "global_msgs.hpp"
+#include <algorithm>
+#include <iterator>
 
 #include "UDPMavlink.hpp"
 
@@ -77,8 +79,21 @@ void UDPMavlink()
 
                     case MAVLINK_MSG_ID_ODOMETRY:
                         mavlink_msg_odometry_decode(&msgIn,&odom);
-                        printf("\033[11;1H");
-                        printf("odometry: %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy);
+                        // printf("\033[11;1H");
+                        //printf("odometry: %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[2], 1 - 2*odom.q[2])*180/PI);
+                        Kalman_filter_conv_U.X_rs = odom.x;
+                        Kalman_filter_conv_U.Y_rs = odom.y;
+                        Kalman_filter_conv_U.q0_rs = odom.q[3];
+                        Kalman_filter_conv_U.q0_rs = odom.q[0];
+                        Kalman_filter_conv_U.q0_rs = odom.q[1];
+                        Kalman_filter_conv_U.q3_rs = odom.q[2];
+                        Kalman_filter_conv_U.Vx_rs = odom.vx;
+                        Kalman_filter_conv_U.Vy_rs = odom.vy;                        
+                        Kalman_filter_conv_U.cov_X_rs = 1e-2;//odom.pose_covariance[0];
+                        Kalman_filter_conv_U.cov_Y_rs = 1e-6;//odom.pose_covariance[6];
+                        Kalman_filter_conv_U.cov_Vx_rs = 1;//odom.velocity_covariance[0];
+                        Kalman_filter_conv_U.cov_Vy_rs= 1e-8;//odom.velocity_covariance[6];
+                        Kalman_filter_conv_U.cov_psi_rs = 1e-4; //odom.pose_covariance[20]*100;
                         break;
                     
                     default:
@@ -96,7 +111,7 @@ void UDPMavlink()
         } else
         {
             // printf("\033[15;1H");
-            // printf("problema connessione udp\n");
+            printf("problema connessione udp\n");
         }
         // int elapsed = timerUDP.read_us();
         ThisThread::sleep_until(epochUDP+200);

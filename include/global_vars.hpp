@@ -110,6 +110,14 @@ extern ExtY_APF_conver_T APF_conver_Y; // External outputs
 
 #endif
 
+#ifndef DEBUG_APF
+#define DEBUG_APF
+
+extern real_T debug_psi_ref;
+extern real_T debug_vel_ref;
+
+#endif
+
 // // Calibration flags are used to notify whether a sensor has undergone the process of calibration successfully
 // #ifndef CALIBRATION_FLAGS
 // #define CALIBRATION_FLAGS

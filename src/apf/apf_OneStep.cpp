@@ -21,27 +21,26 @@ void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
     while (1)
     {
         apf_epoch = Kernel::get_ms_count();
-        static boolean_T OverrunFlag = false;
+        // static boolean_T OverrunFlag = false;
 
         // Disable interrupts here
 
         // Check for overrun
-        if (OverrunFlag) {
-            rtmSetErrorStatus(APF_conver_M, "Overrun");
-            return;
-        }
+        // if (OverrunFlag) {
+        //     rtmSetErrorStatus(APF_conver_M, "Overrun");
+        //     return;
+        // }
 
-        OverrunFlag = true;
+        // OverrunFlag = true;
 
         // Save FPU context here (if necessary)
         // Re-enable timer or interrupt here
         // Set model inputs here
 
-        APF_conver_U.psi_est = Kalman_filter_conv_Y.psi_est;
-        APF_conver_U.Vx_est = Kalman_filter_conv_Y.Vx_est;
-        APF_conver_U.Vy_est = Kalman_filter_conv_Y.Vy_est;
-        APF_conver_U.X_est = Kalman_filter_conv_Y.X_est;
-        APF_conver_U.Y_est = Kalman_filter_conv_Y.Y_est;
+        APF_conver_U.psi_est = Kalman_filter_conv_Y.psi;
+        APF_conver_U.Vx_est = Kalman_filter_conv_Y.Vx;
+        APF_conver_U.X_est = Kalman_filter_conv_Y.X;
+        APF_conver_U.Y_est = Kalman_filter_conv_Y.Y;
 
         // Step the model
         APF_conver_step(APF_conver_M, &APF_conver_U, &APF_conver_Y);
@@ -52,11 +51,11 @@ void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
         // Get model outputs here
 
         // Indicate task complete
-        OverrunFlag = false;
+        // OverrunFlag = false;
 
         // Disable interrupts here
         // Restore FPU context here (if necessary)
         // Enable interrupts here
-        ThisThread::sleep_until(apf_epoch+10);
+        ThisThread::sleep_until(apf_epoch+100);
     }
 }

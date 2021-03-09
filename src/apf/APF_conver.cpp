@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'APF_conver'.
 //
-// Model version                  : 1.94
+// Model version                  : 1.107
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Tue Feb 23 18:34:32 2021
+// C/C++ source code generated on : Thu Mar  4 14:29:04 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -18,11 +18,16 @@
 //
 #include "APF_conver.h"
 #include "APF_conver_private.h"
+#include "global_vars.hpp"
+
+#include "Kalman_filter_conv.h"
 
 // Forward declaration for local functions
 static real_T APF_conver_norm(const real_T x[2]);
 
-// Function for MATLAB Function: '<S4>/IAPF'
+int32_T rtb_eos = 0;
+
+// Function for MATLAB Function: '<S98>/IAPF'
 static real_T APF_conver_norm(const real_T x[2])
 {
   real_T y;
@@ -52,41 +57,41 @@ static real_T APF_conver_norm(const real_T x[2])
   return scale * std::sqrt(y);
 }
 
-real_T rt_atan2d_snf(real_T u0, real_T u1)
-{
-  real_T y;
-  int32_T u0_0;
-  int32_T u1_0;
-  if (rtIsNaN(u0) || rtIsNaN(u1)) {
-    y = (rtNaN);
-  } else if (rtIsInf(u0) && rtIsInf(u1)) {
-    if (u0 > 0.0) {
-      u0_0 = 1;
-    } else {
-      u0_0 = -1;
-    }
+// real_T rt_atan2d_snf(real_T u0, real_T u1)
+// {
+//   real_T y;
+//   int32_T u0_0;
+//   int32_T u1_0;
+//   if (rtIsNaN(u0) || rtIsNaN(u1)) {
+//     y = (rtNaN);
+//   } else if (rtIsInf(u0) && rtIsInf(u1)) {
+//     if (u0 > 0.0) {
+//       u0_0 = 1;
+//     } else {
+//       u0_0 = -1;
+//     }
 
-    if (u1 > 0.0) {
-      u1_0 = 1;
-    } else {
-      u1_0 = -1;
-    }
+//     if (u1 > 0.0) {
+//       u1_0 = 1;
+//     } else {
+//       u1_0 = -1;
+//     }
 
-    y = atan2((real_T)u0_0, (real_T)u1_0);
-  } else if (u1 == 0.0) {
-    if (u0 > 0.0) {
-      y = RT_PI / 2.0;
-    } else if (u0 < 0.0) {
-      y = -(RT_PI / 2.0);
-    } else {
-      y = 0.0;
-    }
-  } else {
-    y = atan2(u0, u1);
-  }
+//     y = atan2((real_T)u0_0, (real_T)u1_0);
+//   } else if (u1 == 0.0) {
+//     if (u0 > 0.0) {
+//       y = RT_PI / 2.0;
+//     } else if (u0 < 0.0) {
+//       y = -(RT_PI / 2.0);
+//     } else {
+//       y = 0.0;
+//     }
+//   } else {
+//     y = atan2(u0, u1);
+//   }
 
-  return y;
-}
+//   return y;
+// }
 
 // Model step function
 void APF_conver_step(RT_MODEL_APF_conver_T *const APF_conver_M,
@@ -94,27 +99,25 @@ void APF_conver_step(RT_MODEL_APF_conver_T *const APF_conver_M,
                      *APF_conver_Y)
 {
   DW_APF_conver_T *APF_conver_DW = ((DW_APF_conver_T *) APF_conver_M->dwork);
-  real_T q[2];
-  real_T rho_goal;
-  real_T F_attx;
-  real_T F_atty;
-  real_T F_repx;
   real_T F_repy;
   real_T obst;
   real_T rho;
-  real_T M[4];
-  int32_T r2;
-  int32_T rtb_eos;
-  boolean_T rtb_Compare;
+  real_T F_totx;
+  real_T F_toty;
+  int32_T enable_signal;
   real_T rtb_V_ref;
+  real_T rtb_Vx_err;
+  // int32_T rtb_eos;
+  boolean_T rtb_Compare;
+  real_T rtb_Product1_g;
   real_T rtb_psi_ref;
+  real_T rtb_psiref;
+  real_T q[2];
   real_T q_0[2];
-  real_T q_1[2];
   real_T q_tmp;
-  real_T q_tmp_0;
   boolean_T guard1 = false;
 
-  // MATLAB Function: '<S4>/IAPF' incorporates:
+  // MATLAB Function: '<S98>/IAPF' incorporates:
   //   Constant: '<Root>/Constant'
   //   Constant: '<Root>/Constant1'
   //   Constant: '<Root>/Constant2'
@@ -122,49 +125,49 @@ void APF_conver_step(RT_MODEL_APF_conver_T *const APF_conver_M,
   //   Inport: '<Root>/X_est'
   //   Inport: '<Root>/Y_est'
 
-  rtb_psi_ref = APF_conver_U->X_est - APF_conver_P.X_goal;
-  q_1[0] = rtb_psi_ref;
-  rtb_V_ref = APF_conver_U->Y_est - APF_conver_P.Y_goal;
-  q_1[1] = rtb_V_ref;
-  rho_goal = APF_conver_norm(q_1);
-  if (rho_goal <= 2.0) {
-    F_attx = (APF_conver_U->X_est - APF_conver_P.X_goal) * -0.15;
-    F_atty = (APF_conver_U->Y_est - APF_conver_P.Y_goal) * -0.15;
+  rtb_V_ref = APF_conver_U->X_est - APF_conver_P.X_goal;
+  q_0[0] = rtb_V_ref;
+  rtb_Product1_g = APF_conver_U->Y_est - APF_conver_P.Y_goal;
+  q_0[1] = rtb_Product1_g;
+  rtb_Vx_err = APF_conver_norm(q_0);
+  if (rtb_Vx_err <= 2.0) {
+    F_totx = (APF_conver_U->X_est - APF_conver_P.X_goal) * -0.15;
+    F_toty = (APF_conver_U->Y_est - APF_conver_P.Y_goal) * -0.15;
   } else {
-    F_attx = rtb_psi_ref * -0.15 * 2.0 / rho_goal;
-    F_atty = rtb_V_ref * -0.15 * 2.0 / rho_goal;
+    F_totx = rtb_V_ref * -0.15 * 2.0 / rtb_Vx_err;
+    F_toty = rtb_Product1_g * -0.15 * 2.0 / rtb_Vx_err;
   }
 
-  F_repx = 0.0;
+  rtb_psi_ref = 0.0;
   F_repy = 0.0;
   obst = 0.0;
-  q_tmp = APF_conver_U->X_est - APF_conver_P.ox;
-  q_1[0] = q_tmp;
-  q_tmp_0 = APF_conver_U->Y_est - APF_conver_P.oy;
-  q_1[1] = q_tmp_0;
-  if (10000.0 >= APF_conver_norm(q_1)) {
-    q_1[0] = q_tmp;
-    q_1[1] = q_tmp_0;
-    rho = APF_conver_norm(q_1);
-    if (rho <= 0.5) {
-      q_1[0] = q_tmp;
-      q_0[0] = q_tmp;
-      q_1[1] = q_tmp_0;
-      q_0[1] = q_tmp_0;
-      obst = (1.0 / rho - 2.0) * 0.05 / (rho * rho);
-      F_repx = obst * q_tmp / APF_conver_norm(q_1);
-      F_repy = obst * q_tmp_0 / APF_conver_norm(q_0);
+  rtb_psiref = APF_conver_U->X_est - APF_conver_P.ox;
+  q_0[0] = rtb_psiref;
+  q_tmp = APF_conver_U->Y_est - APF_conver_P.oy;
+  q_0[1] = q_tmp;
+  if (10000.0 >= APF_conver_norm(q_0)) {
+    q_0[0] = rtb_psiref;
+    q_0[1] = q_tmp;
+    rho = APF_conver_norm(q_0);
+    if (rho <= 0.7) {
+      q_0[0] = rtb_psiref;
+      q[0] = rtb_psiref;
+      q_0[1] = q_tmp;
+      q[1] = q_tmp;
+      obst = (1.0 / rho - 1.4285714285714286) / (rho * rho);
+      rtb_psi_ref = obst * rtb_psiref / APF_conver_norm(q_0);
+      F_repy = obst * q_tmp / APF_conver_norm(q);
       obst = 1.0 / rho;
     }
   }
 
-  q_1[0] = APF_conver_P.X_goal - APF_conver_P.ox;
-  q_1[1] = APF_conver_P.Y_goal - APF_conver_P.oy;
+  q_0[0] = APF_conver_P.X_goal - APF_conver_P.ox;
+  q_0[1] = APF_conver_P.Y_goal - APF_conver_P.oy;
   guard1 = false;
-  if (APF_conver_norm(q_1) <= 0.3) {
-    q_1[0] = rtb_psi_ref;
-    q_1[1] = rtb_V_ref;
-    if (APF_conver_norm(q_1) <= 0.3) {
+  if (APF_conver_norm(q_0) <= 0.3) {
+    q_0[0] = rtb_V_ref;
+    q_0[1] = rtb_Product1_g;
+    if (APF_conver_norm(q_0) <= 0.3) {
     } else {
       guard1 = true;
     }
@@ -173,182 +176,247 @@ void APF_conver_step(RT_MODEL_APF_conver_T *const APF_conver_M,
   }
 
   if (guard1) {
-    F_attx += F_repx;
-    F_atty += F_repy;
+    F_totx += rtb_psi_ref;
+    F_toty += F_repy;
   }
 
-  rtb_psi_ref = rt_atan2d_snf(F_atty, F_attx);
-  rtb_V_ref = 0.6 / ((1.0 / rho_goal + obst) + 2.0);
-  if (std::abs(rho_goal) <= 0.05) {
+  rtb_psi_ref = rt_atan2d_snf(F_toty, F_totx);
+  rtb_V_ref = 0.6 / ((1.0 / rtb_Vx_err + obst) + 2.0);
+  debug_psi_ref = rtb_psi_ref;
+  debug_vel_ref = rtb_V_ref;
+  if (std::abs(rtb_Vx_err) <= 0.10) {
     rtb_V_ref = 0.0;
     rtb_psi_ref = 0.0;
     rtb_eos = 1;
-  } else {
-    rtb_eos = 0;
-  }
+  } 
+    
+  
 
-  // End of MATLAB Function: '<S4>/IAPF'
+  // End of MATLAB Function: '<S98>/IAPF'
 
-  // RelationalOperator: '<S7>/Compare' incorporates:
-  //   Constant: '<S7>/Constant'
-
-  rtb_Compare = (rtb_eos == APF_conver_P.Constant_Value);
-
-  // MATLAB Function: '<Root>/MATLAB Function' incorporates:
-  //   Inport: '<Root>/Vx_est'
-  //   Inport: '<Root>/Vy_est'
+  // MATLAB Function: '<S99>/MATLAB Function' incorporates:
+  //   Constant: '<Root>/Constant'
+  //   Constant: '<Root>/Constant1'
   //   Inport: '<Root>/psi_est'
 
-  rho_goal = std::cos(APF_conver_U->psi_est);
-  M[0] = rho_goal;
-  F_attx = std::sin(APF_conver_U->psi_est);
-  M[2] = -F_attx;
-  M[1] = F_attx;
-  M[3] = rho_goal;
-  q[0] = APF_conver_U->Vx_est;
-  q[1] = APF_conver_U->Vy_est;
-  if (std::abs(F_attx) > std::abs(rho_goal)) {
-    rtb_eos = 1;
-    r2 = 0;
-  } else {
-    rtb_eos = 0;
-    r2 = 1;
+  enable_signal = 0;
+  rtb_psiref = 0.0;
+  if ((-3.1415926535897931 < APF_conver_U->psi_est) && (APF_conver_U->psi_est <=
+       -1.5707963267948966)) {
+    if ((APF_conver_P.X_goal > 0.0) && (APF_conver_P.Y_goal >= 0.0)) {
+      rtb_psiref = -3.1415926535897931;
+    }
+
+    if ((APF_conver_P.X_goal > 0.0) && (APF_conver_P.Y_goal <= 0.0)) {
+      rtb_psiref = -3.1415926535897931;
+    }
+
+    if ((APF_conver_P.X_goal < 0.0) && (APF_conver_P.Y_goal <= 0.0)) {
+      enable_signal = 1;
+      rtb_psiref = 0.0;
+    }
+
+    if ((APF_conver_P.X_goal < 0.0) && (APF_conver_P.Y_goal >= 0.0)) {
+      enable_signal = 1;
+      rtb_psiref = 0.0;
+    }
   }
 
-  rho_goal = M[r2] / M[rtb_eos];
-  F_attx = M[2 + rtb_eos];
+  if ((1.5707963267948966 < APF_conver_U->psi_est) && (APF_conver_U->psi_est <=
+       3.1415926535897931)) {
+    if ((APF_conver_P.X_goal > 0.0) && (APF_conver_P.Y_goal >= 0.0)) {
+      enable_signal = 0;
+      rtb_psiref = 0.0;
+    }
 
-  // Sum: '<S5>/Sum' incorporates:
-  //   MATLAB Function: '<Root>/MATLAB Function'
+    if ((APF_conver_P.X_goal > 0.0) && (APF_conver_P.Y_goal <= 0.0)) {
+      enable_signal = 0;
+      rtb_psiref = 0.0;
+    }
 
-  rho_goal = rtb_V_ref - (q[rtb_eos] - (q[r2] - q[rtb_eos] * rho_goal) / (M[2 +
-    r2] - F_attx * rho_goal) * F_attx) / M[rtb_eos];
+    if ((APF_conver_P.X_goal < 0.0) && (APF_conver_P.Y_goal <= 0.0)) {
+      enable_signal = 1;
+      rtb_psiref = 0.0;
+    }
 
-  // Gain: '<S42>/Filter Coefficient' incorporates:
-  //   DiscreteIntegrator: '<S34>/Filter'
-  //   Gain: '<S33>/Derivative Gain'
-  //   Sum: '<S34>/SumD'
+    if ((APF_conver_P.X_goal < 0.0) && (APF_conver_P.Y_goal >= 0.0)) {
+      enable_signal = 1;
+      rtb_psiref = 0.0;
+    }
+  }
 
-  rtb_V_ref = (APF_conver_P.Kd_Vx * rho_goal - APF_conver_DW->Filter_DSTATE) *
+  if ((-1.5707963267948966 <= APF_conver_U->psi_est) && (APF_conver_U->psi_est <=
+       1.5707963267948966)) {
+    if ((APF_conver_P.X_goal > 0.0) && (APF_conver_P.Y_goal >= 0.0)) {
+      enable_signal = 1;
+      rtb_psiref = 0.0;
+    }
+
+    if ((APF_conver_P.X_goal > 0.0) && (APF_conver_P.Y_goal <= 0.0)) {
+      enable_signal = 1;
+      rtb_psiref = 0.0;
+    }
+
+    if ((APF_conver_P.X_goal < 0.0) && (APF_conver_P.Y_goal <= 0.0)) {
+      enable_signal = 0;
+      rtb_psiref = -3.1415926535897931;
+    }
+
+    if ((APF_conver_P.X_goal < 0.0) && (APF_conver_P.Y_goal >= 0.0)) {
+      enable_signal = 0;
+      rtb_psiref = 3.1415926535897931;
+    }
+  }
+
+  if (enable_signal == 1) {
+    rtb_psiref = 0.0;
+  }
+
+  // Sum: '<S4>/Sum' incorporates:
+  //   Inport: '<Root>/Vx_est'
+  //   MATLAB Function: '<S99>/MATLAB Function'
+  //   Product: '<S97>/Product'
+
+  rtb_Vx_err = rtb_V_ref * static_cast<real_T>(enable_signal) -
+    APF_conver_U->Vx_est;
+
+  // Gain: '<S41>/Filter Coefficient' incorporates:
+  //   DiscreteIntegrator: '<S33>/Filter'
+  //   Gain: '<S32>/Derivative Gain'
+  //   Sum: '<S33>/SumD'
+
+  rtb_V_ref = (APF_conver_P.Kd_Vx * rtb_Vx_err - APF_conver_DW->Filter_DSTATE) *
     APF_conver_P.PIDController_N;
 
-  // Sum: '<S48>/Sum' incorporates:
-  //   DiscreteIntegrator: '<S39>/Integrator'
-  //   Gain: '<S44>/Proportional Gain'
+  // RelationalOperator: '<S6>/Compare' incorporates:
+  //   Constant: '<S6>/Constant'
+  //   MATLAB Function: '<S99>/MATLAB Function'
+  //   Product: '<S97>/Product2'
 
-  F_repx = (APF_conver_P.Kp_Vx * rho_goal + APF_conver_DW->Integrator_DSTATE) +
+  rtb_Compare = (rtb_eos * enable_signal == APF_conver_P.Constant_Value);
+
+  // Sum: '<S47>/Sum' incorporates:
+  //   DiscreteIntegrator: '<S38>/Integrator'
+  //   Gain: '<S43>/Proportional Gain'
+
+  obst = (APF_conver_P.Kp_Vx * rtb_Vx_err + APF_conver_DW->Integrator_DSTATE) +
     rtb_V_ref;
 
-  // Saturate: '<S5>/Saturation1'
-  if (F_repx > APF_conver_P.Saturation1_UpperSat) {
-    F_repx = APF_conver_P.Saturation1_UpperSat;
+  // Saturate: '<S4>/Saturation1'
+  if (obst > APF_conver_P.Saturation1_UpperSat) {
+    obst = APF_conver_P.Saturation1_UpperSat;
   } else {
-    if (F_repx < APF_conver_P.Saturation1_LowerSat) {
-      F_repx = APF_conver_P.Saturation1_LowerSat;
+    if (obst < APF_conver_P.Saturation1_LowerSat) {
+      obst = APF_conver_P.Saturation1_LowerSat;
+    }
+  }
+
+  // End of Saturate: '<S4>/Saturation1'
+
+  // Product: '<S4>/Product1'
+  rtb_Product1_g = obst * static_cast<real_T>(rtb_Compare);
+
+  // Sum: '<S4>/Sum2' incorporates:
+  //   Gain: '<S4>/Gain'
+  //   Gain: '<S4>/Gain2'
+  //   Inport: '<Root>/psi_est'
+  //   MATLAB Function: '<S99>/MATLAB Function'
+  //   Product: '<S97>/Product1'
+  //   Sum: '<S97>/Sum'
+
+  rtb_psi_ref = (rtb_psi_ref * static_cast<real_T>(enable_signal) + rtb_psiref) *
+    APF_conver_P.Gain_Gain - APF_conver_P.Gain2_Gain * APF_conver_U->psi_est;
+
+  // Gain: '<S85>/Filter Coefficient' incorporates:
+  //   DiscreteIntegrator: '<S77>/Filter'
+  //   Gain: '<S76>/Derivative Gain'
+  //   Sum: '<S77>/SumD'
+
+  rtb_psiref = (APF_conver_P.Kd_psi * rtb_psi_ref -
+                APF_conver_DW->Filter_DSTATE_m) * APF_conver_P.PIDController1_N;
+
+  // Gain: '<S4>/1//180' incorporates:
+  //   DiscreteIntegrator: '<S82>/Integrator'
+  //   Gain: '<S87>/Proportional Gain'
+  //   Sum: '<S91>/Sum'
+
+  obst = ((APF_conver_P.Kp_psi * rtb_psi_ref +
+           APF_conver_DW->Integrator_DSTATE_e) + rtb_psiref) *
+    APF_conver_P.u180_Gain;
+
+  // Saturate: '<S4>/Saturation'
+  if (obst > APF_conver_P.Saturation_UpperSat) {
+    obst = APF_conver_P.Saturation_UpperSat;
+  } else {
+    if (obst < APF_conver_P.Saturation_LowerSat) {
+      obst = APF_conver_P.Saturation_LowerSat;
+    }
+  }
+
+  // End of Saturate: '<S4>/Saturation'
+
+  // Product: '<S4>/Product'
+  APF_conver_Y->PWM_r = obst * static_cast<real_T>(rtb_Compare);
+
+  // Gain: '<S5>/   ' incorporates:
+  //   Sum: '<S5>/Sum1'
+
+  APF_conver_Y->PWM_l = (rtb_Product1_g - APF_conver_Y->PWM_r) *
+    APF_conver_P._Gain;
+
+  // Saturate: '<S5>/Saturation1'
+  if (APF_conver_Y->PWM_l > APF_conver_P.Saturation1_UpperSat_m) {
+    // Gain: '<S5>/   ' incorporates:
+    //   Outport: '<Root>/PWM_l'
+
+    APF_conver_Y->PWM_l = APF_conver_P.Saturation1_UpperSat_m;
+  } else {
+    if (APF_conver_Y->PWM_l < APF_conver_P.Saturation1_LowerSat_n) {
+      // Gain: '<S5>/   ' incorporates:
+      //   Outport: '<Root>/PWM_l'
+
+      APF_conver_Y->PWM_l = APF_conver_P.Saturation1_LowerSat_n;
     }
   }
 
   // End of Saturate: '<S5>/Saturation1'
 
-  // Product: '<S5>/Product1'
-  F_attx = F_repx * static_cast<real_T>(rtb_Compare);
+  // Gain: '<S5>/ ' incorporates:
+  //   Sum: '<S5>/Sum'
 
-  // Sum: '<S5>/Sum2' incorporates:
-  //   Gain: '<S5>/Gain'
-  //   Gain: '<S5>/Gain2'
-  //   Inport: '<Root>/psi_est'
-
-  rtb_psi_ref = APF_conver_P.Gain_Gain * rtb_psi_ref - APF_conver_P.Gain2_Gain *
-    APF_conver_U->psi_est;
-
-  // Gain: '<S86>/Filter Coefficient' incorporates:
-  //   DiscreteIntegrator: '<S78>/Filter'
-  //   Gain: '<S77>/Derivative Gain'
-  //   Sum: '<S78>/SumD'
-
-  F_atty = (APF_conver_P.Kd_psi * rtb_psi_ref - APF_conver_DW->Filter_DSTATE_k) *
-    APF_conver_P.PIDController1_N;
-
-  // Gain: '<S5>/1//180' incorporates:
-  //   DiscreteIntegrator: '<S83>/Integrator'
-  //   Gain: '<S88>/Proportional Gain'
-  //   Sum: '<S92>/Sum'
-
-  F_repx = ((APF_conver_P.Kp_psi * rtb_psi_ref +
-             APF_conver_DW->Integrator_DSTATE_i) + F_atty) *
-    APF_conver_P.u180_Gain;
+  APF_conver_Y->PWM_r = (rtb_Product1_g + APF_conver_Y->PWM_r) *
+    APF_conver_P._Gain_p;
 
   // Saturate: '<S5>/Saturation'
-  if (F_repx > APF_conver_P.Saturation_UpperSat) {
-    F_repx = APF_conver_P.Saturation_UpperSat;
+  if (APF_conver_Y->PWM_r > APF_conver_P.Saturation_UpperSat_i) {
+    // Outport: '<Root>/PWM_r'
+    APF_conver_Y->PWM_r = APF_conver_P.Saturation_UpperSat_i;
   } else {
-    if (F_repx < APF_conver_P.Saturation_LowerSat) {
-      F_repx = APF_conver_P.Saturation_LowerSat;
+    if (APF_conver_Y->PWM_r < APF_conver_P.Saturation_LowerSat_f) {
+      // Outport: '<Root>/PWM_r'
+      APF_conver_Y->PWM_r = APF_conver_P.Saturation_LowerSat_f;
     }
   }
 
   // End of Saturate: '<S5>/Saturation'
 
-  // Product: '<S5>/Product'
-  APF_conver_Y->PWM_r = F_repx * static_cast<real_T>(rtb_Compare);
+  // Update for DiscreteIntegrator: '<S38>/Integrator' incorporates:
+  //   Gain: '<S35>/Integral Gain'
 
-  // Gain: '<S6>/   ' incorporates:
-  //   Sum: '<S6>/Sum1'
-
-  APF_conver_Y->PWM_l = (F_attx - APF_conver_Y->PWM_r) * APF_conver_P._Gain;
-
-  // Saturate: '<S6>/Saturation1'
-  if (APF_conver_Y->PWM_l > APF_conver_P.Saturation1_UpperSat_f) {
-    // Gain: '<S6>/   ' incorporates:
-    //   Outport: '<Root>/PWM_l'
-
-    APF_conver_Y->PWM_l = APF_conver_P.Saturation1_UpperSat_f;
-  } else {
-    if (APF_conver_Y->PWM_l < APF_conver_P.Saturation1_LowerSat_h) {
-      // Gain: '<S6>/   ' incorporates:
-      //   Outport: '<Root>/PWM_l'
-
-      APF_conver_Y->PWM_l = APF_conver_P.Saturation1_LowerSat_h;
-    }
-  }
-
-  // End of Saturate: '<S6>/Saturation1'
-
-  // Gain: '<S6>/ ' incorporates:
-  //   Sum: '<S6>/Sum'
-
-  APF_conver_Y->PWM_r = (F_attx + APF_conver_Y->PWM_r) * APF_conver_P._Gain_b;
-
-  // Saturate: '<S6>/Saturation'
-  if (APF_conver_Y->PWM_r > APF_conver_P.Saturation_UpperSat_a) {
-    // Outport: '<Root>/PWM_r'
-    APF_conver_Y->PWM_r = APF_conver_P.Saturation_UpperSat_a;
-  } else {
-    if (APF_conver_Y->PWM_r < APF_conver_P.Saturation_LowerSat_e) {
-      // Outport: '<Root>/PWM_r'
-      APF_conver_Y->PWM_r = APF_conver_P.Saturation_LowerSat_e;
-    }
-  }
-
-  // End of Saturate: '<S6>/Saturation'
-
-  // Update for DiscreteIntegrator: '<S39>/Integrator' incorporates:
-  //   Gain: '<S36>/Integral Gain'
-
-  APF_conver_DW->Integrator_DSTATE += APF_conver_P.Ki_Vx * rho_goal *
+  APF_conver_DW->Integrator_DSTATE += APF_conver_P.Ki_Vx * rtb_Vx_err *
     APF_conver_P.Integrator_gainval;
 
-  // Update for DiscreteIntegrator: '<S34>/Filter'
+  // Update for DiscreteIntegrator: '<S33>/Filter'
   APF_conver_DW->Filter_DSTATE += APF_conver_P.Filter_gainval * rtb_V_ref;
 
-  // Update for DiscreteIntegrator: '<S83>/Integrator' incorporates:
-  //   Gain: '<S80>/Integral Gain'
+  // Update for DiscreteIntegrator: '<S82>/Integrator' incorporates:
+  //   Gain: '<S79>/Integral Gain'
 
-  APF_conver_DW->Integrator_DSTATE_i += APF_conver_P.Ki_psi * rtb_psi_ref *
+  APF_conver_DW->Integrator_DSTATE_e += APF_conver_P.Ki_psi * rtb_psi_ref *
     APF_conver_P.Integrator_gainval_b;
 
-  // Update for DiscreteIntegrator: '<S78>/Filter'
-  APF_conver_DW->Filter_DSTATE_k += APF_conver_P.Filter_gainval_i * F_atty;
+  // Update for DiscreteIntegrator: '<S77>/Filter'
+  APF_conver_DW->Filter_DSTATE_m += APF_conver_P.Filter_gainval_j * rtb_psiref;
 }
 
 // Model initialize function
@@ -373,19 +441,19 @@ void APF_conver_initialize(RT_MODEL_APF_conver_T *const APF_conver_M,
   (void) memset((void *)APF_conver_Y, 0,
                 sizeof(ExtY_APF_conver_T));
 
-  // InitializeConditions for DiscreteIntegrator: '<S39>/Integrator'
+  // InitializeConditions for DiscreteIntegrator: '<S38>/Integrator'
   APF_conver_DW->Integrator_DSTATE =
-    APF_conver_P.PIDController_InitialConditio_k;
+    APF_conver_P.PIDController_InitialConditio_d;
 
-  // InitializeConditions for DiscreteIntegrator: '<S34>/Filter'
+  // InitializeConditions for DiscreteIntegrator: '<S33>/Filter'
   APF_conver_DW->Filter_DSTATE = APF_conver_P.PIDController_InitialConditionF;
 
-  // InitializeConditions for DiscreteIntegrator: '<S83>/Integrator'
-  APF_conver_DW->Integrator_DSTATE_i =
-    APF_conver_P.PIDController1_InitialConditi_l;
+  // InitializeConditions for DiscreteIntegrator: '<S82>/Integrator'
+  APF_conver_DW->Integrator_DSTATE_e =
+    APF_conver_P.PIDController1_InitialConditi_k;
 
-  // InitializeConditions for DiscreteIntegrator: '<S78>/Filter'
-  APF_conver_DW->Filter_DSTATE_k = APF_conver_P.PIDController1_InitialCondition;
+  // InitializeConditions for DiscreteIntegrator: '<S77>/Filter'
+  APF_conver_DW->Filter_DSTATE_m = APF_conver_P.PIDController1_InitialCondition;
 }
 
 // Model terminate function
