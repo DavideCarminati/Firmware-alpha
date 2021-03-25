@@ -34,6 +34,8 @@ void ekf(RT_MODEL_Kalman_filter_conv_T *const Kalman_filter_conv_M)
         // Re-enable timer or interrupt here
         // Set model inputs here
 
+        // Inputs defined in sensinit.cpp
+
         // Step the model
         Kalman_filter_conv_step(Kalman_filter_conv_M, &Kalman_filter_conv_U,
             &Kalman_filter_conv_Y);

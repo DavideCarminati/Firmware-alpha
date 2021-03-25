@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Kalman_filter_conv'.
 //
-// Model version                  : 1.10
+// Model version                  : 1.14
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Thu Mar  4 16:30:35 2021
+// C/C++ source code generated on : Tue Mar  9 15:55:55 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -18,168 +18,6 @@
 //
 #include "Kalman_filter_conv.h"
 #include "Kalman_filter_conv_private.h"
-
-// Forward declaration for local functions
-static void Kalman_filter_c_mrdivide_helper(real_T A[40], const real_T B[64],
-  B_Kalman_filter_conv_T *Kalman_filter_conv_B);
-
-// Function for MATLAB Function: '<S1>/MATLAB Function'
-static void Kalman_filter_c_mrdivide_helper(real_T A[40], const real_T B[64],
-  B_Kalman_filter_conv_T *Kalman_filter_conv_B)
-{
-  int32_T j;
-  int32_T c;
-  int32_T ix;
-  real_T smax;
-  real_T s;
-  int32_T k;
-  int32_T b_ix;
-  int32_T c_ix;
-  int32_T d;
-  int32_T ijA;
-  memcpy(&Kalman_filter_conv_B->b_A[0], &B[0], sizeof(real_T) << 6U);
-  for (j = 0; j < 8; j++) {
-    Kalman_filter_conv_B->ipiv[j] = static_cast<int8_T>((1 + j));
-  }
-
-  for (j = 0; j < 7; j++) {
-    c = j * 9;
-    b_ix = 0;
-    ix = c;
-    smax = std::abs(Kalman_filter_conv_B->b_A[c]);
-    for (k = 2; k <= 8 - j; k++) {
-      ix++;
-      s = std::abs(Kalman_filter_conv_B->b_A[ix]);
-      if (s > smax) {
-        b_ix = k - 1;
-        smax = s;
-      }
-    }
-
-    if (Kalman_filter_conv_B->b_A[c + b_ix] != 0.0) {
-      if (b_ix != 0) {
-        ix = j + b_ix;
-        Kalman_filter_conv_B->ipiv[j] = static_cast<int8_T>((ix + 1));
-        b_ix = j;
-        for (k = 0; k < 8; k++) {
-          smax = Kalman_filter_conv_B->b_A[b_ix];
-          Kalman_filter_conv_B->b_A[b_ix] = Kalman_filter_conv_B->b_A[ix];
-          Kalman_filter_conv_B->b_A[ix] = smax;
-          b_ix += 8;
-          ix += 8;
-        }
-      }
-
-      b_ix = (c - j) + 8;
-      for (ix = c + 1; ix < b_ix; ix++) {
-        Kalman_filter_conv_B->b_A[ix] /= Kalman_filter_conv_B->b_A[c];
-      }
-    }
-
-    b_ix = c;
-    ix = c + 8;
-    for (k = 0; k <= 6 - j; k++) {
-      if (Kalman_filter_conv_B->b_A[ix] != 0.0) {
-        smax = -Kalman_filter_conv_B->b_A[ix];
-        c_ix = c + 1;
-        d = (b_ix - j) + 16;
-        for (ijA = 9 + b_ix; ijA < d; ijA++) {
-          Kalman_filter_conv_B->b_A[ijA] += Kalman_filter_conv_B->b_A[c_ix] *
-            smax;
-          c_ix++;
-        }
-      }
-
-      ix += 8;
-      b_ix += 8;
-    }
-  }
-
-  for (c = 0; c < 8; c++) {
-    b_ix = 5 * c;
-    ix = c << 3;
-    for (k = 0; k < c; k++) {
-      c_ix = 5 * k;
-      smax = Kalman_filter_conv_B->b_A[k + ix];
-      if (smax != 0.0) {
-        for (d = 0; d < 5; d++) {
-          j = d + b_ix;
-          A[j] -= smax * A[d + c_ix];
-        }
-      }
-    }
-
-    smax = 1.0 / Kalman_filter_conv_B->b_A[c + ix];
-    for (ix = 0; ix < 5; ix++) {
-      j = ix + b_ix;
-      A[j] *= smax;
-    }
-  }
-
-  for (c = 7; c >= 0; c--) {
-    b_ix = 5 * c;
-    ix = (c << 3) - 1;
-    for (k = c + 2; k < 9; k++) {
-      c_ix = (k - 1) * 5;
-      smax = Kalman_filter_conv_B->b_A[k + ix];
-      if (smax != 0.0) {
-        for (d = 0; d < 5; d++) {
-          j = d + b_ix;
-          A[j] -= smax * A[d + c_ix];
-        }
-      }
-    }
-  }
-
-  for (c = 6; c >= 0; c--) {
-    if (c + 1 != Kalman_filter_conv_B->ipiv[c]) {
-      b_ix = Kalman_filter_conv_B->ipiv[c] - 1;
-      for (ix = 0; ix < 5; ix++) {
-        k = 5 * c + ix;
-        smax = A[k];
-        j = 5 * b_ix + ix;
-        A[k] = A[j];
-        A[j] = smax;
-      }
-    }
-  }
-}
-
-real_T rt_atan2d_snf(real_T u0, real_T u1)
-{
-  real_T y;
-  int32_T u0_0;
-  int32_T u1_0;
-  if (rtIsNaN(u0) || rtIsNaN(u1)) {
-    y = (rtNaN);
-  } else if (rtIsInf(u0) && rtIsInf(u1)) {
-    if (u0 > 0.0) {
-      u0_0 = 1;
-    } else {
-      u0_0 = -1;
-    }
-
-    if (u1 > 0.0) {
-      u1_0 = 1;
-    } else {
-      u1_0 = -1;
-    }
-
-    y = atan2((real_T)u0_0, (real_T)u1_0);
-  } else if (u1 == 0.0) {
-    if (u0 > 0.0) {
-      y = RT_PI / 2.0;
-    } else if (u0 < 0.0) {
-      y = -(RT_PI / 2.0);
-    } else {
-      y = 0.0;
-    }
-  } else {
-    y = atan2(u0, u1);
-  }
-
-  return y;
-}
 
 // Model step function
 void Kalman_filter_conv_step(RT_MODEL_Kalman_filter_conv_T *const
@@ -190,48 +28,21 @@ void Kalman_filter_conv_step(RT_MODEL_Kalman_filter_conv_T *const
     Kalman_filter_conv_M->blockIO);
   DW_Kalman_filter_conv_T *Kalman_filter_conv_DW = ((DW_Kalman_filter_conv_T *)
     Kalman_filter_conv_M->dwork);
-  int32_T k;
   static const int8_T b[5] = { 0, 0, 0, 0, 1 };
 
-  static const int8_T tmp[40] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-    0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1 };
+  int32_T r1;
+  int32_T r2;
+  int32_T r3;
+  int32_T rtemp;
+  real_T rtb_psidot_enc;
+  static const int8_T tmp[15] = { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1 };
 
-  int32_T i;
-  int32_T rtb_F_tmp;
-  int32_T b_I_tmp;
-
-  // MATLAB Function: '<Root>/MATLAB Function2' incorporates:
-  //   Constant: '<Root>/cov_Vx_enc'
-  //   Constant: '<Root>/cov_psi_enc'
-  //   Constant: '<Root>/cov_psi_mag'
-  //   Inport: '<Root>/cov_Vx_rs'
-  //   Inport: '<Root>/cov_Vy_rs'
-  //   Inport: '<Root>/cov_X_rs'
-  //   Inport: '<Root>/cov_Y_rs'
-  //   Inport: '<Root>/cov_psi_rs'
-
-  memset(&Kalman_filter_conv_B->R[0], 0, sizeof(real_T) << 6U);
-  for (k = 0; k < 8; k++) {
-    Kalman_filter_conv_B->R[k + (k << 3)] = 1.0;
-  }
-
-  Kalman_filter_conv_B->R[0] = Kalman_filter_conv_U->cov_X_rs;
-  Kalman_filter_conv_B->R[9] = Kalman_filter_conv_U->cov_Y_rs;
-  Kalman_filter_conv_B->R[18] = Kalman_filter_conv_U->cov_Vx_rs;
-  Kalman_filter_conv_B->R[27] = Kalman_filter_conv_U->cov_Vy_rs;
-  Kalman_filter_conv_B->R[36] = Kalman_filter_conv_U->cov_psi_rs;
-  Kalman_filter_conv_B->R[45] = Kalman_filter_conv_P.cov_Vx_enc_Value;
-  Kalman_filter_conv_B->R[54] = Kalman_filter_conv_P.cov_psi_enc_Value;
-  Kalman_filter_conv_B->R[63] = Kalman_filter_conv_P.cov_psi_mag_Value;
-
-  // End of MATLAB Function: '<Root>/MATLAB Function2'
-
-  // MATLAB Function: '<S1>/H'
-  for (k = 0; k < 40; k++) {
-    Kalman_filter_conv_B->H[k] = tmp[k];
-  }
-
-  // End of MATLAB Function: '<S1>/H'
+  real_T rtb_F_tmp;
+  real_T rtb_F_tmp_0;
+  real_T rtb_F_tmp_1;
+  int32_T rtb_H_tmp;
+  int32_T K_tmp;
+  int32_T K_tmp_0;
 
   // Gain: '<Root>/Gain3' incorporates:
   //   Inport: '<Root>/pos_l'
@@ -250,94 +61,106 @@ void Kalman_filter_conv_step(RT_MODEL_Kalman_filter_conv_T *const
     Kalman_filter_conv_DW->UnitDelay3_DSTATE) * Kalman_filter_conv_P.Gain4_Gain;
 
   // MATLAB Function: '<Root>/MATLAB Function3'
-  Kalman_filter_conv_B->psidot_enc = (Kalman_filter_conv_B->w_r -
-    Kalman_filter_conv_B->w_l) * 0.11621621621621621;
+  rtb_psidot_enc = (Kalman_filter_conv_B->w_r - Kalman_filter_conv_B->w_l) *
+    0.11621621621621621;
 
   // MATLAB Function: '<S1>/F' incorporates:
   //   MATLAB Function: '<S1>/f'
-  //   SignalConversion: '<S6>/TmpSignal ConversionAt SFunction Inport2'
+  //   SignalConversion: '<S5>/TmpSignal ConversionAt SFunction Inport2'
   //   UnitDelay: '<S1>/Unit Delay'
 
   Kalman_filter_conv_B->F[0] = 1.0;
   Kalman_filter_conv_B->F[5] = 0.0;
-  Kalman_filter_conv_B->rtb_F_tmp_p = std::cos
-    (Kalman_filter_conv_DW->UnitDelay_DSTATE[4]);
-  Kalman_filter_conv_B->rtb_F_tmp_c = 0.2 * Kalman_filter_conv_B->rtb_F_tmp_p;
-  Kalman_filter_conv_B->F[10] = Kalman_filter_conv_B->rtb_F_tmp_c;
-  Kalman_filter_conv_B->rtb_F_tmp = std::sin
-    (Kalman_filter_conv_DW->UnitDelay_DSTATE[4]);
-  Kalman_filter_conv_B->F[15] = 0.2 * -Kalman_filter_conv_B->rtb_F_tmp;
-  Kalman_filter_conv_B->rtb_F_tmp_f = Kalman_filter_conv_B->rtb_F_tmp_p *
+  Kalman_filter_conv_B->a21 = std::cos(Kalman_filter_conv_DW->UnitDelay_DSTATE[4]);
+  rtb_F_tmp_0 = 0.2 * Kalman_filter_conv_B->a21;
+  Kalman_filter_conv_B->F[10] = rtb_F_tmp_0;
+  rtb_F_tmp = std::sin(Kalman_filter_conv_DW->UnitDelay_DSTATE[4]);
+  Kalman_filter_conv_B->F[15] = 0.2 * -rtb_F_tmp;
+  rtb_F_tmp_1 = Kalman_filter_conv_B->a21 *
     Kalman_filter_conv_DW->UnitDelay_DSTATE[3];
   Kalman_filter_conv_B->F[20] = (-Kalman_filter_conv_DW->UnitDelay_DSTATE[2] *
-    Kalman_filter_conv_B->rtb_F_tmp - Kalman_filter_conv_B->rtb_F_tmp_f) * 0.2;
+    rtb_F_tmp - rtb_F_tmp_1) * 0.2;
   Kalman_filter_conv_B->F[1] = 0.0;
   Kalman_filter_conv_B->F[6] = 1.0;
-  Kalman_filter_conv_B->F[11] = 0.2 * Kalman_filter_conv_B->rtb_F_tmp;
-  Kalman_filter_conv_B->F[16] = Kalman_filter_conv_B->rtb_F_tmp_c;
-  Kalman_filter_conv_B->rtb_F_tmp_p = (Kalman_filter_conv_B->rtb_F_tmp_p *
-    Kalman_filter_conv_DW->UnitDelay_DSTATE[2] - Kalman_filter_conv_B->rtb_F_tmp
-    * Kalman_filter_conv_DW->UnitDelay_DSTATE[3]) * 0.2;
-  Kalman_filter_conv_B->F[21] = Kalman_filter_conv_B->rtb_F_tmp_p;
+  Kalman_filter_conv_B->F[11] = 0.2 * rtb_F_tmp;
+  Kalman_filter_conv_B->F[16] = rtb_F_tmp_0;
+  Kalman_filter_conv_B->a21 = (Kalman_filter_conv_B->a21 *
+    Kalman_filter_conv_DW->UnitDelay_DSTATE[2] - rtb_F_tmp *
+    Kalman_filter_conv_DW->UnitDelay_DSTATE[3]) * 0.2;
+  Kalman_filter_conv_B->F[21] = Kalman_filter_conv_B->a21;
   Kalman_filter_conv_B->F[2] = 0.0;
   Kalman_filter_conv_B->F[7] = 0.0;
   Kalman_filter_conv_B->F[12] = 1.0;
-  Kalman_filter_conv_B->F[17] = Kalman_filter_conv_B->psidot_enc * 0.2;
+  Kalman_filter_conv_B->F[17] = rtb_psidot_enc * 0.2;
   Kalman_filter_conv_B->F[22] = 0.0;
   Kalman_filter_conv_B->F[3] = 0.0;
   Kalman_filter_conv_B->F[8] = 0.0;
-  Kalman_filter_conv_B->F[13] = -Kalman_filter_conv_B->psidot_enc * 0.2;
+  Kalman_filter_conv_B->F[13] = -rtb_psidot_enc * 0.2;
   Kalman_filter_conv_B->F[18] = 1.0;
   Kalman_filter_conv_B->F[23] = 0.0;
-  for (k = 0; k < 5; k++) {
-    Kalman_filter_conv_B->F[4 + 5 * k] = b[k];
+  for (r1 = 0; r1 < 5; r1++) {
+    Kalman_filter_conv_B->F[4 + 5 * r1] = b[r1];
   }
+
+  // MATLAB Function: '<S1>/H'
+  for (r1 = 0; r1 < 15; r1++) {
+    Kalman_filter_conv_B->H[r1] = tmp[r1];
+  }
+
+  // End of MATLAB Function: '<S1>/H'
+
+  // MATLAB Function: '<Root>/MATLAB Function2' incorporates:
+  //   Constant: '<Root>/cov_Vx_enc'
+  //   Constant: '<Root>/cov_psi_enc'
+  //   Constant: '<Root>/cov_psi_mag'
+
+  memset(&Kalman_filter_conv_B->R[0], 0, 9U * sizeof(real_T));
+  Kalman_filter_conv_B->R[0] = Kalman_filter_conv_P.cov_Vx_enc_Value;
+  Kalman_filter_conv_B->R[4] = Kalman_filter_conv_P.cov_psi_enc_Value;
+  Kalman_filter_conv_B->R[8] = Kalman_filter_conv_P.cov_psi_mag_Value;
 
   // DiscreteIntegrator: '<Root>/Discrete-Time Integrator'
   Kalman_filter_conv_DW->DiscreteTimeIntegrator_DSTATE +=
-    Kalman_filter_conv_P.DiscreteTimeIntegrator_gainval *
-    Kalman_filter_conv_B->psidot_enc;
+    Kalman_filter_conv_P.DiscreteTimeIntegrator_gainval * rtb_psidot_enc;
 
   // MATLAB Function: '<S1>/f' incorporates:
   //   Inport: '<Root>/ax'
   //   Inport: '<Root>/ay'
   //   MATLAB Function: '<S1>/F'
-  //   SignalConversion: '<S6>/TmpSignal ConversionAt SFunction Inport2'
+  //   SignalConversion: '<S5>/TmpSignal ConversionAt SFunction Inport2'
   //   UnitDelay: '<S1>/Unit Delay'
 
-  Kalman_filter_conv_B->x[0] = Kalman_filter_conv_B->rtb_F_tmp_p +
+  Kalman_filter_conv_B->x[0] = Kalman_filter_conv_B->a21 +
     Kalman_filter_conv_DW->UnitDelay_DSTATE[0];
-  Kalman_filter_conv_B->x[1] = (Kalman_filter_conv_B->rtb_F_tmp *
-    Kalman_filter_conv_DW->UnitDelay_DSTATE[2] +
-    Kalman_filter_conv_B->rtb_F_tmp_f) * 0.2 +
+  Kalman_filter_conv_B->x[1] = (rtb_F_tmp *
+    Kalman_filter_conv_DW->UnitDelay_DSTATE[2] + rtb_F_tmp_1) * 0.2 +
     Kalman_filter_conv_DW->UnitDelay_DSTATE[1];
-  Kalman_filter_conv_B->x[2] = (Kalman_filter_conv_B->psidot_enc *
+  Kalman_filter_conv_B->x[2] = (rtb_psidot_enc *
     Kalman_filter_conv_DW->UnitDelay_DSTATE[3] + Kalman_filter_conv_U->ax) * 0.2
     + Kalman_filter_conv_DW->UnitDelay_DSTATE[2];
-  Kalman_filter_conv_B->x[3] = (Kalman_filter_conv_U->ay -
-    Kalman_filter_conv_B->psidot_enc * Kalman_filter_conv_DW->UnitDelay_DSTATE[2])
-    * 0.2 + Kalman_filter_conv_DW->UnitDelay_DSTATE[3];
-  Kalman_filter_conv_B->x[4] = Kalman_filter_conv_B->psidot_enc * 0.2 +
+  Kalman_filter_conv_B->x[3] = (Kalman_filter_conv_U->ay - rtb_psidot_enc *
+    Kalman_filter_conv_DW->UnitDelay_DSTATE[2]) * 0.2 +
+    Kalman_filter_conv_DW->UnitDelay_DSTATE[3];
+  Kalman_filter_conv_B->x[4] = rtb_psidot_enc * 0.2 +
     Kalman_filter_conv_DW->UnitDelay_DSTATE[4];
 
   // MATLAB Function: '<S1>/MATLAB Function'
-  for (k = 0; k < 5; k++) {
-    for (i = 0; i < 5; i++) {
-      rtb_F_tmp = k + 5 * i;
-      Kalman_filter_conv_B->rtb_F_k[rtb_F_tmp] = 0.0;
-      for (b_I_tmp = 0; b_I_tmp < 5; b_I_tmp++) {
-        Kalman_filter_conv_B->rtb_F_k[rtb_F_tmp] += Kalman_filter_conv_B->F[5 *
-          b_I_tmp + k] * Kalman_filter_conv_DW->P_N_N[5 * i + b_I_tmp];
+  for (r1 = 0; r1 < 5; r1++) {
+    for (r2 = 0; r2 < 5; r2++) {
+      rtemp = r1 + 5 * r2;
+      Kalman_filter_conv_B->rtb_F_m[rtemp] = 0.0;
+      for (r3 = 0; r3 < 5; r3++) {
+        Kalman_filter_conv_B->rtb_F_m[rtemp] += Kalman_filter_conv_B->F[5 * r3 +
+          r1] * Kalman_filter_conv_DW->P_N_N[5 * r2 + r3];
       }
     }
 
-    for (i = 0; i < 5; i++) {
-      rtb_F_tmp = k + 5 * i;
-      Kalman_filter_conv_B->rtb_F_c[rtb_F_tmp] = 0.0;
-      for (b_I_tmp = 0; b_I_tmp < 5; b_I_tmp++) {
-        Kalman_filter_conv_B->rtb_F_c[rtb_F_tmp] +=
-          Kalman_filter_conv_B->rtb_F_k[5 * b_I_tmp + k] *
-          Kalman_filter_conv_B->F[5 * b_I_tmp + i];
+    for (r2 = 0; r2 < 5; r2++) {
+      rtemp = r1 + 5 * r2;
+      Kalman_filter_conv_B->rtb_F_c[rtemp] = 0.0;
+      for (r3 = 0; r3 < 5; r3++) {
+        Kalman_filter_conv_B->rtb_F_c[rtemp] += Kalman_filter_conv_B->rtb_F_m[5 *
+          r3 + r1] * Kalman_filter_conv_B->F[5 * r3 + r2];
       }
     }
   }
@@ -349,161 +172,189 @@ void Kalman_filter_conv_step(RT_MODEL_Kalman_filter_conv_T *const
   //   Constant: '<Root>/cov_Y'
   //   Constant: '<Root>/cov_psi'
 
-  Kalman_filter_conv_B->rtb_F_k[0] = Kalman_filter_conv_P.cov_X_Value;
-  Kalman_filter_conv_B->rtb_F_k[5] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[10] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[15] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[20] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[1] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[6] = Kalman_filter_conv_P.cov_Y_Value;
-  Kalman_filter_conv_B->rtb_F_k[11] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[16] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[21] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[2] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[7] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[12] = Kalman_filter_conv_P.cov_Vx_Value;
-  Kalman_filter_conv_B->rtb_F_k[17] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[22] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[3] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[8] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[13] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[18] = Kalman_filter_conv_P.cov_Vy_Value;
-  Kalman_filter_conv_B->rtb_F_k[23] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[4] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[9] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[14] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[19] = 0.0;
-  Kalman_filter_conv_B->rtb_F_k[24] = Kalman_filter_conv_P.cov_psi_Value;
+  Kalman_filter_conv_B->rtb_F_m[0] = Kalman_filter_conv_P.cov_X_Value;
+  Kalman_filter_conv_B->rtb_F_m[5] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[10] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[15] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[20] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[1] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[6] = Kalman_filter_conv_P.cov_Y_Value;
+  Kalman_filter_conv_B->rtb_F_m[11] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[16] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[21] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[2] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[7] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[12] = Kalman_filter_conv_P.cov_Vx_Value;
+  Kalman_filter_conv_B->rtb_F_m[17] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[22] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[3] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[8] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[13] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[18] = Kalman_filter_conv_P.cov_Vy_Value;
+  Kalman_filter_conv_B->rtb_F_m[23] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[4] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[9] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[14] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[19] = 0.0;
+  Kalman_filter_conv_B->rtb_F_m[24] = Kalman_filter_conv_P.cov_psi_Value;
 
   // MATLAB Function: '<S1>/MATLAB Function'
-  for (k = 0; k < 25; k++) {
-    Kalman_filter_conv_B->F[k] = Kalman_filter_conv_B->rtb_F_c[k] +
-      Kalman_filter_conv_B->rtb_F_k[k];
+  for (r1 = 0; r1 < 25; r1++) {
+    Kalman_filter_conv_B->F[r1] = Kalman_filter_conv_B->rtb_F_c[r1] +
+      Kalman_filter_conv_B->rtb_F_m[r1];
   }
 
-  for (k = 0; k < 5; k++) {
-    for (i = 0; i < 8; i++) {
-      rtb_F_tmp = k + 5 * i;
-      Kalman_filter_conv_B->K[rtb_F_tmp] = 0.0;
-      for (b_I_tmp = 0; b_I_tmp < 5; b_I_tmp++) {
-        Kalman_filter_conv_B->K[rtb_F_tmp] += Kalman_filter_conv_B->F[5 *
-          b_I_tmp + k] * static_cast<real_T>(Kalman_filter_conv_B->H[(b_I_tmp <<
-          3) + i]);
+  for (r1 = 0; r1 < 3; r1++) {
+    for (r2 = 0; r2 < 5; r2++) {
+      Kalman_filter_conv_B->K[r2 + 5 * r1] = Kalman_filter_conv_B->H[3 * r2 + r1];
+    }
+  }
+
+  for (r1 = 0; r1 < 3; r1++) {
+    for (r2 = 0; r2 < 5; r2++) {
+      rtemp = r2 + 5 * r1;
+      Kalman_filter_conv_B->y[rtemp] = 0.0;
+      rtb_H_tmp = r1 + 3 * r2;
+      Kalman_filter_conv_B->rtb_H_k[rtb_H_tmp] = 0.0;
+      for (r3 = 0; r3 < 5; r3++) {
+        Kalman_filter_conv_B->y[rtemp] += Kalman_filter_conv_B->F[5 * r3 + r2] *
+          Kalman_filter_conv_B->K[5 * r1 + r3];
+        Kalman_filter_conv_B->rtb_H_k[rtb_H_tmp] += static_cast<real_T>
+          (Kalman_filter_conv_B->H[3 * r3 + r1]) * Kalman_filter_conv_B->F[5 *
+          r2 + r3];
+      }
+    }
+
+    for (r2 = 0; r2 < 3; r2++) {
+      rtb_psidot_enc = 0.0;
+      for (r3 = 0; r3 < 5; r3++) {
+        rtb_psidot_enc += Kalman_filter_conv_B->rtb_H_k[3 * r3 + r1] *
+          Kalman_filter_conv_B->K[5 * r2 + r3];
+      }
+
+      r3 = 3 * r2 + r1;
+      Kalman_filter_conv_B->B[r3] = Kalman_filter_conv_B->R[r3] + rtb_psidot_enc;
+    }
+  }
+
+  r1 = 0;
+  r2 = 1;
+  r3 = 2;
+  rtb_psidot_enc = std::abs(Kalman_filter_conv_B->B[0]);
+  Kalman_filter_conv_B->a21 = std::abs(Kalman_filter_conv_B->B[1]);
+  if (Kalman_filter_conv_B->a21 > rtb_psidot_enc) {
+    rtb_psidot_enc = Kalman_filter_conv_B->a21;
+    r1 = 1;
+    r2 = 0;
+  }
+
+  if (std::abs(Kalman_filter_conv_B->B[2]) > rtb_psidot_enc) {
+    r1 = 2;
+    r2 = 1;
+    r3 = 0;
+  }
+
+  Kalman_filter_conv_B->B[r2] /= Kalman_filter_conv_B->B[r1];
+  Kalman_filter_conv_B->B[r3] /= Kalman_filter_conv_B->B[r1];
+  Kalman_filter_conv_B->B[3 + r2] -= Kalman_filter_conv_B->B[3 + r1] *
+    Kalman_filter_conv_B->B[r2];
+  Kalman_filter_conv_B->B[3 + r3] -= Kalman_filter_conv_B->B[3 + r1] *
+    Kalman_filter_conv_B->B[r3];
+  Kalman_filter_conv_B->B[6 + r2] -= Kalman_filter_conv_B->B[6 + r1] *
+    Kalman_filter_conv_B->B[r2];
+  Kalman_filter_conv_B->B[6 + r3] -= Kalman_filter_conv_B->B[6 + r1] *
+    Kalman_filter_conv_B->B[r3];
+  if (std::abs(Kalman_filter_conv_B->B[3 + r3]) > std::abs
+      (Kalman_filter_conv_B->B[3 + r2])) {
+    rtemp = r2;
+    r2 = r3;
+    r3 = rtemp;
+  }
+
+  Kalman_filter_conv_B->B[3 + r3] /= Kalman_filter_conv_B->B[3 + r2];
+  Kalman_filter_conv_B->B[6 + r3] -= Kalman_filter_conv_B->B[3 + r3] *
+    Kalman_filter_conv_B->B[6 + r2];
+  for (rtemp = 0; rtemp < 5; rtemp++) {
+    rtb_H_tmp = rtemp + 5 * r1;
+    Kalman_filter_conv_B->K[rtb_H_tmp] = Kalman_filter_conv_B->y[rtemp] /
+      Kalman_filter_conv_B->B[r1];
+    K_tmp = rtemp + 5 * r2;
+    Kalman_filter_conv_B->K[K_tmp] = Kalman_filter_conv_B->y[5 + rtemp] -
+      Kalman_filter_conv_B->K[rtb_H_tmp] * Kalman_filter_conv_B->B[3 + r1];
+    K_tmp_0 = rtemp + 5 * r3;
+    Kalman_filter_conv_B->K[K_tmp_0] = Kalman_filter_conv_B->y[10 + rtemp] -
+      Kalman_filter_conv_B->K[rtb_H_tmp] * Kalman_filter_conv_B->B[6 + r1];
+    Kalman_filter_conv_B->K[K_tmp] /= Kalman_filter_conv_B->B[3 + r2];
+    Kalman_filter_conv_B->K[K_tmp_0] -= Kalman_filter_conv_B->K[K_tmp] *
+      Kalman_filter_conv_B->B[6 + r2];
+    Kalman_filter_conv_B->K[K_tmp_0] /= Kalman_filter_conv_B->B[6 + r3];
+    Kalman_filter_conv_B->K[K_tmp] -= Kalman_filter_conv_B->K[K_tmp_0] *
+      Kalman_filter_conv_B->B[3 + r3];
+    Kalman_filter_conv_B->K[rtb_H_tmp] -= Kalman_filter_conv_B->K[K_tmp_0] *
+      Kalman_filter_conv_B->B[r3];
+    Kalman_filter_conv_B->K[rtb_H_tmp] -= Kalman_filter_conv_B->K[K_tmp] *
+      Kalman_filter_conv_B->B[r2];
+  }
+
+  for (r1 = 0; r1 < 25; r1++) {
+    Kalman_filter_conv_B->b_I[r1] = 0;
+  }
+
+  for (r1 = 0; r1 < 5; r1++) {
+    Kalman_filter_conv_B->b_I[r1 + 5 * r1] = 1;
+  }
+
+  for (r1 = 0; r1 < 5; r1++) {
+    for (r2 = 0; r2 < 5; r2++) {
+      r3 = 5 * r2 + r1;
+      Kalman_filter_conv_B->rtb_F_c[r3] = static_cast<real_T>
+        (Kalman_filter_conv_B->b_I[r3]) - ((static_cast<real_T>
+        (Kalman_filter_conv_B->H[3 * r2 + 1]) * Kalman_filter_conv_B->K[r1 + 5]
+        + static_cast<real_T>(Kalman_filter_conv_B->H[3 * r2]) *
+        Kalman_filter_conv_B->K[r1]) + static_cast<real_T>
+        (Kalman_filter_conv_B->H[3 * r2 + 2]) * Kalman_filter_conv_B->K[r1 + 10]);
+    }
+
+    for (r2 = 0; r2 < 5; r2++) {
+      rtemp = r1 + 5 * r2;
+      Kalman_filter_conv_DW->P_N_N[rtemp] = 0.0;
+      for (r3 = 0; r3 < 5; r3++) {
+        Kalman_filter_conv_DW->P_N_N[rtemp] += Kalman_filter_conv_B->rtb_F_c[5 *
+          r3 + r1] * Kalman_filter_conv_B->F[5 * r2 + r3];
       }
     }
   }
 
-  for (k = 0; k < 8; k++) {
-    for (i = 0; i < 5; i++) {
-      rtb_F_tmp = k + (i << 3);
-      Kalman_filter_conv_B->rtb_H_c[rtb_F_tmp] = 0.0;
-      for (b_I_tmp = 0; b_I_tmp < 5; b_I_tmp++) {
-        Kalman_filter_conv_B->rtb_H_c[rtb_F_tmp] += static_cast<real_T>
-          (Kalman_filter_conv_B->H[(b_I_tmp << 3) + k]) *
-          Kalman_filter_conv_B->F[5 * i + b_I_tmp];
-      }
-    }
-
-    for (i = 0; i < 8; i++) {
-      Kalman_filter_conv_B->psidot_enc = 0.0;
-      for (b_I_tmp = 0; b_I_tmp < 5; b_I_tmp++) {
-        rtb_F_tmp = b_I_tmp << 3;
-        Kalman_filter_conv_B->psidot_enc += Kalman_filter_conv_B->
-          rtb_H_c[rtb_F_tmp + k] * static_cast<real_T>(Kalman_filter_conv_B->
-          H[rtb_F_tmp + i]);
-      }
-
-      rtb_F_tmp = (i << 3) + k;
-      Kalman_filter_conv_B->rtb_H_m[rtb_F_tmp] = Kalman_filter_conv_B->
-        R[rtb_F_tmp] + Kalman_filter_conv_B->psidot_enc;
-    }
-  }
-
-  Kalman_filter_c_mrdivide_helper(Kalman_filter_conv_B->K,
-    Kalman_filter_conv_B->rtb_H_m, Kalman_filter_conv_B);
-  for (k = 0; k < 25; k++) {
-    Kalman_filter_conv_B->b_I[k] = 0;
-  }
-
-  for (k = 0; k < 5; k++) {
-    Kalman_filter_conv_B->b_I[k + 5 * k] = 1;
-  }
-
-  for (k = 0; k < 5; k++) {
-    for (i = 0; i < 5; i++) {
-      Kalman_filter_conv_B->psidot_enc = 0.0;
-      for (b_I_tmp = 0; b_I_tmp < 8; b_I_tmp++) {
-        Kalman_filter_conv_B->psidot_enc += Kalman_filter_conv_B->K[5 * b_I_tmp
-          + k] * static_cast<real_T>(Kalman_filter_conv_B->H[(i << 3) + b_I_tmp]);
-      }
-
-      b_I_tmp = 5 * i + k;
-      Kalman_filter_conv_B->rtb_F_c[b_I_tmp] = static_cast<real_T>
-        (Kalman_filter_conv_B->b_I[b_I_tmp]) - Kalman_filter_conv_B->psidot_enc;
-    }
-
-    for (i = 0; i < 5; i++) {
-      rtb_F_tmp = k + 5 * i;
-      Kalman_filter_conv_DW->P_N_N[rtb_F_tmp] = 0.0;
-      for (b_I_tmp = 0; b_I_tmp < 5; b_I_tmp++) {
-        Kalman_filter_conv_DW->P_N_N[rtb_F_tmp] += Kalman_filter_conv_B->
-          rtb_F_c[5 * b_I_tmp + k] * Kalman_filter_conv_B->F[5 * i + b_I_tmp];
-      }
-    }
-  }
-
-  // SignalConversion: '<S8>/TmpSignal ConversionAt SFunction Inport1' incorporates:
-  //   Inport: '<Root>/Vx_rs'
-  //   Inport: '<Root>/Vy_rs'
-  //   Inport: '<Root>/X_rs'
-  //   Inport: '<Root>/Y_rs'
+  // SignalConversion: '<S7>/TmpSignal ConversionAt SFunction Inport1' incorporates:
   //   Inport: '<Root>/psi_mag'
-  //   Inport: '<Root>/q0_rs'
-  //   Inport: '<Root>/q1_rs'
-  //   Inport: '<Root>/q2_rs'
-  //   Inport: '<Root>/q3_rs'
-  //   MATLAB Function: '<Root>/MATLAB Function'
   //   MATLAB Function: '<Root>/MATLAB Function3'
   //   MATLAB Function: '<S1>/MATLAB Function'
 
-  Kalman_filter_conv_B->dv0[0] = Kalman_filter_conv_U->X_rs;
-  Kalman_filter_conv_B->dv0[1] = Kalman_filter_conv_U->Y_rs;
-  Kalman_filter_conv_B->dv0[2] = Kalman_filter_conv_U->Vx_rs;
-  Kalman_filter_conv_B->dv0[3] = Kalman_filter_conv_U->Vy_rs;
-  Kalman_filter_conv_B->dv0[4] = rt_atan2d_snf((Kalman_filter_conv_U->q0_rs *
-    Kalman_filter_conv_U->q3_rs + Kalman_filter_conv_U->q1_rs *
-    Kalman_filter_conv_U->q2_rs) * 2.0, 1.0 - (Kalman_filter_conv_U->q2_rs *
-    Kalman_filter_conv_U->q2_rs + Kalman_filter_conv_U->q3_rs *
-    Kalman_filter_conv_U->q3_rs) * 2.0);
-  Kalman_filter_conv_B->dv0[5] = (Kalman_filter_conv_B->w_r +
+  Kalman_filter_conv_B->dv0[0] = (Kalman_filter_conv_B->w_r +
     Kalman_filter_conv_B->w_l) * 0.01075;
-  Kalman_filter_conv_B->dv0[6] =
+  Kalman_filter_conv_B->dv0[1] =
     Kalman_filter_conv_DW->DiscreteTimeIntegrator_DSTATE;
-  Kalman_filter_conv_B->dv0[7] = Kalman_filter_conv_U->psi_mag;
+  Kalman_filter_conv_B->dv0[2] = Kalman_filter_conv_U->psi_mag;
 
   // MATLAB Function: '<S1>/MATLAB Function' incorporates:
   //   UnitDelay: '<S1>/Unit Delay'
 
-  for (k = 0; k < 8; k++) {
-    Kalman_filter_conv_B->rtb_H_b[k] = 0.0;
-    for (i = 0; i < 5; i++) {
-      Kalman_filter_conv_B->rtb_H_b[k] += static_cast<real_T>
-        (Kalman_filter_conv_B->H[(i << 3) + k]) * Kalman_filter_conv_B->x[i];
+  for (r1 = 0; r1 < 3; r1++) {
+    Kalman_filter_conv_B->rtb_H_c[r1] = 0.0;
+    for (r2 = 0; r2 < 5; r2++) {
+      Kalman_filter_conv_B->rtb_H_c[r1] += static_cast<real_T>
+        (Kalman_filter_conv_B->H[3 * r2 + r1]) * Kalman_filter_conv_B->x[r2];
     }
 
-    Kalman_filter_conv_B->dv1[k] = Kalman_filter_conv_B->dv0[k] -
-      Kalman_filter_conv_B->rtb_H_b[k];
+    Kalman_filter_conv_B->dv1[r1] = Kalman_filter_conv_B->dv0[r1] -
+      Kalman_filter_conv_B->rtb_H_c[r1];
   }
 
-  for (k = 0; k < 5; k++) {
-    Kalman_filter_conv_B->psidot_enc = 0.0;
-    for (i = 0; i < 8; i++) {
-      Kalman_filter_conv_B->psidot_enc += Kalman_filter_conv_B->K[5 * i + k] *
-        Kalman_filter_conv_B->dv1[i];
-    }
-
-    Kalman_filter_conv_DW->UnitDelay_DSTATE[k] = Kalman_filter_conv_B->x[k] +
-      Kalman_filter_conv_B->psidot_enc;
+  for (r1 = 0; r1 < 5; r1++) {
+    Kalman_filter_conv_DW->UnitDelay_DSTATE[r1] = ((Kalman_filter_conv_B->K[r1 +
+      5] * Kalman_filter_conv_B->dv1[1] + Kalman_filter_conv_B->K[r1] *
+      Kalman_filter_conv_B->dv1[0]) + Kalman_filter_conv_B->K[r1 + 10] *
+      Kalman_filter_conv_B->dv1[2]) + Kalman_filter_conv_B->x[r1];
   }
 
   // Outport: '<Root>/X' incorporates:
@@ -551,9 +402,6 @@ void Kalman_filter_conv_initialize(RT_MODEL_Kalman_filter_conv_T *const
     Kalman_filter_conv_M->dwork);
 
   // Registration code
-
-  // initialize non-finites
-  rt_InitInfAndNaN(sizeof(real_T));
 
   // states (dwork)
   (void) memset((void *)Kalman_filter_conv_DW, 0,

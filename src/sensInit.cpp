@@ -6,6 +6,7 @@
 #include <mbed.h>
 #include "FXOS8700CQ.h"
 #include "global_vars.hpp"
+#include "global_msgs.hpp" // for a debug printf
 #include "massStorage.hpp"
 #include "RotaryEncoder.h"
 
@@ -114,11 +115,10 @@ void EncoderRead(void)
     int secs = puttyTimer.read_ms();
 
     // printf("\033[13;1H");
-    printf("time %d, pwm left,right: %f, %f  pos left, right %ld, %ld   ax, ay, %f %f psi, %f X_est, Y_est, Vx_est, Vy_est, psi_est %f %f %f %f %f, dbg psi ref %f, dbg v ref %f, odometry: %f %f %f %f %f, cov %f %f %f %f %f\n", \
+    printf("time %d, pwm left,right: %f, %f  pos left, right %ld, %ld   ax, ay, %f %f psi, %f X_est, Y_est, Vx_est, Vy_est, psi_est %f %f %f %f %f, odometry: %f %f %f %f %f, Vref %f psiref %f\n", \
         secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, posL, posR, accmagValues.ax*9.81, accmagValues.ay*9.81, Kalman_filter_conv_U.psi_mag*180/3.14, \
-        Kalman_filter_conv_Y.X, Kalman_filter_conv_Y.Y, Kalman_filter_conv_Y.Vx, Kalman_filter_conv_Y.Vy, Kalman_filter_conv_Y.psi, debug_psi_ref, \
-        debug_vel_ref, Kalman_filter_conv_U.X_rs, Kalman_filter_conv_U.Y_rs, Kalman_filter_conv_U.Vx_rs, Kalman_filter_conv_U.Vy_rs, atan2(2*Kalman_filter_conv_U.q0_rs*Kalman_filter_conv_U.q3_rs, 1 - 2*pow(Kalman_filter_conv_U.q3_rs,2)),\
-        Kalman_filter_conv_U.cov_X_rs, Kalman_filter_conv_U.cov_Y_rs, Kalman_filter_conv_U.cov_Vx_rs, Kalman_filter_conv_U.cov_Vy_rs, Kalman_filter_conv_U.cov_psi_rs);
+        Kalman_filter_conv_Y.X, Kalman_filter_conv_Y.Y, Kalman_filter_conv_Y.Vx, Kalman_filter_conv_Y.Vy, Kalman_filter_conv_Y.psi, \
+        odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3], 1 - 2*pow(odom.q[3],2)), debug_vel_ref, debug_psi_ref);
     
     
 }

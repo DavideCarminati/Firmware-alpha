@@ -37,10 +37,10 @@ void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
         // Re-enable timer or interrupt here
         // Set model inputs here
 
-        APF_conver_U.psi_est = Kalman_filter_conv_Y.psi;
-        APF_conver_U.Vx_est = Kalman_filter_conv_Y.Vx;
-        APF_conver_U.X_est = Kalman_filter_conv_Y.X;
-        APF_conver_U.Y_est = Kalman_filter_conv_Y.Y;
+        APF_conver_U.psi_est = atan2(2*odom.q[3]*odom.q[2], 1 - 2*pow(odom.q[2],2));
+        APF_conver_U.Vx_est = odom.vx*cos(atan2(2*odom.q[3]*odom.q[2], 1 - 2*pow(odom.q[2],2)))+odom.vy*sin(atan2(2*odom.q[3]*odom.q[2], 1 - 2*pow(odom.q[2],2))); // Vx in body frame
+        APF_conver_U.X_est = odom.x;
+        APF_conver_U.Y_est = odom.y;
 
         // Step the model
         APF_conver_step(APF_conver_M, &APF_conver_U, &APF_conver_Y);

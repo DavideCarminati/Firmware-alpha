@@ -23,12 +23,13 @@ static const char*          ltpndMask     = "255.255.255.0";  // Mask
 static const char*          ltpndGateway  = "192.168.1.1";    //Gateway
 
 SocketAddress sockAddr_in(ltpndIP,8150); // Setting up server to listen to port 8150
+SocketAddress sockAddr_out(ltpndIP,8151);
 
 uint8_t in_data[MAVLINK_MAX_PACKET_LEN], out_buf[MAVLINK_MAX_PACKET_LEN];
 
-mavlink_message_t msgIn;
+mavlink_message_t msgIn, ekf_data_fusedOut;
 mavlink_status_t status;
-mavlink_attitude_t att;
+mavlink_odometry_t ekf_data_fused;
 
 // mavlink_raw_imu_t raw_imu;
 
@@ -80,20 +81,8 @@ void UDPMavlink()
                     case MAVLINK_MSG_ID_ODOMETRY:
                         mavlink_msg_odometry_decode(&msgIn,&odom);
                         // printf("\033[11;1H");
-                        //printf("odometry: %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[2], 1 - 2*odom.q[2])*180/PI);
-                        Kalman_filter_conv_U.X_rs = odom.x;
-                        Kalman_filter_conv_U.Y_rs = odom.y;
-                        Kalman_filter_conv_U.q0_rs = odom.q[3];
-                        Kalman_filter_conv_U.q0_rs = odom.q[0];
-                        Kalman_filter_conv_U.q0_rs = odom.q[1];
-                        Kalman_filter_conv_U.q3_rs = odom.q[2];
-                        Kalman_filter_conv_U.Vx_rs = odom.vx;
-                        Kalman_filter_conv_U.Vy_rs = odom.vy;                        
-                        Kalman_filter_conv_U.cov_X_rs = 1e-2;//odom.pose_covariance[0];
-                        Kalman_filter_conv_U.cov_Y_rs = 1e-6;//odom.pose_covariance[6];
-                        Kalman_filter_conv_U.cov_Vx_rs = 1;//odom.velocity_covariance[0];
-                        Kalman_filter_conv_U.cov_Vy_rs= 1e-8;//odom.velocity_covariance[6];
-                        Kalman_filter_conv_U.cov_psi_rs = 1e-4; //odom.pose_covariance[20]*100;
+                        // printf("odometry: %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[2], 1 - 2*pow(odom.q[2],2))*180/PI);
+
                         break;
                     
                     default:
@@ -112,6 +101,28 @@ void UDPMavlink()
         {
             // printf("\033[15;1H");
             printf("problema connessione udp\n");
+        }
+
+        time_t sec = 0;//time(NULL);
+        ekf_data_fused.time_usec = sec;
+        ekf_data_fused.x = Kalman_filter_conv_Y.X;
+        ekf_data_fused.y = Kalman_filter_conv_Y.Y;
+        ekf_data_fused.vx = Kalman_filter_conv_Y.Vx*cos(Kalman_filter_conv_Y.psi);
+        ekf_data_fused.vy = Kalman_filter_conv_Y.Vx*sin(Kalman_filter_conv_Y.psi); // Vx is in body frame!
+        ekf_data_fused.q[0] = cos(Kalman_filter_conv_Y.psi/2);
+        ekf_data_fused.q[3] = sin(Kalman_filter_conv_Y.psi/2); // q[1] and q[2] are zero since the rotation is around z
+
+        mavlink_msg_odometry_encode(SYS_ID,COMP_ID,&ekf_data_fusedOut,&ekf_data_fused);
+        mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&ekf_data_fusedOut); 
+
+        if(socket.sendto(sockAddr_out,(const void*)out_buf,MAVLINK_MAX_PACKET_LEN) != NSAPI_ERROR_WOULD_BLOCK) // sending data...
+        {
+            // continue;
+            // printf("ekf data sent!\n");
+        } 
+        else 
+        {
+            printf("Data not sent!\n");
         }
         // int elapsed = timerUDP.read_us();
         ThisThread::sleep_until(epochUDP+200);

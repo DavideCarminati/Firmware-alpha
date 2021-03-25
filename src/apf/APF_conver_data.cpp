@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'APF_conver'.
 //
-// Model version                  : 1.107
+// Model version                  : 1.114
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Thu Mar  4 14:29:04 2021
+// C/C++ source code generated on : Thu Mar 25 15:20:53 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -22,104 +22,104 @@
 // Block parameters (default storage)
 P_APF_conver_T APF_conver_P = {
   // Variable: Kd_Vx
-  //  Referenced by: '<S32>/Derivative Gain'
+  //  Referenced by: '<S33>/Derivative Gain'
 
   0.0,
 
   // Variable: Kd_psi
-  //  Referenced by: '<S76>/Derivative Gain'
+  //  Referenced by: '<S77>/Derivative Gain'
 
   0.0,
 
   // Variable: Ki_Vx
-  //  Referenced by: '<S35>/Integral Gain'
+  //  Referenced by: '<S36>/Integral Gain'
 
   1.85,
 
   // Variable: Ki_psi
-  //  Referenced by: '<S79>/Integral Gain'
+  //  Referenced by: '<S80>/Integral Gain'
 
   0.0,
 
   // Variable: Kp_Vx
-  //  Referenced by: '<S43>/Proportional Gain'
+  //  Referenced by: '<S44>/Proportional Gain'
 
   2.0,
 
   // Variable: Kp_psi
-  //  Referenced by: '<S87>/Proportional Gain'
+  //  Referenced by: '<S88>/Proportional Gain'
 
-  1,
-
-  // Variable: X_goal
-  //  Referenced by: '<Root>/Constant'
-
-  1.0,
-
-  // Variable: Y_goal
-  //  Referenced by: '<Root>/Constant1'
-
-  0.0,
-
-  // Variable: ox
-  //  Referenced by: '<Root>/Constant2'
-
-  5.0,
-
-  // Variable: oy
-  //  Referenced by: '<Root>/Constant3'
-
-  5.0,
+  0.4,
 
   // Mask Parameter: PIDController_InitialConditionF
-  //  Referenced by: '<S33>/Filter'
+  //  Referenced by: '<S34>/Filter'
 
   0.0,
 
   // Mask Parameter: PIDController1_InitialCondition
-  //  Referenced by: '<S77>/Filter'
+  //  Referenced by: '<S78>/Filter'
 
   0.0,
 
-  // Mask Parameter: PIDController_InitialConditio_d
-  //  Referenced by: '<S38>/Integrator'
+  // Mask Parameter: PIDController_InitialConditio_o
+  //  Referenced by: '<S39>/Integrator'
 
   0.0,
 
-  // Mask Parameter: PIDController1_InitialConditi_k
-  //  Referenced by: '<S82>/Integrator'
+  // Mask Parameter: PIDController1_InitialConditi_d
+  //  Referenced by: '<S83>/Integrator'
 
   0.0,
 
   // Mask Parameter: PIDController_N
-  //  Referenced by: '<S41>/Filter Coefficient'
+  //  Referenced by: '<S42>/Filter Coefficient'
 
   100.0,
 
   // Mask Parameter: PIDController1_N
-  //  Referenced by: '<S85>/Filter Coefficient'
+  //  Referenced by: '<S86>/Filter Coefficient'
 
   100.0,
 
+  // Expression: 1
+  //  Referenced by: '<Root>/X_goal'
+
+  1.0,
+
+  // Expression: 0
+  //  Referenced by: '<Root>/Y_goal'
+
+  0.0,
+
+  // Expression: 4
+  //  Referenced by: '<Root>/ox'
+
+  4.0,
+
+  // Expression: 4
+  //  Referenced by: '<Root>/oy'
+
+  4.0,
+
   // Computed Parameter: Integrator_gainval
-  //  Referenced by: '<S38>/Integrator'
+  //  Referenced by: '<S39>/Integrator'
 
   0.1,
 
   // Computed Parameter: Filter_gainval
-  //  Referenced by: '<S33>/Filter'
+  //  Referenced by: '<S34>/Filter'
 
   0.1,
 
   // Expression: 1
   //  Referenced by: '<S4>/Saturation1'
 
-  0.8,
+  1.0,
 
   // Expression: -1
   //  Referenced by: '<S4>/Saturation1'
 
-  -0.8,
+  -1.0,
 
   // Expression: 0
   //  Referenced by: '<S6>/Constant'
@@ -136,13 +136,13 @@ P_APF_conver_T APF_conver_P = {
 
   57.295779513082323,
 
-  // Computed Parameter: Integrator_gainval_b
-  //  Referenced by: '<S82>/Integrator'
+  // Computed Parameter: Integrator_gainval_m
+  //  Referenced by: '<S83>/Integrator'
 
   0.1,
 
-  // Computed Parameter: Filter_gainval_j
-  //  Referenced by: '<S77>/Filter'
+  // Computed Parameter: Filter_gainval_o
+  //  Referenced by: '<S78>/Filter'
 
   0.1,
 
