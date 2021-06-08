@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Kalman_filter_conv'.
 //
-// Model version                  : 1.14
+// Model version                  : 1.11
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Tue Mar  9 15:55:55 2021
+// C/C++ source code generated on : Thu Mar 25 17:05:55 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -21,6 +21,46 @@
 
 // Block parameters (default storage)
 P_Kalman_filter_conv_T Kalman_filter_conv_P = {
+  // Expression: 1e-8
+  //  Referenced by: '<Root>/cov_X_rs'
+
+  1.0E-8,
+
+  // Expression: 1e-8
+  //  Referenced by: '<Root>/Cov_Y_rs'
+
+  1.0E-8,
+
+  // Expression: 1
+  //  Referenced by: '<Root>/cov_Vx_rs'
+
+  1.0,
+
+  // Expression: 1
+  //  Referenced by: '<Root>/cov_Vy_rs'
+
+  1.0,
+
+  // Expression: 1e-4
+  //  Referenced by: '<Root>/cov_psi_rs'
+
+  0.0001,
+
+  // Expression: 1e-12
+  //  Referenced by: '<Root>/cov_Vx_enc'
+
+  1.0E-12,
+
+  // Expression: 1e-12
+  //  Referenced by: '<Root>/cov_psi_enc'
+
+  1.0E-12,
+
+  // Expression: 1e-6
+  //  Referenced by: '<Root>/cov_psi_mag'
+
+  1.0E-6,
+
   // Expression: 1e-12
   //  Referenced by: '<Root>/cov_X'
 
@@ -29,22 +69,22 @@ P_Kalman_filter_conv_T Kalman_filter_conv_P = {
   // Expression: 1e-12
   //  Referenced by: '<Root>/cov_Y'
 
-  1.0E-4,
+  1.0E-12,
 
-  // Expression: 1e-6
+  // Expression: 1e-4
   //  Referenced by: '<Root>/cov_Vx'
 
-  1.0E-2,
+  0.0001,
 
-  // Expression: 1e-3
+  // Expression: 1e-2
   //  Referenced by: '<Root>/cov_Vy'
 
-  1.0E-2,
+  0.01,
 
   // Expression: 1e-2
   //  Referenced by: '<Root>/cov_psi'
 
-  1.0E-8,
+  0.01,
 
   // Expression: 0
   //  Referenced by: '<Root>/Unit Delay2'
@@ -70,21 +110,6 @@ P_Kalman_filter_conv_T Kalman_filter_conv_P = {
   //  Referenced by: '<S1>/Unit Delay'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-  // Expression: 1e-3
-  //  Referenced by: '<Root>/cov_Vx_enc'
-
-  1.0E-12,
-
-  // Expression: 1e-3
-  //  Referenced by: '<Root>/cov_psi_enc'
-
-  1.0E-8,
-
-  // Expression: 0.01
-  //  Referenced by: '<Root>/cov_psi_mag'
-
-  1.0E-4,
 
   // Computed Parameter: DiscreteTimeIntegrator_gainval
   //  Referenced by: '<Root>/Discrete-Time Integrator'

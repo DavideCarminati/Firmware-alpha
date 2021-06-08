@@ -115,10 +115,8 @@ void EncoderRead(void)
     int secs = puttyTimer.read_ms();
 
     // printf("\033[13;1H");
-    printf("time %d, pwm left,right: %f, %f  pos left, right %ld, %ld   ax, ay, %f %f psi, %f X_est, Y_est, Vx_est, Vy_est, psi_est %f %f %f %f %f, odometry: %f %f %f %f %f, Vref %f psiref %f\n", \
-        secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, posL, posR, accmagValues.ax*9.81, accmagValues.ay*9.81, Kalman_filter_conv_U.psi_mag*180/3.14, \
-        Kalman_filter_conv_Y.X, Kalman_filter_conv_Y.Y, Kalman_filter_conv_Y.Vx, Kalman_filter_conv_Y.Vy, Kalman_filter_conv_Y.psi, \
-        odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3], 1 - 2*pow(odom.q[3],2)), debug_vel_ref, debug_psi_ref);
+     printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", \
+         secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
     
     
 }

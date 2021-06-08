@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Kalman_filter_conv'.
 //
-// Model version                  : 1.14
+// Model version                  : 1.11
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Tue Mar  9 15:55:55 2021
+// C/C++ source code generated on : Thu Mar 25 17:05:55 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -19,6 +19,7 @@
 #ifndef RTW_HEADER_Kalman_filter_conv_h_
 #define RTW_HEADER_Kalman_filter_conv_h_
 #include <cmath>
+#include <math.h>
 #include <string.h>
 #ifndef Kalman_filter_conv_COMMON_INCLUDES_
 # define Kalman_filter_conv_COMMON_INCLUDES_
@@ -27,8 +28,26 @@
 
 #include "Kalman_filter_conv_types.h"
 #include "rt_defines.h"
+#include "rt_nonfinite.h"
+#include "rtGetInf.h"
 
 // Macros for accessing real-time model data structure
+#ifndef rtmGetBlockIO
+# define rtmGetBlockIO(rtm)            ((rtm)->blockIO)
+#endif
+
+#ifndef rtmSetBlockIO
+# define rtmSetBlockIO(rtm, val)       ((rtm)->blockIO = (val))
+#endif
+
+#ifndef rtmGetRootDWork
+# define rtmGetRootDWork(rtm)          ((rtm)->dwork)
+#endif
+
+#ifndef rtmSetRootDWork
+# define rtmSetRootDWork(rtm, val)     ((rtm)->dwork = (val))
+#endif
+
 #ifndef rtmGetErrorStatus
 # define rtmGetErrorStatus(rtm)        ((rtm)->errorStatus)
 #endif
@@ -39,23 +58,28 @@
 
 // Block signals (default storage)
 typedef struct {
+  real_T R[64];                        // '<Root>/MATLAB Function2'
+  real_T rtb_H_m[64];
+  real_T b_A[64];
+  real_T K[40];
+  real_T rtb_H_c[40];
   real_T F[25];                        // '<S1>/F'
-  real_T rtb_F_m[25];
+  real_T rtb_F_k[25];
   real_T rtb_F_c[25];
-  real_T K[15];
-  real_T y[15];
-  real_T rtb_H_k[15];
-  real_T B[9];
-  real_T R[9];                         // '<Root>/MATLAB Function2'
+  real_T dv0[8];
+  real_T rtb_H_b[8];
+  real_T dv1[8];
+  int8_T H[40];                        // '<S1>/H'
   real_T x[5];                         // '<S1>/f'
   int8_T b_I[25];
-  real_T dv0[3];
-  real_T rtb_H_c[3];
-  real_T dv1[3];
-  int8_T H[15];                        // '<S1>/H'
-  real_T a21;
+  int8_T ipiv[8];
   real_T w_l;                          // '<Root>/Gain3'
   real_T w_r;                          // '<Root>/Gain4'
+  real_T psidot_enc;                   // '<Root>/MATLAB Function3'
+  real_T rtb_F_tmp;
+  real_T rtb_F_tmp_p;
+  real_T rtb_F_tmp_c;
+  real_T rtb_F_tmp_f;
 } B_Kalman_filter_conv_T;
 
 // Block states (default storage) for system '<Root>'
@@ -74,6 +98,14 @@ typedef struct {
   real_T psi_mag;                      // '<Root>/psi_mag'
   real_T ax;                           // '<Root>/ax'
   real_T ay;                           // '<Root>/ay'
+  real_T X_rs;                         // '<Root>/X_rs'
+  real_T Y_rs;                         // '<Root>/Y_rs'
+  real_T Vx_rs;                        // '<Root>/Vx_rs'
+  real_T Vy_rs;                        // '<Root>/Vy_rs'
+  real_T q0_rs;                        // '<Root>/q0_rs'
+  real_T q1_rs;                        // '<Root>/q1_rs'
+  real_T q2_rs;                        // '<Root>/q2_rs'
+  real_T q3_rs;                        // '<Root>/q3_rs'
 } ExtU_Kalman_filter_conv_T;
 
 // External outputs (root outports fed by signals with default storage)
@@ -87,16 +119,40 @@ typedef struct {
 
 // Parameters (default storage)
 struct P_Kalman_filter_conv_T_ {
+  real_T cov_X_rs_Value;               // Expression: 1e-8
+                                          //  Referenced by: '<Root>/cov_X_rs'
+
+  real_T Cov_Y_rs_Value;               // Expression: 1e-8
+                                          //  Referenced by: '<Root>/Cov_Y_rs'
+
+  real_T cov_Vx_rs_Value;              // Expression: 1
+                                          //  Referenced by: '<Root>/cov_Vx_rs'
+
+  real_T cov_Vy_rs_Value;              // Expression: 1
+                                          //  Referenced by: '<Root>/cov_Vy_rs'
+
+  real_T cov_psi_rs_Value;             // Expression: 1e-4
+                                          //  Referenced by: '<Root>/cov_psi_rs'
+
+  real_T cov_Vx_enc_Value;             // Expression: 1e-12
+                                          //  Referenced by: '<Root>/cov_Vx_enc'
+
+  real_T cov_psi_enc_Value;            // Expression: 1e-12
+                                          //  Referenced by: '<Root>/cov_psi_enc'
+
+  real_T cov_psi_mag_Value;            // Expression: 1e-6
+                                          //  Referenced by: '<Root>/cov_psi_mag'
+
   real_T cov_X_Value;                  // Expression: 1e-12
                                           //  Referenced by: '<Root>/cov_X'
 
   real_T cov_Y_Value;                  // Expression: 1e-12
                                           //  Referenced by: '<Root>/cov_Y'
 
-  real_T cov_Vx_Value;                 // Expression: 1e-6
+  real_T cov_Vx_Value;                 // Expression: 1e-4
                                           //  Referenced by: '<Root>/cov_Vx'
 
-  real_T cov_Vy_Value;                 // Expression: 1e-3
+  real_T cov_Vy_Value;                 // Expression: 1e-2
                                           //  Referenced by: '<Root>/cov_Vy'
 
   real_T cov_psi_Value;                // Expression: 1e-2
@@ -117,15 +173,6 @@ struct P_Kalman_filter_conv_T_ {
   real_T UnitDelay_InitialCondition[5];// Expression: [0 0 0 0 0]
                                           //  Referenced by: '<S1>/Unit Delay'
 
-  real_T cov_Vx_enc_Value;             // Expression: 1e-3
-                                          //  Referenced by: '<Root>/cov_Vx_enc'
-
-  real_T cov_psi_enc_Value;            // Expression: 1e-3
-                                          //  Referenced by: '<Root>/cov_psi_enc'
-
-  real_T cov_psi_mag_Value;            // Expression: 0.01
-                                          //  Referenced by: '<Root>/cov_psi_mag'
-
   real_T DiscreteTimeIntegrator_gainval;
                            // Computed Parameter: DiscreteTimeIntegrator_gainval
                               //  Referenced by: '<Root>/Discrete-Time Integrator'
@@ -137,7 +184,7 @@ struct P_Kalman_filter_conv_T_ {
 
 // Real-time Model Data Structure
 struct tag_RTM_Kalman_filter_conv_T {
-  const char_T * volatile errorStatus;
+  const char_T *errorStatus;
   B_Kalman_filter_conv_T *blockIO;
   DW_Kalman_filter_conv_T *dwork;
 };
@@ -193,13 +240,14 @@ extern "C" {
 //
 //  '<Root>' : 'Kalman_filter_conv'
 //  '<S1>'   : 'Kalman_filter_conv/EKF1'
-//  '<S2>'   : 'Kalman_filter_conv/MATLAB Function1'
-//  '<S3>'   : 'Kalman_filter_conv/MATLAB Function2'
-//  '<S4>'   : 'Kalman_filter_conv/MATLAB Function3'
-//  '<S5>'   : 'Kalman_filter_conv/EKF1/F'
-//  '<S6>'   : 'Kalman_filter_conv/EKF1/H'
-//  '<S7>'   : 'Kalman_filter_conv/EKF1/MATLAB Function'
-//  '<S8>'   : 'Kalman_filter_conv/EKF1/f'
+//  '<S2>'   : 'Kalman_filter_conv/MATLAB Function'
+//  '<S3>'   : 'Kalman_filter_conv/MATLAB Function1'
+//  '<S4>'   : 'Kalman_filter_conv/MATLAB Function2'
+//  '<S5>'   : 'Kalman_filter_conv/MATLAB Function3'
+//  '<S6>'   : 'Kalman_filter_conv/EKF1/F'
+//  '<S7>'   : 'Kalman_filter_conv/EKF1/H'
+//  '<S8>'   : 'Kalman_filter_conv/EKF1/MATLAB Function'
+//  '<S9>'   : 'Kalman_filter_conv/EKF1/f'
 
 #endif                                 // RTW_HEADER_Kalman_filter_conv_h_
 
