@@ -36,7 +36,7 @@ Encoder encoderR(PTC1, PTC8, true);
 
 FILE *f_calib;
 
-float roll,pitch,mag_norm;
+float roll, pitch, psi, mag_norm;
 float magValues[3], magValues_filt[3], minExtremes[3], maxExtremes[3], minMag[3], maxMag[3];
 int measurements_count = 0, id_calib;
 char f_buff[100], f_buff_disc[100], temp_char;
@@ -103,23 +103,39 @@ void postSensorEvent(void)
     puttyTimer.start();
 }
 
+/** EncoderRead reads information from Motors' encoders.
+ *  Outputs are:
+ *  [posL, posR] = left and right angular positions
+ */
+
 void EncoderRead(void)
 {
     posL = -encoderL.getPosition()*360/(2*1920);
     posR = encoderR.getPosition()*360/(2*1920);
     Kalman_filter_conv_U.pos_l = posL;
     Kalman_filter_conv_U.pos_r = posR;
+    distanceValues.posL = posL;
+    distanceValues.posL = posR;
     speedL = encoderL.getSpeed()*60; // rpm
     speedR = encoderR.getSpeed()*60;
     // time_t secs = time(NULL);
     int secs = puttyTimer.read_ms();
 
     // printf("\033[13;1H");
-     printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", \
-         secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
+    //  printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", \
+    //      secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
+    // printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", \
+    //     secs, rc.chan1_raw, rc.chan2_raw, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
     
     
 }
+
+/** AccMagRead reads information from Freedom magnetometers and accelerometers.
+ *  Outputs are: 
+ *  [mx, my, mz] = magValues    -> magnetic field intensity, 
+ *                 accmagValues -> normalized magnetic field intensity
+ *  [phi, theta, psi] = roll (accelerometer), pitch (accelerometer), psi (magnetometer)
+ */
 
 // TODO: add semaphore to protect the write-to-buffer operation in the following event!
 void AccMagRead(void) // Event to copy sensor value from its register to extern variable
@@ -129,28 +145,29 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     magValues[1] = accmagValues.my;
     magValues[2] = accmagValues.mz;
     magCal.run(magValues,magValues_filt);
-    // mag_norm=0.00001;
+
     mag_norm = sqrt(accmagValues.mx*accmagValues.mx + accmagValues.my*accmagValues.my + accmagValues.mz*accmagValues.mz);
     accmagValues.mx = accmagValues.mx/mag_norm;
     accmagValues.my = accmagValues.my/mag_norm;
     accmagValues.mz = accmagValues.mz/mag_norm;
-    pitch = atan2(accmagValues.ax,sqrt(accmagValues.ay*accmagValues.ay + accmagValues.az*accmagValues.az)); // ax, ay in g e non in m/s^2!!!
+    pitch = atan2(accmagValues.ax,sqrt(accmagValues.ay*accmagValues.ay + accmagValues.az*accmagValues.az));   // WARNING: ax, ay, az in g, not in m/s^2!
     roll = atan2(-accmagValues.ay,sqrt(accmagValues.ax*accmagValues.ax + accmagValues.az*accmagValues.az));
-    // feedback_control_U.psi_est = atan2(-accmagValues.my*cos(roll) - accmagValues.mz*sin(roll),accmagValues.mx*cos(pitch) \
+    // feedback_control_U.psi_est = atan2(-accmagValues.my*cos(roll) - accmagValues.mz*sin(roll),accmagValues.mx*cos(pitch)
     //                             + accmagValues.my*sin(pitch)*sin(roll) - accmagValues.mz*sin(pitch)*cos(roll))*180/3.14;
-    PI_contr_U.psi_odom = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
-    // printf("yaw: %f\n",feedback_control_U.psi_est);
-    // printf("ax: %.2f ay: %.2f az: %.2f pitch: %.2f roll: %.2f yaw: %.2f mx: %.2f my: %.2f mz: %.2f\n", \ 
-            // accmagValues.ax, accmagValues.ay, accmagValues.az, pitch*180/3.14, roll*180/3.14, feedback_control_U.psi_est, accmagValues.mx, accmagValues.my, accmagValues.mz);
-    // feedback_control_U.reference = (accmagValues.ax + 1)/2; // Normalized between 0 and 1
-    // feedback_control_U.estimated = 0;//servo1.read();
-    // printf("\033[2;1H");
-    // printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
-    // printf("%f\n", accmagValues.ax);
-    Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);//*180/3.14;
-    Kalman_filter_conv_U.ax = accmagValues.ax*9.81;
-    Kalman_filter_conv_U.ay = accmagValues.ay*9.81;
+    psi = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
+    PI_contr_U.psi_odom = psi;
+
     
+    attitudeValues.psi = -atan2(magValues_filt[1],-magValues_filt[0]);  // WARNING: signs are different because a shift of range has been performed
+
+    /* Kalman Filter input assignment: 
+    *  Psi = yaw angle                         [rad]
+    *  Ax, Ay = acceleration in body frame     [m/s^2]
+    */
+    Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);  // WARNING: signs are different because a shift of range has been performed
+    Kalman_filter_conv_U.ax = -accmagValues.ax*9.81;                              // WARNING: signs are different because axis orientation
+    Kalman_filter_conv_U.ay = accmagValues.ay*9.81;
+    //printf("ax %f ay %f az %f\n", accmagValues.ax*1000, accmagValues.ay*1000, accmagValues.az*1000);
     irq.rise(calib_irq_handle);
 }
 

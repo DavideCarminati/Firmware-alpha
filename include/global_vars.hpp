@@ -80,6 +80,31 @@ extern Data accmagValues;
 
 #endif
 
+#ifndef ATTITUDE_VALUES
+#define ATTITUDE_VALUES
+
+struct Attitude {
+    float phi;
+    float theta;
+    float psi;
+};
+
+extern Attitude attitudeValues;
+
+#endif
+
+#ifndef DISTANCE_VALUES
+#define DISTANCE_VALUES
+
+struct Distance {
+    float posL;
+    float posR;
+};
+
+extern Distance distanceValues;
+
+#endif
+
 #ifndef LED_MUTEX
 #define LED_MUTEX
 

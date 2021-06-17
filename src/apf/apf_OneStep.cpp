@@ -13,7 +13,7 @@
 Timer apf_timer;
 uint64_t apf_epoch;
 
-TankMotor leftMotor(PTC10,PTB23,PTA2), rightMotor(PTC11,PTB9,PTA1);
+// TankMotor leftMotor(PTC10,PTB23,PTA2), rightMotor(PTC11,PTB9,PTA1);
 
 void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
 {
@@ -45,8 +45,8 @@ void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
         // Step the model
         APF_conver_step(APF_conver_M, &APF_conver_U, &APF_conver_Y);
 
-        leftMotor.Move(APF_conver_Y.PWM_l);
-        rightMotor.Move(APF_conver_Y.PWM_r);
+        // leftMotor.Move(APF_conver_Y.PWM_l);
+        // rightMotor.Move(APF_conver_Y.PWM_r);
 
         // Get model outputs here
 

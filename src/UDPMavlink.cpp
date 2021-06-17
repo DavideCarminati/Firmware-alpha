@@ -29,7 +29,7 @@ uint8_t in_data[MAVLINK_MAX_PACKET_LEN], out_buf[MAVLINK_MAX_PACKET_LEN];
 
 mavlink_message_t msgIn, ekf_data_fusedOut, imu_k64_Out, encodersOut;
 mavlink_status_t status;
-// mavlink_odometry_t ekf_data_fused;
+// mavlink_odometry_t ekf_data_fused;    // WARNING: Data for fusion are now managed by imu_k64  
 mavlink_scaled_imu_t imu_k64;
 mavlink_wheel_distance_t encoders;
 
@@ -39,7 +39,7 @@ mavlink_wheel_distance_t encoders;
 uint8_t SYS_ID = 1;
 uint8_t COMP_ID = 1;
 
-float accx, accy, accz;
+float accx, accy, accz, mx, my, mz;
 
 Timer timerUDP;
 
@@ -89,11 +89,13 @@ void UDPMavlink()
 
                         break;
 
-                    // case MAVLINK_MSG_ID_IMU:
-                    //     // printf("\033[11;1H");
-                    //     // printf("odometry: %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[2], 1 - 2*pow(odom.q[2],2))*180/PI);
+                    case MAVLINK_MSG_ID_RC_CHANNELS:
+                        mavlink_msg_rc_channels_decode(&msgIn, &rc);
+                        //printf("pwm left, right and direction %d, %d, %d\n", rc.chan1_raw, rc.chan2_raw, rc.chan3_raw);
+                        // printf("\033[11;1H");
+                        // printf("odometry: %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[2], 1 - 2*pow(odom.q[2],2))*180/PI);
 
-                    //     break;    
+                        break;    
                     
                     default:
                         printf("\033[4;1H");
@@ -114,6 +116,10 @@ void UDPMavlink()
         }
 
         time_t sec = 0;//time(NULL);
+
+        /* EKF inputs and outputs definition section
+        *
+        */
         // Kalman_filter_conv_U.X_rs=odom.x;
         // Kalman_filter_conv_U.Y_rs=odom.y;
         // Kalman_filter_conv_U.q0_rs=odom.q[0];
@@ -124,57 +130,64 @@ void UDPMavlink()
         // psi_rs= atan2(2*(odom.q[0]*odom.q[3]+odom.q[1]*odom.q[2]),1-2*(pow(odom.q[2],2)+pow(odom.q[3],2)));
         // Kalman_filter_conv_U.Vx_rs=odom.vx*cos(psi_rs)+odom.vy*sin(psi_rs);
         // Kalman_filter_conv_U.Vy_rs=odom.vy*cos(psi_rs)-odom.vx*sin(psi_rs);
-        
-
-        imu_k64.time_boot_ms = sec;
         // ekf_data_fused.x = Kalman_filter_conv_Y.X;
         // ekf_data_fused.y = Kalman_filter_conv_Y.Y;
         // ekf_data_fused.vx = Kalman_filter_conv_Y.Vx*cos(Kalman_filter_conv_Y.psi);
         // ekf_data_fused.vy = Kalman_filter_conv_Y.Vx*sin(Kalman_filter_conv_Y.psi); // Vx is in body frame!
         // ekf_data_fused.q[0] = cos(Kalman_filter_conv_Y.psi/2);
         // ekf_data_fused.q[3] = sin(Kalman_filter_conv_Y.psi/2); // q[1] and q[2] are zero since the rotation is around z
-        accx = accmagValues.ax*1000;
+       
+        
+        /* imu_k64 message definition section
+        * SCALED_IMU MAVLINK MESSAGE: accelerometers and magnetometers readings in mg and mgauss
+        */
+        imu_k64.time_boot_ms = sec;
+        accx = -accmagValues.ax*1000;
         accy = accmagValues.ay*1000;
-        accz = accmagValues.az*1000;
+        accz = -accmagValues.az*1000;
+        mx   = accmagValues.mx*1000;
+        my   = accmagValues.my*1000;
+        mz   = accmagValues.mz*1000;
         imu_k64.xacc = (int16_t)accx;
         imu_k64.yacc = (int16_t)accy;
-        imu_k64.zacc = (int16_t)accz; // TODO cambiare il tipo!!!!
-        // zmag is q4 for imu ros message
-
-        // printf("psi: %f ax_float ax_int, ay, az: %f %d %d  %d \n", Kalman_filter_conv_U.psi_mag, accmagValues.ax*1000, imu_k64.xacc, imu_k64.yacc, imu_k64.zacc); 
-
-        imu_k64.zmag = (int16_t)sin(Kalman_filter_conv_U.psi_mag/2); // TODO: change variable name when ekf is not used
-
+        imu_k64.zacc = (int16_t)accz; 
+        imu_k64.xmag = (int16_t)mx; 
+        imu_k64.ymag = (int16_t)my; 
+        imu_k64.zmag = (int16_t)mz; 
+        imu_k64.zmag = (int16_t)sin(attitudeValues.psi/2);  // WARNING: zmag is q4 for IMU ROS Message
+        
+        
         mavlink_msg_scaled_imu_encode(SYS_ID,COMP_ID,&imu_k64_Out,&imu_k64);
         mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&imu_k64_Out); 
 
-        if(socket.sendto(sockAddr_out,(const void*)out_buf,MAVLINK_MAX_PACKET_LEN) != NSAPI_ERROR_WOULD_BLOCK) // sending data...
-        {
-            // continue;
-            // printf("ekf data sent!\n");
-        } 
-        else 
-        {
-            printf("Data not sent!\n");
-        }
+        // if(socket.sendto(sockAddr_out,(const void*)out_buf,MAVLINK_MAX_PACKET_LEN) != NSAPI_ERROR_WOULD_BLOCK) // sending data...
+        // {
+        //     // continue;
+        //     // printf("ekf data sent!\n");
+        // } 
+        // else 
+        // {
+        //     printf("Data not sent!\n");
+        // }
 
         encoders.time_usec = sec;
-        encoders.distance[0] = Kalman_filter_conv_U.pos_l*0.0215;
-        encoders.distance[1] = Kalman_filter_conv_U.pos_r*0.0215;
+        encoders.distance[0] = distanceValues.posL*0.0215; 
+        encoders.distance[1] = distanceValues.posR*0.0215;
 
         mavlink_msg_wheel_distance_encode(SYS_ID,COMP_ID,&encodersOut,&encoders);
         mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&encodersOut);
 
-        if(socket.sendto(sockAddr_out,(const void*)out_buf,MAVLINK_MAX_PACKET_LEN) != NSAPI_ERROR_WOULD_BLOCK) // sending data...
-        {
-            // continue;
-            // printf("ekf data sent!\n");
-        } 
-        else 
-        {
-            printf("Data not sent!\n");
-        }
+        // if(socket.sendto(sockAddr_out,(const void*)out_buf,MAVLINK_MAX_PACKET_LEN) != NSAPI_ERROR_WOULD_BLOCK) // sending data...
+        // {
+        //     // continue;
+        //     // printf("ekf data sent!\n");
+        // } 
+        // else 
+        // {
+        //     printf("Data not sent!\n");
+        // }
         // // int elapsed = timerUDP.read_us();
-        ThisThread::sleep_until(epochUDP+200);
+
+        ThisThread::sleep_until(epochUDP+100);
     }
 }

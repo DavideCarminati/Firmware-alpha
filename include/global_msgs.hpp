@@ -11,4 +11,5 @@
 #define MAVLINK_ATT
 extern mavlink_attitude_t att;
 extern mavlink_odometry_t odom;
+extern mavlink_rc_channels_t rc;
 #endif

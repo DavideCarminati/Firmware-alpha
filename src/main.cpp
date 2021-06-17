@@ -93,14 +93,19 @@ ExtY_PI_contr_T PI_contr_Y;     // External outputs
  */
 mavlink_odometry_t odom;
 mavlink_set_position_target_local_ned_t setpointsTrajectoryPlanner;
+mavlink_rc_channels_t rc;
 
 /** Defining global onboard accelerometer and magnetometer values
+ *  Attitude values and encoder angular position values
  * 
  */
 
 Data accmagValues;
 
-// Data accmagValues;
+Attitude attitudeValues;
+
+Distance distanceValues;
+
 
 /** Initializing ethernet interface and the socket to enable UDP communications in threads UDPMavlink.cpp and UDPPIL.cpp
  * 
@@ -142,13 +147,15 @@ int main()
   // ControllerInit.start(cntrInit);
   printf("%s thread started\n", cntrInit_thread_name);
   SensorInit.start(sensInit);
-  // OutputPortInit.start(outportInit);
+  OutputPortInit.start(outportInit);
   UDPMavlinkComm.start(UDPMavlink);
   //Navigator.start(navigator);
   //Prognostic.start(prognostic);
   ThisThread::sleep_for(5000);
-  EKFInit.start(ekfInit);
-  APFInit.start(apfInit);
+
+  // EKFInit.start(ekfInit); // Extended Kalman Filter
+  // APFInit.start(apfInit); // Guidance and Control Algorithm
+  
   CommandLineInterface.start(callback(cli2,serial));
   // printf("Command line available\n");
   

@@ -13,12 +13,14 @@
 #include "Servo.h"
 #include "global_vars.hpp"
 #include "TankMotor.hpp"
+#include "global_msgs.hpp"
 
 #include "outportInit.hpp"
 
 
 float pos = 75.0/180;
 float delta_pos = 0.01;
+int signs, signt, right_pwm=0, left_pwm=0;
 
 // Servo servo2(PTC3); ///< The PIN enable for PWM is PTC10.
 PwmOut servopwm(PTC3);
@@ -30,6 +32,7 @@ Event<void(void)> motorwriteEvent(&queuePWM,MotorWrite);
 Thread ServoWrite(osPriorityNormal,16184,nullptr,"servoWrite");
 
 // TankMotor leftMotor(PTC10,PTC16,PTC17), rightMotor(PTC11,PTB9,PTA1);
+TankMotor leftMotor(PTC10,PTB23,PTA2), rightMotor(PTC11,PTB9,PTA1);
 
 // CRITICAL Also in here I have to protect the read of the output of the controller algorithm with a mutex!!!
 
@@ -38,7 +41,7 @@ Thread ServoWrite(osPriorityNormal,16184,nullptr,"servoWrite");
  */
 void outportInit()
 {
-    servo1.calibrate(0.0005,90); // 0.0005 s from center (1.5ms) to max/min
+    // servo1.calibrate(0.0005,90); // 0.0005 s from center (1.5ms) to max/min
     // servo2.calibrate(0.0005,90);
     servopwm.pulsewidth_us(1500);
     ServoWrite.start(postServoEvent);
@@ -51,11 +54,11 @@ void postServoEvent(void)
 {
     servowriteEvent.period(500);
     servowriteEvent.delay(500);
-    servowriteEvent.post();
+    // servowriteEvent.post();
 
-    // motorwriteEvent.delay(4000);
-    // motorwriteEvent.period(200);
-    // motorwriteEvent.post();
+    motorwriteEvent.delay(4000);
+    motorwriteEvent.period(200);
+    motorwriteEvent.post();
     // printf("\033[2;60Hpost");
 }
 
@@ -84,17 +87,44 @@ void Servo1Write(void)
     // pos = feedback_control_Y.u;//*180;
     // servo1.write(pos);
     // printf("\033[1;1H");
-    // printf("pos given to pwm port: %f\n",pos);
+    // printf("Pos given to PWM port: %f\n",pos);
 }
+
+/** MotorWrite assigns PWM values to left Motor and right Motor;
+ *  a possibility is to use the rc.chan_raw values coming from Controller (MAVLINK message)
+ */
 
 void MotorWrite(void)
 {
     // printf("\033[2;50Hout1");
     // semContrPWM.acquire();
     // printf("\033[2;50Hout2");
-    // leftMotor.Move(feedback_control_Y.pwm_left);
-    // rightMotor.Move(feedback_control_Y.pwm_right);
+
+    // MODE 1:
+    //  leftMotor.Move(rc.chan1_raw-40000);
+    //  rightMotor.Move(rc.chan2_raw);
+   
+    // MODE 2: 
+    signs = 1;
+    signt = 1;
+
+    if (rc.chan3_raw == 1)
+      {
+        signs = -1; 
+      }
     
+    if (rc.chan4_raw == 1)
+      { 
+        signt = -1; 
+      }
+
+    left_pwm = signs*rc.chan1_raw+signt*rc.chan2_raw;
+    right_pwm = signs*rc.chan1_raw-signt*rc.chan2_raw;
+
+    leftMotor.Move(left_pwm);
+    rightMotor.Move(right_pwm);
+
+    printf("pwm left, right  %d, %d \n", left_pwm, right_pwm);
 
     // leftMotor.Move(7000);
     // rightMotor.Move(7000);
