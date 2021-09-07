@@ -149,6 +149,8 @@ int main()
   ThisThread::sleep_for(5000);
   EKFInit.start(ekfInit);
   APFInit.start(apfInit);
+  
+
   CommandLineInterface.start(callback(cli2,serial));
   // printf("Command line available\n");
   

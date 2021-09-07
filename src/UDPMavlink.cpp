@@ -8,6 +8,7 @@
 #include <EthernetInterface.h>
 #include "global_vars.hpp"
 #include "common/mavlink.h"
+#include "UGV/mavlink.h"
 #include "global_msgs.hpp"
 #include <algorithm>
 #include <iterator>
@@ -39,7 +40,7 @@ mavlink_wheel_distance_t encoders;
 uint8_t SYS_ID = 1;
 uint8_t COMP_ID = 1;
 
-float accx, accy, accz;
+float accx, accy, accz, quat_w;
 
 Timer timerUDP;
 
@@ -85,8 +86,8 @@ void UDPMavlink()
                     case MAVLINK_MSG_ID_ODOMETRY:
                         mavlink_msg_odometry_decode(&msgIn,&odom);
                         // printf("\033[11;1H");
-                        // printf("odometry: %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[2], 1 - 2*pow(odom.q[2],2))*180/PI);
-
+                        //printf("odometry: %f, %f, %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, encoders.distance[0], encoders.distance[1]);
+                        printf("psi filter %f, psi mag %f \n", atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, Kalman_filter_conv_U.psi_mag*180/PI);
                         break;
 
                     // case MAVLINK_MSG_ID_IMU:
@@ -110,7 +111,7 @@ void UDPMavlink()
         } else
         {
             // printf("\033[15;1H");
-            printf("problema connessione udp\n");
+            printf("problema connessione udp\n"); 
         }
 
         time_t sec = 0;//time(NULL);
@@ -133,18 +134,24 @@ void UDPMavlink()
         // ekf_data_fused.vy = Kalman_filter_conv_Y.Vx*sin(Kalman_filter_conv_Y.psi); // Vx is in body frame!
         // ekf_data_fused.q[0] = cos(Kalman_filter_conv_Y.psi/2);
         // ekf_data_fused.q[3] = sin(Kalman_filter_conv_Y.psi/2); // q[1] and q[2] are zero since the rotation is around z
-        accx = accmagValues.ax*1000;
+        accx = accmagValues.ax*1000; // in mG
         accy = accmagValues.ay*1000;
         accz = accmagValues.az*1000;
-        imu_k64.xacc = (int16_t)accx;
+        imu_k64.xacc = -(int16_t)accx;
         imu_k64.yacc = (int16_t)accy;
-        imu_k64.zacc = (int16_t)accz; // TODO cambiare il tipo!!!!
-        // zmag is q4 for imu ros message
+        imu_k64.zacc = -(int16_t)accz; 
 
-        // printf("psi: %f ax_float ax_int, ay, az: %f %d %d  %d \n", Kalman_filter_conv_U.psi_mag, accmagValues.ax*1000, imu_k64.xacc, imu_k64.yacc, imu_k64.zacc); 
-
-        imu_k64.zmag = (int16_t)sin(Kalman_filter_conv_U.psi_mag/2); // TODO: change variable name when ekf is not used
-
+        // zmag is q4 for imu ros message, signs are for the reference frame
+        quat_w = sin(Kalman_filter_conv_U.psi_mag/2)*10000;
+        imu_k64.zmag = (int16_t)quat_w; // TODO: change variable name when ekf is not used
+        //printf("Quaternion: %d  Angle: %f quat_w: %f \n", imu_k64.zmag, Kalman_filter_conv_U.psi_mag*180/PI, quat_w);
+        // Following variables in SCALED_IMU MAVLINK message are used to sent COVARIANCE values
+        imu_k64.xmag = (int16_t)2.2e-06*10^7;   // Covariance for ax
+        imu_k64.ymag = (int16_t)1.7e-06*10^7;   // Covariance for ay
+        imu_k64.xgyro = (int16_t)3.6e-06*10^7;  // Covariance for az
+        imu_k64.ygyro = (int16_t)1.5e-04*10^5;  // Covariance for psi
+        
+        
         mavlink_msg_scaled_imu_encode(SYS_ID,COMP_ID,&imu_k64_Out,&imu_k64);
         mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&imu_k64_Out); 
 
@@ -159,8 +166,8 @@ void UDPMavlink()
         }
 
         encoders.time_usec = sec;
-        encoders.distance[0] = Kalman_filter_conv_U.pos_l*0.0215;
-        encoders.distance[1] = Kalman_filter_conv_U.pos_r*0.0215;
+        encoders.distance[0] = Kalman_filter_conv_U.pos_l*0.0215*PI/180;
+        encoders.distance[1] = Kalman_filter_conv_U.pos_r*0.0215*PI/180;
 
         mavlink_msg_wheel_distance_encode(SYS_ID,COMP_ID,&encodersOut,&encoders);
         mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&encodersOut);

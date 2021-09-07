@@ -19,9 +19,11 @@
 #include <Thread.h>
 #include <rtos.h>
 
+#include "Imu/ADXL345_I2C.h"
+//#include "Imu/ITG3200.h"
 
 #define FXOS8700CQ_FREQ 200 //!< Frequency at which the sensor is interrogated
-
+#define ADXL345_FREQ 200
 // using namespace events;
 // using namespace rtos;
 // using namespace ThisThread;
@@ -34,6 +36,9 @@ DigitalOut calib_led(LED_GREEN,1), controllerLedSensorThread(LED_BLUE,1);
 Encoder encoderL(PTB18, PTB19, true);
 Encoder encoderR(PTC1, PTC8, true);
 
+ADXL345_I2C accimu(PTE25,PTE24);  // NON FUNZIONA L'AGGIUNTA ADXL345, CONTROLLARE
+//ITG3200 accimu(PTE25,PTE24);
+
 FILE *f_calib;
 
 float roll,pitch,mag_norm;
@@ -41,6 +46,7 @@ float magValues[3], magValues_filt[3], minExtremes[3], maxExtremes[3], minMag[3]
 int measurements_count = 0, id_calib;
 char f_buff[100], f_buff_disc[100], temp_char;
 float mag_extremes[6];
+int16_t readings[3];
 
 int32_t posL, posR;
 float speedL, speedR;
@@ -51,6 +57,7 @@ EventQueue queue;
 Event<void(void)> accmagreadEvent(&queue,AccMagRead);
 Event<void(void)> calibrationEvent(mbed_event_queue(),calibration);
 Event<void(void)> encoderEvent(&queue, EncoderRead);
+Event<void(void)> accimureadEvent(&queue,AccImuRead);
 
 const char* sdcard_access_thread_name = "SDStorageAccess";
 Thread SDStorageAccess(osPriorityNormal,16184,nullptr,sdcard_access_thread_name);
@@ -100,6 +107,10 @@ void postSensorEvent(void)
     encoderEvent.delay(200);
     encoderEvent.post();
 
+    accimureadEvent.period(ADXL345_FREQ); 
+    accimureadEvent.delay(200);
+    accimureadEvent.post();
+
     puttyTimer.start();
 }
 
@@ -113,10 +124,9 @@ void EncoderRead(void)
     speedR = encoderR.getSpeed()*60;
     // time_t secs = time(NULL);
     int secs = puttyTimer.read_ms();
-
     // printf("\033[13;1H");
-     printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", \
-         secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
+    // printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", 
+    //    secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
     
     
 }
@@ -147,12 +157,36 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     // printf("\033[2;1H");
     // printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
     // printf("%f\n", accmagValues.ax);
-    Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);//*180/3.14;
+    // TODO Control sign Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);//*180/3.14;
+    Kalman_filter_conv_U.psi_mag = atan2(magValues_filt[1],magValues_filt[0]);
     Kalman_filter_conv_U.ax = accmagValues.ax*9.81;
     Kalman_filter_conv_U.ay = accmagValues.ay*9.81;
-    
+    //printf("ax, ay, az: %f  %f  %f  q4: %f \n", accmagValues.ax, accmagValues.ay, accmagValues.az, Kalman_filter_conv_U.psi_mag*180/3.14); 
     irq.rise(calib_irq_handle);
 }
+
+void AccImuRead(void) 
+{
+   //Go into standby mode to configure the device.
+    accimu.setPowerControl(0x00);
+ 
+    //Full resolution, +/-16g, 4mg/LSB.
+    accimu.setDataFormatControl(0x31);
+    
+    //3.2kHz data rate.
+    accimu.setDataRate(ADXL345_200HZ);
+ 
+    //Measurement mode.
+    accimu.setPowerControl(0x2D);
+
+    accimu.getOutput(readings);
+    printf("Accelerometer Values: %i %i %i \n", readings[0], readings[1], readings[2]);
+    // accimu.setLpBandwidth(LPFBW_42HZ);
+    // printf("%i, %i, %i\n", accimu.getGyroX(), accimu.getGyroY(), accimu.getGyroZ());
+    
+}
+
+
 
 // Interrupt handler that starts the calibration
 void calib_irq_handle(void)

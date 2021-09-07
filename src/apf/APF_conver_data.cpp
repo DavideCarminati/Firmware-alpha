@@ -84,12 +84,12 @@ P_APF_conver_T APF_conver_P = {
   // Expression: 1
   //  Referenced by: '<Root>/X_goal'
 
-  1.0,
+  0.5,
 
   // Expression: 0
   //  Referenced by: '<Root>/Y_goal'
 
-  0.0,
+  0,
 
   // Expression: 4
   //  Referenced by: '<Root>/ox'

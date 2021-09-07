@@ -198,25 +198,20 @@ void APF_conver_step(RT_MODEL_APF_conver_T *const APF_conver_M,
 
   F_tot = scale * std::sqrt(F_tot);
   F_toty = rt_atan2d_snf(F_toty, F_totx);
-  obst = 0.6 / ((0.4 / rtb_Vx_err + obst) + 2.0);
+  obst = 0.6 / ((0.2 / rtb_Vx_err + obst) + 2.0);
 
   debug_vel_ref= obst;
   debug_psi_ref=F_toty;
 
 
-  if (std::abs(rtb_Vx_err) <= 0.1) {
+  if (std::abs(rtb_Vx_err) <= 0.2) {
     obst = 0.0;
-    F_toty = 0.0;
     rtb_eos = 1;
   } else {
     rtb_eos = 0;
   }
 
-  if (F_tot == 0.0) {
-    F_toty = 0.0;
-    obst = -0.3;
-  }
-
+  // printf("End of sm: %d \n", rtb_eos);
   // End of MATLAB Function: '<S98>/IAPF'
 
   // MATLAB Function: '<S99>/MATLAB Function' incorporates:
