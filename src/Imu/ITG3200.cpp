@@ -37,11 +37,11 @@
  */
 #include "Imu/ITG3200.h"
 
-ITG3200::ITG3200(PinName sda, PinName scl) : i2c_(sda, scl) {
+ITG3200::ITG3200(PinName sda, PinName scl, uint8_t address) : i2c_(sda, scl) {
 
     //400kHz, fast mode.
     i2c_.frequency(400000);
-    
+    ITG3200_I2C_ADDRESS = address;
     //Set FS_SEL to 0x03 for proper operation.
     //See datasheet for details.
     char tx[2];

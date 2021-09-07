@@ -43,7 +43,6 @@
 /**
  * Defines
  */
-#define ITG3200_I2C_ADDRESS 0x69 //7-bit address.
 
 //-----------
 // Registers
@@ -88,8 +87,9 @@ public:
      *
      * @param sda - mbed pin to use for the SDA I2C line.
      * @param scl - mbed pin to use for the SCL I2C line.
+     * @param address - address of the device 0x69 bu default but some use 0x68.
      */
-    ITG3200(PinName sda, PinName scl);
+    ITG3200(PinName sda, PinName scl, uint8_t address = 0x69);
 
     /**
      * Get the identity of the device.
@@ -333,7 +333,7 @@ public:
 private:
 
     I2C i2c_;
-
+    uint8_t ITG3200_I2C_ADDRESS;
 };
 
 #endif /* ITG3200_H */

@@ -19,8 +19,8 @@
 #include <Thread.h>
 #include <rtos.h>
 
-#include "Imu/ADXL345_I2C.h"
-//#include "Imu/ITG3200.h"
+// #include "Imu/ADXL345_I2C.h"
+#include "Imu/ITG3200.h"
 
 #define FXOS8700CQ_FREQ 200 //!< Frequency at which the sensor is interrogated
 #define ADXL345_FREQ 200
@@ -29,15 +29,18 @@
 // using namespace ThisThread;
 // using namespace mbed;
 
-FXOS8700CQ accmag(PTE25,PTE24);
-CalibrateMagneto magCal;
+I2C i2c(PTE25,PTE24);
+
+// FXOS8700CQ accmag(PTE25,PTE24);
+// CalibrateMagneto magCal;
 DigitalOut calib_led(LED_GREEN,1), controllerLedSensorThread(LED_BLUE,1);
 
 Encoder encoderL(PTB18, PTB19, true);
 Encoder encoderR(PTC1, PTC8, true);
 
-ADXL345_I2C accimu(PTE25,PTE24);  // NON FUNZIONA L'AGGIUNTA ADXL345, CONTROLLARE
-//ITG3200 accimu(PTE25,PTE24);
+// ADXL345_I2C accimu(PTE25,PTE24);  // NON FUNZIONA L'AGGIUNTA ADXL345, CONTROLLARE
+ITG3200 accimu(PTE25,PTE24, 0x68);
+
 
 FILE *f_calib;
 
@@ -54,8 +57,8 @@ float speedL, speedR;
 
 EventQueue queue;
 // EventQueue SDaccessQueue(8096);
-Event<void(void)> accmagreadEvent(&queue,AccMagRead);
-Event<void(void)> calibrationEvent(mbed_event_queue(),calibration);
+// Event<void(void)> accmagreadEvent(&queue,AccMagRead);
+// Event<void(void)> calibrationEvent(mbed_event_queue(),calibration);
 Event<void(void)> encoderEvent(&queue, EncoderRead);
 Event<void(void)> accimureadEvent(&queue,AccImuRead);
 
@@ -69,27 +72,27 @@ Timer puttyTimer;
 
 void sensInit()
 {
-    accmag.init();
-    // Open file with params and get them...
-    if (readFromSD(mag_extremes, "Magnetometer extremes [minXYZ; maxXYZ]\n") < 0)
-    {
-        // MBED_WARNING(MBED_MAKE_ERROR(MBED_MODULE_APPLICATION, MBED_ERROR_CODE_FAILED_OPERATION),"SD card has no calib.txt file to open! Please format the SD card and calibrate\n");
-        printf("SD card has no calib.txt file to open! Please format the SD card and calibrate\n");
-    }
-    else
-    {
-        minExtremes[0] = mag_extremes[0];
-        minExtremes[1] = mag_extremes[1];
-        minExtremes[2] = mag_extremes[2];
-        maxExtremes[0] = mag_extremes[3];
-        maxExtremes[1] = mag_extremes[4];
-        maxExtremes[2] = mag_extremes[5];
-        magCal.setExtremes(minExtremes,maxExtremes);
-        for (int ii = 0; ii < 6; ii++)
-        {
-            printf("data out mag extr %f\n", mag_extremes[ii]);
-        }
-    }
+    // accmag.init();
+    // // Open file with params and get them...
+    // if (readFromSD(mag_extremes, "Magnetometer extremes [minXYZ; maxXYZ]\n") < 0)
+    // {
+    //     // MBED_WARNING(MBED_MAKE_ERROR(MBED_MODULE_APPLICATION, MBED_ERROR_CODE_FAILED_OPERATION),"SD card has no calib.txt file to open! Please format the SD card and calibrate\n");
+    //     printf("SD card has no calib.txt file to open! Please format the SD card and calibrate\n");
+    // }
+    // else
+    // {
+    //     minExtremes[0] = mag_extremes[0];
+    //     minExtremes[1] = mag_extremes[1];
+    //     minExtremes[2] = mag_extremes[2];
+    //     maxExtremes[0] = mag_extremes[3];
+    //     maxExtremes[1] = mag_extremes[4];
+    //     maxExtremes[2] = mag_extremes[5];
+    //     magCal.setExtremes(minExtremes,maxExtremes);
+    //     for (int ii = 0; ii < 6; ii++)
+    //     {
+    //         printf("data out mag extr %f\n", mag_extremes[ii]);
+    //     }
+    // }
     printf("\033[2J");
     SensorRead.start(postSensorEvent);
     queue.dispatch(); // Start the queue; queue has to be started in this thread!!!
@@ -98,11 +101,11 @@ void sensInit()
 
 void postSensorEvent(void)
 {
-    // Write here the sensor read events to post them into the queue!
-    accmagreadEvent.period(FXOS8700CQ_FREQ); 
-    accmagreadEvent.delay(200);
-    accmagreadEvent.post();
-    // queue.call_every(200,AccMagRead);
+    // // Write here the sensor read events to post them into the queue!
+    // accmagreadEvent.period(FXOS8700CQ_FREQ); 
+    // accmagreadEvent.delay(200);
+    // accmagreadEvent.post();
+    // // queue.call_every(200,AccMagRead);
     encoderEvent.period(100);
     encoderEvent.delay(200);
     encoderEvent.post();
@@ -132,114 +135,120 @@ void EncoderRead(void)
 }
 
 // TODO: add semaphore to protect the write-to-buffer operation in the following event!
-void AccMagRead(void) // Event to copy sensor value from its register to extern variable
-{
-    accmagValues = accmag.get_values();
-    magValues[0] = accmagValues.mx;
-    magValues[1] = accmagValues.my;
-    magValues[2] = accmagValues.mz;
-    magCal.run(magValues,magValues_filt);
-    // mag_norm=0.00001;
-    mag_norm = sqrt(accmagValues.mx*accmagValues.mx + accmagValues.my*accmagValues.my + accmagValues.mz*accmagValues.mz);
-    accmagValues.mx = accmagValues.mx/mag_norm;
-    accmagValues.my = accmagValues.my/mag_norm;
-    accmagValues.mz = accmagValues.mz/mag_norm;
-    pitch = atan2(accmagValues.ax,sqrt(accmagValues.ay*accmagValues.ay + accmagValues.az*accmagValues.az)); // ax, ay in g e non in m/s^2!!!
-    roll = atan2(-accmagValues.ay,sqrt(accmagValues.ax*accmagValues.ax + accmagValues.az*accmagValues.az));
-    // feedback_control_U.psi_est = atan2(-accmagValues.my*cos(roll) - accmagValues.mz*sin(roll),accmagValues.mx*cos(pitch) \
-    //                             + accmagValues.my*sin(pitch)*sin(roll) - accmagValues.mz*sin(pitch)*cos(roll))*180/3.14;
-    PI_contr_U.psi_odom = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
-    // printf("yaw: %f\n",feedback_control_U.psi_est);
-    // printf("ax: %.2f ay: %.2f az: %.2f pitch: %.2f roll: %.2f yaw: %.2f mx: %.2f my: %.2f mz: %.2f\n", \ 
-            // accmagValues.ax, accmagValues.ay, accmagValues.az, pitch*180/3.14, roll*180/3.14, feedback_control_U.psi_est, accmagValues.mx, accmagValues.my, accmagValues.mz);
-    // feedback_control_U.reference = (accmagValues.ax + 1)/2; // Normalized between 0 and 1
-    // feedback_control_U.estimated = 0;//servo1.read();
-    // printf("\033[2;1H");
-    // printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
-    // printf("%f\n", accmagValues.ax);
-    // TODO Control sign Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);//*180/3.14;
-    Kalman_filter_conv_U.psi_mag = atan2(magValues_filt[1],magValues_filt[0]);
-    Kalman_filter_conv_U.ax = accmagValues.ax*9.81;
-    Kalman_filter_conv_U.ay = accmagValues.ay*9.81;
-    //printf("ax, ay, az: %f  %f  %f  q4: %f \n", accmagValues.ax, accmagValues.ay, accmagValues.az, Kalman_filter_conv_U.psi_mag*180/3.14); 
-    irq.rise(calib_irq_handle);
-}
+// void AccMagRead(void) // Event to copy sensor value from its register to extern variable
+// {
+//     accmagValues = accmag.get_values();
+//     magValues[0] = accmagValues.mx;
+//     magValues[1] = accmagValues.my;
+//     magValues[2] = accmagValues.mz;
+//     magCal.run(magValues,magValues_filt);
+//     // mag_norm=0.00001;
+//     mag_norm = sqrt(accmagValues.mx*accmagValues.mx + accmagValues.my*accmagValues.my + accmagValues.mz*accmagValues.mz);
+//     accmagValues.mx = accmagValues.mx/mag_norm;
+//     accmagValues.my = accmagValues.my/mag_norm;
+//     accmagValues.mz = accmagValues.mz/mag_norm;
+//     pitch = atan2(accmagValues.ax,sqrt(accmagValues.ay*accmagValues.ay + accmagValues.az*accmagValues.az)); // ax, ay in g e non in m/s^2!!!
+//     roll = atan2(-accmagValues.ay,sqrt(accmagValues.ax*accmagValues.ax + accmagValues.az*accmagValues.az));
+//     // feedback_control_U.psi_est = atan2(-accmagValues.my*cos(roll) - accmagValues.mz*sin(roll),accmagValues.mx*cos(pitch) \
+//     //                             + accmagValues.my*sin(pitch)*sin(roll) - accmagValues.mz*sin(pitch)*cos(roll))*180/3.14;
+//     PI_contr_U.psi_odom = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
+//     // printf("yaw: %f\n",feedback_control_U.psi_est);
+//     // printf("ax: %.2f ay: %.2f az: %.2f pitch: %.2f roll: %.2f yaw: %.2f mx: %.2f my: %.2f mz: %.2f\n", \ 
+//             // accmagValues.ax, accmagValues.ay, accmagValues.az, pitch*180/3.14, roll*180/3.14, feedback_control_U.psi_est, accmagValues.mx, accmagValues.my, accmagValues.mz);
+//     // feedback_control_U.reference = (accmagValues.ax + 1)/2; // Normalized between 0 and 1
+//     // feedback_control_U.estimated = 0;//servo1.read();
+//     // printf("\033[2;1H");
+//     // printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
+//     // printf("%f\n", accmagValues.ax);
+//     // TODO Control sign Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);//*180/3.14;
+//     Kalman_filter_conv_U.psi_mag = atan2(magValues_filt[1],magValues_filt[0]);
+//     Kalman_filter_conv_U.ax = accmagValues.ax*9.81;
+//     Kalman_filter_conv_U.ay = accmagValues.ay*9.81;
+//     //printf("ax, ay, az: %f  %f  %f  q4: %f \n", accmagValues.ax, accmagValues.ay, accmagValues.az, Kalman_filter_conv_U.psi_mag*180/3.14); 
+//     irq.rise(calib_irq_handle);
+// }
 
 void AccImuRead(void) 
 {
-   //Go into standby mode to configure the device.
-    accimu.setPowerControl(0x00);
+//    //Go into standby mode to configure the device.
+//     accimu.setPowerControl(0x00);
  
-    //Full resolution, +/-16g, 4mg/LSB.
-    accimu.setDataFormatControl(0x31);
+//     //Full resolution, +/-16g, 4mg/LSB.
+//     accimu.setDataFormatControl(0x31);
     
-    //3.2kHz data rate.
-    accimu.setDataRate(ADXL345_200HZ);
+//     //3.2kHz data rate.
+//     accimu.setDataRate(ADXL345_200HZ);
  
-    //Measurement mode.
-    accimu.setPowerControl(0x2D);
+//     //Measurement mode.
+//     accimu.setPowerControl(0x2D);
 
-    accimu.getOutput(readings);
-    printf("Accelerometer Values: %i %i %i \n", readings[0], readings[1], readings[2]);
-    // accimu.setLpBandwidth(LPFBW_42HZ);
-    // printf("%i, %i, %i\n", accimu.getGyroX(), accimu.getGyroY(), accimu.getGyroZ());
+//     accimu.getOutput(readings);
+//     printf("Accelerometer Values: %i %i %i \n", readings[0], readings[1], readings[2]);
+    accimu.setLpBandwidth(LPFBW_256HZ);
+    printf("ITG3200 DevID 0x%02X\n",accimu.getWhoAmI());
+    printf("%i, %i, %i\n", accimu.getGyroX(), accimu.getGyroY(), accimu.getGyroZ());
     
 }
 
 
 
 // Interrupt handler that starts the calibration
-void calib_irq_handle(void)
-{
-    // printf("break queue\n");
-    irq.rise(NULL);
-    queue.break_dispatch();                         // Stop the dispatch of sensor queue while calibrating
-    calibrationEvent.period(FXOS8700CQ_FREQ);
-    id_calib = calibrationEvent.post();
-}
+// void calib_irq_handle(void)
+// {
+//     // printf("break queue\n");
+//     irq.rise(NULL);
+//     queue.break_dispatch();                         // Stop the dispatch of sensor queue while calibrating
+//     calibrationEvent.period(FXOS8700CQ_FREQ);
+//     id_calib = calibrationEvent.post();
+// }
 
-// Calibration event
-void calibration(void)
-{
-    // printf("Thread name: %s; Thread id: %d", ThisThread::get_name(), ThisThread::get_id());
-    if(measurements_count == 0)
-    {
-        controllerLedSensorThread = 1;
-        led_lock.lock();
-    }
-    calib_led = 0;
-    measurements_count++;
-    printf("measurm %d\n",measurements_count);
-    accmagValues = accmag.get_values();
-    magValues[0] = accmagValues.mx;
-    magValues[1] = accmagValues.my;
-    magValues[2] = accmagValues.mz;
-    magCal.run(magValues,magValues_filt);
-    // When reached the number of initial points the calibration is complete
-    if (measurements_count == INITIAL_POINTS)
-    {
-        // It means the magnetometer is calibrated, so I raise a flag signaling that
-        measurements_count = 0;
-        SDStorageAccess.start(refreshParamFileSD);
-        led_lock.unlock();
-    }
+// // Calibration event
+// void calibration(void)
+// {
+//     // printf("Thread name: %s; Thread id: %d", ThisThread::get_name(), ThisThread::get_id());
+//     if(measurements_count == 0)
+//     {
+//         controllerLedSensorThread = 1;
+//         led_lock.lock();
+//     }
+//     calib_led = 0;
+//     measurements_count++;
+//     printf("measurm %d\n",measurements_count);
+//     accmagValues = accmag.get_values();
+//     magValues[0] = accmagValues.mx;
+//     magValues[1] = accmagValues.my;
+//     magValues[2] = accmagValues.mz;
+//     magCal.run(magValues,magValues_filt);
+//     // When reached the number of initial points the calibration is complete
+//     if (measurements_count == INITIAL_POINTS)
+//     {
+//         // It means the magnetometer is calibrated, so I raise a flag signaling that
+//         measurements_count = 0;
+//         SDStorageAccess.start(refreshParamFileSD);
+//         led_lock.unlock();
+//     }
     
-}
-void refreshParamFileSD(void)
-{
-    mbed_event_queue()->cancel(id_calib);
-    printf("Updating the parameters file on the SD card...\n");
-    magCal.getExtremes(minMag, maxMag);
-    float magData_in[6] = {minMag[0], minMag[1], minMag[2], maxMag[0], maxMag[1], maxMag[2]};
-    if(parametersUpdate(magData_in, "Magnetometer extremes [minXYZ; maxXYZ]\n") == MBED_SUCCESS)
-    {
-        printf("Done updating params!\n");
-        calib_led = 1;
-        queue.dispatch();           // Re-dispatch the sensor queue
-        irq.rise(calib_irq_handle); // Re/enable the rise interrupt on the button to avoid multiple calibrations
-        SDStorageAccess.join();
-    }
-}
+// }
+// void refreshParamFileSD(void)
+// {
+//     mbed_event_queue()->cancel(id_calib);
+//     printf("Updating the parameters file on the SD card...\n");
+//     magCal.getExtremes(minMag, maxMag);
+//     float magData_in[6] = {minMag[0], minMag[1], minMag[2], maxMag[0], maxMag[1], maxMag[2]};
+//     if(parametersUpdate(magData_in, "Magnetometer extremes [minXYZ; maxXYZ]\n") == MBED_SUCCESS)
+//     {
+//         printf("Done updating params!\n");
+//         calib_led = 1;
+//         queue.dispatch();           // Re-dispatch the sensor queue
+//         irq.rise(calib_irq_handle); // Re/enable the rise interrupt on the button to avoid multiple calibrations
+//         SDStorageAccess.join();
+//     }
+// }
+
+
+
+
+
 
 // FIXME DEAD CODE!!
 // void writeOnSD(void)
