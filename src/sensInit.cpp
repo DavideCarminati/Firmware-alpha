@@ -122,7 +122,8 @@ void EncoderRead(void)
     int secs = puttyTimer.read_ms();
 
     // printf("\033[13;1H");
-    //  printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", \
+    //  printf("time %d, pwm left,right: %f, %f pos left, right %f, %f \n", \
+            secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, posL, posR);
     //      secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
     // printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", \
     //     secs, rc.chan1_raw, rc.chan2_raw, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
