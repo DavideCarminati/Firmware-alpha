@@ -75,6 +75,7 @@ public:
     ~FXOS8700CQ();
     void init();
     Data get_values();
+    char get_who_am_i(); // Homemade function
  
 private:
     I2C* i2c;
