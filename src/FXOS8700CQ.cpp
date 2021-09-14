@@ -146,6 +146,25 @@ char FXOS8700CQ::read_byte_from_reg(char reg)
  
     return rx;
 }
+
+//Homemade function (delete if necessary) /////
+char FXOS8700CQ::get_who_am_i()
+{
+    char reg = 0x0D;
+    int nack = i2c->write(FXOS8700CQ_ADDR,&reg,1,true);  // send the register address to the slave
+    // true as need to send repeated start condition (5.10.1 datasheet)
+    // http://www.i2c-bus.org/repeated-start-condition/
+    if (nack)
+        error("No acknowledgement received!");  // if we don't receive acknowledgement, send error message
+ 
+    char rx;
+    nack = i2c->read(FXOS8700CQ_ADDR,&rx,1);  // read a byte from the register and store in buffer
+    if (nack)
+        error("No acknowledgement received!");  // if we don't receive acknowledgement, send error message
+ 
+    return rx;
+}
+///////////////////////////////////////////////
  
 // reads a series of bytes, starting from a specific register
 void FXOS8700CQ::read_bytes_from_reg(char reg,int number_of_bytes,char bytes[])
