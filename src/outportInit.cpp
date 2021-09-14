@@ -18,9 +18,22 @@
 #include "outportInit.hpp"
 
 
+#include "FXOS8700CQ.h"
+#include "massStorage.hpp"
+#include "RotaryEncoder.h"
+#include "sensInit.hpp"
+#include "EventQueue.h"
+#include "Event.h"
+#include "math.h"
+#include "magCalibrate.hpp"
+#include <ThisThread.h>
+#include <Thread.h>
+#include <rtos.h>
+
 float pos = 75.0/180;
 float delta_pos = 0.01;
 int signs, signt, right_pwm=0, left_pwm=0;
+Timer encoderTimer;
 
 // Servo servo2(PTC3); ///< The PIN enable for PWM is PTC10.
 PwmOut servopwm(PTC3);
@@ -60,6 +73,8 @@ void postServoEvent(void)
     motorwriteEvent.period(200);
     motorwriteEvent.post();
     // printf("\033[2;60Hpost");
+
+    encoderTimer.start();
 }
 
 /** The event is simply a method writing the computed duty cycle to the enabled pin port. The duty cycle is directly dependent on the output of the
@@ -121,10 +136,12 @@ void MotorWrite(void)
     left_pwm = signs*rc.chan1_raw+signt*rc.chan2_raw;
     right_pwm = signs*rc.chan1_raw-signt*rc.chan2_raw;
 
+    int secs = encoderTimer.read_ms();
+
     leftMotor.Move(left_pwm);
     rightMotor.Move(right_pwm);
 
-    printf("pwm left, right  %d, %d \n", left_pwm, right_pwm);
+    printf("t %d, pwm left, right  %d, %d pos left, right %f, %f\n", secs, left_pwm, right_pwm, distanceValues.posL , distanceValues.posR);
 
     // leftMotor.Move(7000);
     // rightMotor.Move(7000);

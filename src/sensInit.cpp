@@ -112,17 +112,17 @@ void EncoderRead(void)
 {
     posL = -encoderL.getPosition()*360/(2*1920);
     posR = encoderR.getPosition()*360/(2*1920);
-    Kalman_filter_conv_U.pos_l = posL;
-    Kalman_filter_conv_U.pos_r = posR;
     distanceValues.posL = posL;
-    distanceValues.posL = posR;
+    distanceValues.posR = posR;
     speedL = encoderL.getSpeed()*60; // rpm
     speedR = encoderR.getSpeed()*60;
+    Kalman_filter_conv_U.pos_l = posL;
+    Kalman_filter_conv_U.pos_r = posR;
     // time_t secs = time(NULL);
     int secs = puttyTimer.read_ms();
 
     // printf("\033[13;1H");
-    //  printf("time %d, pwm left,right: %f, %f pos left, right %f, %f \n", \
+    //  printf("time %d, pwm left,right: %d, %d pos left, right %d, %d \n", \
             secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, posL, posR);
     //      secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
     // printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", \
