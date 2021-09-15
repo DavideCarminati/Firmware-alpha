@@ -13,6 +13,7 @@
 #include "FXOS8700CQ.h"
 #include "Kalman_filter_conv.h"
 #include "APF_conver.h"
+#include "Imu/ADXL345_I2C.h"
 
 #ifndef UDP_BUFFER
 #define UDP_BUFFER
@@ -77,6 +78,13 @@ extern UDPSocket socket;
 #define ACCMAG_VALUES
 
 extern Data accmagValues;
+
+#endif
+
+#ifndef IMUEXT_VALUES
+#define IMUEXT_VALUES
+
+extern Data2 imuextValues;
 
 #endif
 

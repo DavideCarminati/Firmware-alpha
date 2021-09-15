@@ -14,24 +14,26 @@
 #include <iterator>
 
 #include "UDPMavlink.hpp"
+#include "Imu/ADXL345_I2C.h"
 
 static const char*          mbedIP       = "192.168.1.10";  //IP 
 static const char*          mbedMask     = "255.255.255.0";  // Mask
 static const char*          mbedGateway  = "192.168.1.1";    //Gateway
 
-static const char*          ltpndIP      = "192.168.1.11";
-static const char*          ltpndMask     = "255.255.255.0";  // Mask
-static const char*          ltpndGateway  = "192.168.1.1";    //Gateway
+static const char*          ltpndIP      =  "169.254.85.139";///"192.168.1.11";
+static const char*          ltpndMask     = "255.255.0.0";//"255.255.255.0";  // Mask
+static const char*          ltpndGateway  =   "192.168.1.255";///"192.168.1.1";    //Gateway
 
 SocketAddress sockAddr_in(ltpndIP,8150); // Setting up server to listen to port 8150
 SocketAddress sockAddr_out(ltpndIP,8151);
 
 uint8_t in_data[MAVLINK_MAX_PACKET_LEN], out_buf[MAVLINK_MAX_PACKET_LEN];
 
-mavlink_message_t msgIn, ekf_data_fusedOut, imu_k64_Out, encodersOut;
+mavlink_message_t msgIn, ekf_data_fusedOut, imu_k64_Out, imu_ext_Out, encodersOut;
 mavlink_status_t status;
 // mavlink_odometry_t ekf_data_fused;
 mavlink_scaled_imu_t imu_k64;
+mavlink_scaled_imu2_t imu_ext;    // here 
 mavlink_wheel_distance_t encoders;
 
 // mavlink_raw_imu_t raw_imu;
@@ -41,6 +43,7 @@ uint8_t SYS_ID = 1;
 uint8_t COMP_ID = 1;
 
 float accx, accy, accz, quat_w;
+float accxEx, accyEx, acczEx, gyrxEx, gyryEx, gyrzEx;
 
 Timer timerUDP;
 
@@ -114,6 +117,7 @@ void UDPMavlink()
             printf("problema connessione udp\n"); 
         }
 
+// INTERNAL IMU //////////////
         time_t sec = 0;//time(NULL);
         // Kalman_filter_conv_U.X_rs=odom.x;
         // Kalman_filter_conv_U.Y_rs=odom.y;
@@ -164,6 +168,44 @@ void UDPMavlink()
         {
             printf("Data not sent!\n");
         }
+
+////////////////////////////////////////
+
+// EXTERNAL IMU ////////////////////////
+        imu_ext.time_boot_ms = sec;
+        accx = imuextValues.ax*1000; // in mG
+        accy = imuextValues.ay*1000;
+        accz = imuextValues.az*1000;
+        imu_ext.xacc = -(int16_t)accx;
+        imu_ext.yacc = (int16_t)accy;
+        imu_ext.zacc = -(int16_t)accz; 
+
+        // zmag is q4 for imu ros message, signs are for the reference frame
+        quat_w = 0;
+        imu_ext.zmag = 0; // TODO: change variable name when ekf is not used
+        //printf("Quaternion: %d  Angle: %f quat_w: %f \n", imu_k64.zmag, Kalman_filter_conv_U.psi_mag*180/PI, quat_w);
+        // Following variables in SCALED_IMU MAVLINK message are used to sent COVARIANCE values
+        imu_ext.xmag = 0;   // Covariance for ax
+        imu_ext.ymag = 0;   // Covariance for ay
+        imu_ext.xgyro = imuextValues.gx*1000;  // 
+        imu_ext.ygyro = imuextValues.gy*1000;  // 
+        imu_ext.zgyro = imuextValues.gz*1000;  //
+        
+        
+        mavlink_msg_scaled_imu2_encode(SYS_ID,COMP_ID,&imu_ext_Out,&imu_ext);
+        mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&imu_ext_Out); 
+
+        if(socket.sendto(sockAddr_out,(const void*)out_buf,MAVLINK_MAX_PACKET_LEN) != NSAPI_ERROR_WOULD_BLOCK) // sending data...
+        {
+            // continue;
+            // printf("ekf data sent!\n");
+        } 
+        else 
+        {
+            printf("Data not sent!\n");
+        }
+
+/////////////////////////////////////////////
 
         encoders.time_usec = sec;
         encoders.distance[0] = Kalman_filter_conv_U.pos_l*0.0215*PI/180;

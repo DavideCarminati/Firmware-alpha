@@ -26,6 +26,7 @@
 #include "apfInit.hpp"
 
 #include "Thread.h"
+#include "Imu/ADXL345_I2C.h"
 
 using namespace events;
 using namespace rtos;
@@ -100,7 +101,7 @@ mavlink_set_position_target_local_ned_t setpointsTrajectoryPlanner;
 
 Data accmagValues;
 
-// Data accmagValues;
+// Data2 imuextValues;
 
 /** Initializing ethernet interface and the socket to enable UDP communications in threads UDPMavlink.cpp and UDPPIL.cpp
  * 
