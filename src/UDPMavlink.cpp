@@ -87,8 +87,8 @@ void UDPMavlink()
                     case MAVLINK_MSG_ID_ODOMETRY:
                         mavlink_msg_odometry_decode(&msgIn,&odom);
                         // printf("\033[11;1H");
-                        //printf("odometry: %f, %f, %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, encoders.distance[0], encoders.distance[1]);
-                        printf("psi filter %f, psi mag %f \n", atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, Kalman_filter_conv_U.psi_mag*180/PI);
+                        printf("odometry: %f, %f, %f, %f, %f, %f, %f, %f\n", (float)odom.time_usec, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, encoders.distance[0], encoders.distance[1]);
+                        //printf("psi filter %f, psi mag %f \n", atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, Kalman_filter_conv_U.psi_mag*180/PI);
                         break;
 
                     // case MAVLINK_MSG_ID_IMU:
@@ -174,9 +174,9 @@ void UDPMavlink()
         accx = imuextValues.ax*1000; // in mG
         accy = imuextValues.ay*1000;
         accz = imuextValues.az*1000;
-        imu_ext.xacc = -(int16_t)accx;
+        imu_ext.xacc = (int16_t)accx;
         imu_ext.yacc = (int16_t)accy;
-        imu_ext.zacc = -(int16_t)accz; 
+        imu_ext.zacc = (int16_t)accz; 
 
         // zmag is q4 for imu ros message, signs are for the reference frame
         quat_w = 0;
@@ -185,10 +185,11 @@ void UDPMavlink()
         // Following variables in SCALED_IMU MAVLINK message are used to sent COVARIANCE values
         imu_ext.xmag = 0;   // Covariance for ax
         imu_ext.ymag = 0;   // Covariance for ay
-        imu_ext.xgyro = imuextValues.gx*1000;  // 
+        imu_ext.xgyro = imuextValues.gx*1000;  //  in [deg/s]
         imu_ext.ygyro = imuextValues.gy*1000;  // 
         imu_ext.zgyro = imuextValues.gz*1000;  //
-        
+        //printf("gyr_x: %i, gyr_y: %d , gyr_z: %i acc_x: %i, acc_y: %i , acc_z: %i %i %i %i\n", imu_ext.xgyro, imu_ext.ygyro, imu_ext.zgyro, imu_ext.xacc, imu_ext.yacc, imu_ext.zacc, imu_k64.xacc, imu_k64.yacc, imu_k64.zacc);
+
         
         mavlink_msg_scaled_imu2_encode(SYS_ID,COMP_ID,&imu_ext_Out,&imu_ext);
         mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&imu_ext_Out); 
@@ -206,8 +207,8 @@ void UDPMavlink()
 /////////////////////////////////////////////
 
         encoders.time_usec = sec;
-        encoders.distance[0] = Kalman_filter_conv_U.pos_l*0.0215*PI/180;
-        encoders.distance[1] = Kalman_filter_conv_U.pos_r*0.0215*PI/180;
+        encoders.distance[0] = Kalman_filter_conv_U.pos_l*0.02*PI/180;
+        encoders.distance[1] = Kalman_filter_conv_U.pos_r*0.02*PI/180;
 
         mavlink_msg_wheel_distance_encode(SYS_ID,COMP_ID,&encodersOut,&encoders);
         mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&encodersOut);

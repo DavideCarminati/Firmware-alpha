@@ -131,7 +131,7 @@ extern real_T debug_vel_ref;
 #ifndef EXTIMU_VALUES
 #define EXTIMU_VALUES
 
-extern Data_2 ext_imuValues;
+extern Data2 imuextValues;
 
 #endif
 

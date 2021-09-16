@@ -233,7 +233,7 @@ void AccImuRead(void)
     imuextValues.gx = gyro.getGyroY()/gyro_resol;
     imuextValues.gy = -gyro.getGyroX()/gyro_resol;
     imuextValues.gz = gyro.getGyroZ()/gyro_resol;
-    printf("gyr_x: %f, gyr_y: %f , gyr_z: %f \n", imuextValues.gx, imuextValues.gy, imuextValues.gz);
+    //printf("%f ,    %f ,     %f %f ,    %f %f ,   %f %f,    %f %f\n", imuextValues.gx, imuextValues.gy, imuextValues.gz,Kalman_filter_conv_U.psi_mag*180/3.14, imuextValues.ax*9.81, -accmagValues.ax*9.81, imuextValues.ay*9.81, accmagValues.ay*9.81, imuextValues.az*9.81,   -accmagValues.az*9.81);
 
 
     
