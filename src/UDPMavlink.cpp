@@ -28,12 +28,13 @@ SocketAddress sockAddr_out(ltpndIP,8151);
 
 uint8_t in_data[MAVLINK_MAX_PACKET_LEN], out_buf[MAVLINK_MAX_PACKET_LEN];
 
-mavlink_message_t msgIn, ekf_data_fusedOut, imu_k64_Out, encodersOut;
+mavlink_message_t msgIn, ekf_data_fusedOut, imu_k64_Out, ext_imu_Out, encodersOut;
 mavlink_status_t status;
 // mavlink_odometry_t ekf_data_fused;
 mavlink_scaled_imu_t imu_k64;
 mavlink_wheel_distance_t encoders;
 
+mavlink_scaled_imu2_t ext_imu;
 // mavlink_raw_imu_t raw_imu;
 
 
@@ -41,6 +42,7 @@ uint8_t SYS_ID = 1;
 uint8_t COMP_ID = 1;
 
 float accx, accy, accz, quat_w;
+float accx_2, accy_2, accz_2, gyrox_2, gyroy_2, gyroz_2;
 
 Timer timerUDP;
 
@@ -86,8 +88,8 @@ void UDPMavlink()
                     case MAVLINK_MSG_ID_ODOMETRY:
                         mavlink_msg_odometry_decode(&msgIn,&odom);
                         // printf("\033[11;1H");
-                        //printf("odometry: %f, %f, %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, encoders.distance[0], encoders.distance[1]);
-                        printf("psi filter %f, psi mag %f \n", atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, Kalman_filter_conv_U.psi_mag*180/PI);
+                        printf("odometry: %f, %f, %f, %f, %f, %f, %f\n", odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, encoders.distance[0], encoders.distance[1]);
+                        //printf("psi filter %f, psi mag %f \n", atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, Kalman_filter_conv_U.psi_mag*180/PI);
                         break;
 
                     // case MAVLINK_MSG_ID_IMU:
@@ -154,6 +156,25 @@ void UDPMavlink()
         
         mavlink_msg_scaled_imu_encode(SYS_ID,COMP_ID,&imu_k64_Out,&imu_k64);
         mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&imu_k64_Out); 
+
+       
+        ext_imu.time_boot_ms = sec;
+        accx_2 = 1000*ext_imuValues.ax; // in mG
+        accy_2 = 1000*ext_imuValues.ay;
+        accz_2 = 1000*ext_imuValues.az;
+        ext_imu.xacc = -(int16_t)accx_2;
+        ext_imu.yacc = (int16_t)accy_2;
+        ext_imu.zacc = -(int16_t)accz_2; 
+
+        gyrox_2 = 1000*ext_imuValues.gx;
+        gyroy_2 = 1000*ext_imuValues.gy;
+        gyroz_2 = 1000*ext_imuValues.gz;
+        ext_imu.xgyro = (int16_t)gyrox_2;
+        ext_imu.ygyro = (int16_t)gyroy_2;
+        ext_imu.zgyro = (int16_t)gyroz_2; 
+        
+        mavlink_msg_scaled_imu2_encode(SYS_ID,COMP_ID,&ext_imu_Out,&ext_imu);
+        mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&ext_imu_Out); 
 
         if(socket.sendto(sockAddr_out,(const void*)out_buf,MAVLINK_MAX_PACKET_LEN) != NSAPI_ERROR_WOULD_BLOCK) // sending data...
         {

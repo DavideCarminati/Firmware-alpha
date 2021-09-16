@@ -14,6 +14,8 @@
 #include "Kalman_filter_conv.h"
 #include "APF_conver.h"
 
+#include "Imu/ADXL345_I2C.h"
+
 #ifndef UDP_BUFFER
 #define UDP_BUFFER
 
@@ -115,6 +117,13 @@ extern ExtY_APF_conver_T APF_conver_Y; // External outputs
 
 extern real_T debug_psi_ref;
 extern real_T debug_vel_ref;
+
+#endif
+
+#ifndef EXTIMU_VALUES
+#define EXTIMU_VALUES
+
+extern Data_2 ext_imuValues;
 
 #endif
 
