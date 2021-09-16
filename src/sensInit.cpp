@@ -54,8 +54,7 @@ int16_t readings[3];
 
 int32_t posL, posR;
 float speedL, speedR;
-float ax_2, ay_2, az_2, gx_2, gy_2, gz_2;
-Data_2 ext_imuValues;
+Data2 imuextValues, data_test;
 
 EventQueue queue;
 // EventQueue SDaccessQueue(8096);
@@ -183,8 +182,8 @@ void AccImuRead(void)
     // printf("ADXL345 acc DevID0x%02X\n",imu.getDeviceID());
     ////////////////////////////////////////
 
-    // // External imu configuration ///////////
-    // //Go into standby mode to configure the device.
+    // External imu configuration ///////////
+    //Go into standby mode to configure the device.
     imu.setPowerControl(0x00);
     //Full resolution, +/-16g, 4mg/LSB.
     imu.setDataFormatControl(0x0B);
@@ -192,36 +191,52 @@ void AccImuRead(void)
     imu.setDataRate(ADXL345_3200HZ);
     //Measurement mode.
     imu.setPowerControl(0x08);
-    // //////////////////////////////////////////
-    // // External accelerom data
-    // // wait(0.1);
+    //////////////////////////////////////////
+    // External accelerom data
+    // wait(0.1);
     // printf("External IMU data:\n");
     imu.getOutput(readings);
     // //13-bit, sign extended values.
     // // Typical resolution is 256 == 1g
+    
     float accel_resol = 256;
     // printf("acc_x: %f g, acc_y: %f g, acc_z: %f g\n", (float)readings[0]/accel_resol, (float)readings[1]/accel_resol, (float)readings[2]/accel_resol);
-
 
     // wait(0.1);
     // External gyro data
     // Units are degrees per second
     float gyro_resol = 14.375; //LSB per º/second
-//  printf("ax: %.2f ay: %.2f az: %.2f roll: %.2f pitch: %.2f yaw: %.2f gyr_x: %f, gyr_y: %f , gyr_z: %f acc_x: %f , acc_y: %f , acc_z: %f \n", \
-//         accmagValues.ax, accmagValues.ay, accmagValues.az, roll*180/3.14, pitch*180/3.14, Kalman_filter_conv_U.psi_mag*180/3.14, gyro.getGyroX()/gyro_resol, gyro.getGyroY()/gyro_resol, gyro.getGyroZ()/gyro_resol, (float)readings[0]/accel_resol, (float)readings[1]/accel_resol, (float)readings[2]/accel_resol);
-    gx_2 = gyro.getGyroY()/gyro_resol;
-    gy_2 = -gyro.getGyroX()/gyro_resol;
-    gz_2 = gyro.getGyroZ()/gyro_resol;
-    ax_2 = (float)readings[1]/accel_resol;
-    ay_2 = -(float)readings[0]/accel_resol;
-    az_2 = (float)readings[2]/accel_resol;
+    // printf("gyr_x: %f, gyr_y: %f , gyr_z: %f \n", gyro.getGyroX()/gyro_resol, gyro.getGyroY()/gyro_resol, gyro.getGyroZ()/gyro_resol);
+    // data_test.ax = (float)readings[0]/accel_resol;
+    // data_test.ay = (float)readings[1]/accel_resol;
+    // data_test.az = (float)readings[2]/accel_resol;
+    // data_test.gx = gyro.getGyroX()/gyro_resol;
+    // data_test.gy = gyro.getGyroY()/gyro_resol;
+    // data_test.gz = gyro.getGyroZ()/gyro_resol;
+    // imuextValues.ax = data_test.ax;
+    // imuextValues.ay = data_test.ay;
+    // imuextValues.az = data_test.az;
+    // imuextValues.gx = data_test.gx;
+    // imuextValues.gx = data_test.gy;
+    // imuextValues.gx = data_test.gz;
 
-    ext_imuValues.ax = ax_2;
-    ext_imuValues.ay = ay_2;
-    ext_imuValues.az = az_2;
-    ext_imuValues.gx = gx_2;
-    ext_imuValues.gy = gy_2;
-    ext_imuValues.gz = gz_2;
+
+
+
+
+
+
+
+    imuextValues.ax = (float)readings[1]/accel_resol;
+    imuextValues.ay = -(float)readings[0]/accel_resol;
+    imuextValues.az = (float)readings[2]/accel_resol;
+    imuextValues.gx = gyro.getGyroY()/gyro_resol;
+    imuextValues.gy = -gyro.getGyroX()/gyro_resol;
+    imuextValues.gz = gyro.getGyroZ()/gyro_resol;
+    printf("gyr_x: %f, gyr_y: %f , gyr_z: %f \n", imuextValues.gx, imuextValues.gy, imuextValues.gz);
+
+
+    
     
     //printf("ax: %.2f ay: %.2f az: %.2f \n", ax_2, ay_2, az_2);
 }

@@ -122,7 +122,7 @@
 // modes
 #define MeasurementMode     0x08
 
-struct Data_2 {
+struct Data2 {
     float ax;
     float ay;
     float az;
@@ -130,6 +130,8 @@ struct Data_2 {
     float gy;
     float gz;
 };
+
+
 
 
 
