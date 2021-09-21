@@ -18,9 +18,9 @@ static const char*          mbedIP       = "192.168.1.10";  //IP
 static const char*          mbedMask     = "255.255.255.0";  // Mask
 static const char*          mbedGateway  = "192.168.1.1";    //Gateway
 
-static const char*          ltpndIP      =  "192.168.1.11"; //"169.254.85.139";
-static const char*          ltpndMask     = "255.255.255.0";  // Mask "255.255.0.0";//
-static const char*          ltpndGateway  =   "192.168.1.1";    //Gateway "192.168.1.255";///
+static const char*          ltpndIP      =  "169.254.51.39";//"169.254.85.139"; //"192.168.1.11";
+static const char*          ltpndMask     = "255.255.0.0"; //"255.255.255.0";  // Mask 
+static const char*          ltpndGateway  =  "192.168.1.1";// "192.168.1.1";    //Gateway /
 
 SocketAddress sockAddr_in(ltpndIP,8150); // Setting up server to listen to port 8150
 SocketAddress sockAddr_out(ltpndIP,8151);
@@ -55,7 +55,7 @@ void UDPMavlink()
 
     
     socket.open(&eth);
-    socket.set_timeout(2000);
+    socket.set_timeout(1000); // This can be changed
     
     socket.bind(8150);
     
@@ -209,7 +209,7 @@ void UDPMavlink()
         encoders.time_usec = sec;
         encoders.distance[0] = Kalman_filter_conv_U.pos_l*0.02*PI/180;
         encoders.distance[1] = Kalman_filter_conv_U.pos_r*0.02*PI/180;
-
+        printf("Encoder data: %d, %d\n", encoders.distance[0], encoders.distance[1]);
         mavlink_msg_wheel_distance_encode(SYS_ID,COMP_ID,&encodersOut,&encoders);
         mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&encodersOut);
 
@@ -223,6 +223,6 @@ void UDPMavlink()
             printf("Data not sent!\n");
         }
         // // int elapsed = timerUDP.read_us();
-        ThisThread::sleep_until(epochUDP+200);
+        ThisThread::sleep_until(epochUDP+200); // The 200 can be changed for a smaller number if the communication is slow
     }
 }

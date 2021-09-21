@@ -131,6 +131,7 @@ void EncoderRead(void)
     // time_t secs = time(NULL);
     int secs = puttyTimer.read_ms();
     // printf("\033[13;1H");
+    // printf("Encoder position: %d  %d\n",Kalman_filter_conv_U.pos_l, Kalman_filter_conv_U.pos_r);
     // printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", 
     //    secs, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]), debug_vel_ref, debug_psi_ref);
     
