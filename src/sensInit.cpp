@@ -122,8 +122,8 @@ void postSensorEvent(void)
 
 void EncoderRead(void)
 {
-    posL = -encoderL.getPosition()*360/(2*1920);
-    posR = encoderR.getPosition()*360/(2*1920);
+    posL = -encoderL.getPosition()*360/(1920);
+    posR = encoderR.getPosition()*360/(1920);
     Kalman_filter_conv_U.pos_l = posL;
     Kalman_filter_conv_U.pos_r = posR;
     speedL = encoderL.getSpeed()*60; // rpm

@@ -45,8 +45,8 @@ void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
         // Step the model
         APF_conver_step(APF_conver_M, &APF_conver_U, &APF_conver_Y);
 
-        leftMotor.Move(APF_conver_Y.PWM_l/3);
-        rightMotor.Move(APF_conver_Y.PWM_r/3);
+        leftMotor.Move(APF_conver_Y.PWM_l/4);  //TODO this is a limit for speed. Change to have fast dynamics
+        rightMotor.Move(APF_conver_Y.PWM_r/4); 
         //printf("PWM: %f, %f pos: %f %f ang: %f \n", APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, APF_conver_U.psi_est);
         // Get model outputs here
 
