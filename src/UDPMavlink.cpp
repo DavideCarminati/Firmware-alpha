@@ -223,6 +223,6 @@ void UDPMavlink()
             printf("Data not sent!\n");
         }
         // // int elapsed = timerUDP.read_us();
-        ThisThread::sleep_until(epochUDP+200);
+        ThisThread::sleep_until(epochUDP+100);
     }
 }

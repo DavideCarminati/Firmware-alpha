@@ -198,7 +198,7 @@ void APF_conver_step(RT_MODEL_APF_conver_T *const APF_conver_M,
 
   F_tot = scale * std::sqrt(F_tot);
   F_toty = rt_atan2d_snf(F_toty, F_totx);
-  obst = 0.6 / ((0.2 / rtb_Vx_err + obst) + 2.0);
+  obst = 0.6 / ((0.2 / rtb_Vx_err + obst) + 2.0); // 0.6 / ((0.2 / rtb_Vx_err + obst) + 2.0);
 
   debug_vel_ref= obst;
   debug_psi_ref=F_toty;
