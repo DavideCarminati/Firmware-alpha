@@ -30,7 +30,7 @@ Event<void(void)> motorwriteEvent(&queuePWM,MotorWrite);
 Thread ServoWrite(osPriorityNormal,16184,nullptr,"servoWrite");
 
 // TankMotor leftMotor(PTC10,PTC16,PTC17), rightMotor(PTC11,PTB9,PTA1);
-TankMotor leftMotor(PTC10,PTB23,PTA2), rightMotor(PTC11,PTB9,PTA1);
+//TankMotor leftMotor(PTC10,PTB23,PTA2), rightMotor(PTC11,PTB9,PTA1);
 
 // CRITICAL Also in here I have to protect the read of the output of the controller algorithm with a mutex!!!
 
@@ -95,8 +95,7 @@ void MotorWrite(void)
     // printf("\033[2;50Hout2");
     // leftMotor.Move(feedback_control_Y.pwm_left);
     // rightMotor.Move(feedback_control_Y.pwm_right);
-    leftMotor.Move(5000);
-    rightMotor.Move(5000);
+
     
 
     // leftMotor.Move(7000);
