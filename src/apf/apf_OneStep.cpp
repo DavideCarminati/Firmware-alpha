@@ -13,7 +13,7 @@
 Timer apf_timer;
 uint64_t apf_epoch;
 
-TankMotor leftMotor(PTC10,PTB23,PTA2), rightMotor(PTC11,PTB9,PTA1);
+//TankMotor leftMotor(PTC10,PTB23,PTA2), rightMotor(PTC11,PTB9,PTA1);
 
 void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
 {
@@ -44,10 +44,13 @@ void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
 
         // Step the model
         APF_conver_step(APF_conver_M, &APF_conver_U, &APF_conver_Y);
+        APF_conver_Y.PWM_l = 10000;
+        APF_conver_Y.PWM_r = 10000;
+        printf("%f %f \n", APF_conver_Y.PWM_l/2, APF_conver_Y.PWM_r/2);
+        // leftMotor.Move(APF_conver_Y.PWM_l/2);  //TODO this is a limit for speed. Change to have fast dynamics
+        // rightMotor.Move(APF_conver_Y.PWM_r/2); 
 
-        leftMotor.Move(APF_conver_Y.PWM_l/4);  //TODO this is a limit for speed. Change to have fast dynamics
-        rightMotor.Move(APF_conver_Y.PWM_r/4); 
-        //printf("PWM: %f, %f pos: %f %f ang: %f \n", APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, APF_conver_U.psi_est);
+        // //printf("PWM: %f, %f pos: %f %f ang: %f \n", APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, APF_conver_U.psi_est);
         // Get model outputs here
 
         // Indicate task complete

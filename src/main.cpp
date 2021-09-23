@@ -25,6 +25,8 @@
 #include "ekfInit.hpp"
 #include "apfInit.hpp"
 
+#include "TankMotor.hpp"
+
 #include "Thread.h"
 #include "Imu/ADXL345_I2C.h"
 
@@ -124,7 +126,6 @@ real_T debug_psi_ref;
 real_T debug_vel_ref;
 
 
-
 int main() 
 {
   printf("\033[2J");
@@ -143,15 +144,15 @@ int main()
   // ControllerInit.start(cntrInit);
   printf("%s thread started\n", cntrInit_thread_name);
   SensorInit.start(sensInit);
-  // OutputPortInit.start(outportInit);
+  OutputPortInit.start(outportInit);
   UDPMavlinkComm.start(UDPMavlink);
   //Navigator.start(navigator);
   //Prognostic.start(prognostic);
   ThisThread::sleep_for(5000);
-  EKFInit.start(ekfInit);
-  APFInit.start(apfInit);
-  
+  //EKFInit.start(ekfInit);
+  //APFInit.start(apfInit);
 
+ 
   CommandLineInterface.start(callback(cli2,serial));
   // printf("Command line available\n");
   

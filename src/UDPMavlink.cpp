@@ -87,7 +87,7 @@ void UDPMavlink()
                     case MAVLINK_MSG_ID_ODOMETRY:
                         mavlink_msg_odometry_decode(&msgIn,&odom);
                         // printf("\033[11;1H");
-                        printf("odometry: %f, %f, %f, %f, %f, %f, %f, %f\n", (float)odom.time_usec, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, encoders.distance[0], encoders.distance[1]);
+                        //printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", (float)epochUDP, APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, encoders.distance[0], encoders.distance[1], debug_psi_ref, debug_vel_ref);
                         //printf("psi filter %f, psi mag %f \n", atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, Kalman_filter_conv_U.psi_mag*180/PI);
                         break;
 

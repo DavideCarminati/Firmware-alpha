@@ -34,22 +34,22 @@ P_APF_conver_T APF_conver_P = {
   // Variable: Ki_Vx
   //  Referenced by: '<S36>/Integral Gain'
 
-  1.85,
+  1.85, // 1.85
 
   // Variable: Ki_psi
   //  Referenced by: '<S80>/Integral Gain'
 
-  0.0,
+  0.1,
 
   // Variable: Kp_Vx
   //  Referenced by: '<S44>/Proportional Gain'
 
-  2.0,
+  2, //2
 
   // Variable: Kp_psi
   //  Referenced by: '<S88>/Proportional Gain'
 
-  1, // 0.4
+  0.4, // 0.4
 
   // Mask Parameter: PIDController_InitialConditionF
   //  Referenced by: '<S34>/Filter'
@@ -84,12 +84,12 @@ P_APF_conver_T APF_conver_P = {
   // Expression: 1
   //  Referenced by: '<Root>/X_goal'
 
-  0.8,
+  1,
 
   // Expression: 0
   //  Referenced by: '<Root>/Y_goal'
 
-  -0.4,
+  0,
 
   // Expression: 4
   //  Referenced by: '<Root>/ox'
