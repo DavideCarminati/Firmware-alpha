@@ -39,12 +39,12 @@ P_APF_conver_T APF_conver_P = {
   // Variable: Ki_psi
   //  Referenced by: '<S80>/Integral Gain'
 
-  1,
+  4,
 
   // Variable: Kp_Vx
   //  Referenced by: '<S44>/Proportional Gain'
 
-  2, //2
+  10, //2
 
   // Variable: Kp_psi
   //  Referenced by: '<S88>/Proportional Gain'
@@ -89,7 +89,7 @@ P_APF_conver_T APF_conver_P = {
   // Expression: 0
   //  Referenced by: '<Root>/Y_goal'
 
-  0,
+  1,
 
   // Expression: 4
   //  Referenced by: '<Root>/ox'
