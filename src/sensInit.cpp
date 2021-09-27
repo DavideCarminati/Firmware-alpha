@@ -132,12 +132,11 @@ void EncoderRead(void)
 {
     //Are encoders ON? If not, reset their positions
     val = switchEnc.getState();
-    if (val == 1) //YES
-        ledPin = 1; //Turn led on
-    else 
-        ledPin = 0;     //Turn led off
-        encoderL.setPosition(0);
-        encoderR.setPosition(0);
+    if (val == 1) {ledPin = 1;} 
+    else {ledPin = 0;}     
+        encoderL.Reset(true);   // True is for resetting the encoder timer too
+        encoderR.Reset(true);   // True is for resetting the encoder timer too
+        
     
     posL = -encoderL.getPosition()*360/(1920);
     posR = encoderR.getPosition()*360/(1920);
