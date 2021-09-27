@@ -44,7 +44,10 @@ ITG3200 gyro(PTE25,PTE24, 0x68);
 
 ADXL345_I2C imu(PTE25,PTE24);
 
-Battery bat(PTC3);
+Battery bat(PTD3);
+// DigitalIn batteryOn(PTD3, PullUp);
+DigitalOut ledPin(PTD2);
+
 
 FILE *f_calib;
 
@@ -231,8 +234,15 @@ void AccImuRead(void)
     // imuextValues.gx = data_test.gy;
     // imuextValues.gx = data_test.gz;
 
-
-
+    // if (batteryOn== true)
+    //     ledPin = 1;
+    // else 
+    // ledPin = 0;
+    int32_t val = bat.getState();
+    if (val == 1)
+        ledPin = 1;
+    else 
+    ledPin = 0;
 
 
 
