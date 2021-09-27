@@ -3,6 +3,7 @@
 
     Creates a timer that calls an interrupt with the given frequency
 */
+#include <cstdio>
 #include <mbed.h>
 #include "FXOS8700CQ.h"
 #include "global_vars.hpp"
@@ -21,6 +22,7 @@
 
 #include "Imu/ADXL345_I2C.h"
 #include "Imu/ITG3200.h"
+#include "Battery.hpp"
 
 #define FXOS8700CQ_FREQ 200 //!< Frequency at which the sensor is interrogated
 #define ACCIMU_FREQ 200
@@ -41,6 +43,11 @@ Encoder encoderR(PTC1, PTC8, true);
 ITG3200 gyro(PTE25,PTE24, 0x68);
 
 ADXL345_I2C imu(PTE25,PTE24);
+
+Battery bat(PTD3);
+// DigitalIn batteryOn(PTD3, PullUp);
+DigitalOut ledPin(PTD2);
+
 
 FILE *f_calib;
 
@@ -122,13 +129,20 @@ void postSensorEvent(void)
 
 void EncoderRead(void)
 {
+    
     posL = -encoderL.getPosition()*360/(1920);
     posR = encoderR.getPosition()*360/(1920);
     Kalman_filter_conv_U.pos_l = posL;
     Kalman_filter_conv_U.pos_r = posR;
+    
     speedL = encoderL.getSpeed()*60; // rpm
     speedR = encoderR.getSpeed()*60;
     // time_t secs = time(NULL);
+    //int32_t value = 1000;
+    // if (posL > value){
+    //     encoderL.Reset(true);
+    // printf("battery level:%d\n", bat.getState());
+    // }
     int secs = puttyTimer.read_ms();
     // printf("\033[13;1H");
     // printf("Encoder position: %d  %d\n",Kalman_filter_conv_U.pos_l, Kalman_filter_conv_U.pos_r);
@@ -221,8 +235,15 @@ void AccImuRead(void)
     // imuextValues.gx = data_test.gy;
     // imuextValues.gx = data_test.gz;
 
-
-
+    // if (batteryOn== true)
+    //     ledPin = 1;
+    // else 
+    // ledPin = 0;
+    int32_t val = bat.getState();
+    if (val == 1)
+        ledPin = 1;
+    else 
+    ledPin = 0;
 
 
 
