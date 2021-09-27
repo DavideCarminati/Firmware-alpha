@@ -22,7 +22,7 @@
 
 #include "Imu/ADXL345_I2C.h"
 #include "Imu/ITG3200.h"
-#include "Battery.hpp"
+#include "ManualSwitch.hpp"
 
 #define FXOS8700CQ_FREQ 200 //!< Frequency at which the sensor is interrogated
 #define ACCIMU_FREQ 200
@@ -44,7 +44,7 @@ ITG3200 gyro(PTE25,PTE24, 0x68);
 
 ADXL345_I2C imu(PTE25,PTE24);
 
-Battery bat(PTD3);
+ManualSwitch switchEnc(PTD3);
 // DigitalIn batteryOn(PTD3, PullUp);
 DigitalOut ledPin(PTD2);
 
@@ -60,6 +60,7 @@ int16_t readings[3];
 // char cmd[2];
 
 int32_t posL, posR;
+int32_t val;
 float speedL, speedR;
 Data2 imuextValues, data_test;
 
@@ -129,6 +130,14 @@ void postSensorEvent(void)
 
 void EncoderRead(void)
 {
+    //Are encoders ON? If not, reset their positions
+    val = switchEnc.getState();
+    if (val == 1) //YES
+        ledPin = 1; //Turn led on
+    else 
+        ledPin = 0;     //Turn led off
+        encoderL.setPosition(0);
+        encoderR.setPosition(0);
     
     posL = -encoderL.getPosition()*360/(1920);
     posR = encoderR.getPosition()*360/(1920);
@@ -239,11 +248,7 @@ void AccImuRead(void)
     //     ledPin = 1;
     // else 
     // ledPin = 0;
-    int32_t val = bat.getState();
-    if (val == 1)
-        ledPin = 1;
-    else 
-    ledPin = 0;
+
 
 
 

@@ -1,15 +1,15 @@
-#include "EncoderPower.hpp"
+#include "ManualSwitch.hpp"
 #include <cstdio>
 
 
-EncoderPower::EncoderPower(PinName int_a):bat_in(int_a)
+ManualSwitch::ManualSwitch(PinName int_a):bat_in(int_a)
 {
     // if (bat_in)
-    //  {printf("EncoderPower on");}
-    // else{printf("EncoderPower off");}
-    EncoderPower::Nothing();
+    //  {printf("ManualSwitch on");}
+    // else{printf("ManualSwitch off");}
+    ManualSwitch::Nothing();
 }
  
- void EncoderPower::Nothing(void){
+ void ManualSwitch::Nothing(void){
      //nothing
  }

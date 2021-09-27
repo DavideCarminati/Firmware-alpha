@@ -4,25 +4,25 @@
 #include "mbed.h"
 #include "rtwtypes.h"
 
-/** EncoderPower class.
- *  Class to be used to define the use of the EncoderPower conditioned by the state of an switch
+/** ManualSwitch class.
+ *  Class to be used to define the use of the ManualSwitch conditioned by the state of an switch
  * Example:
  * @code
  * #include "mbed.h"
- * #include "EncoderPower.hpp"
+ * #include "ManualSwitch.hpp"
  *
- *   EncoderPower bat(PTBsomething);
+ *   ManualSwitch bat(PTBsomething);
 
  * @endcode
  */
-class EncoderPower
+class ManualSwitch
 {
     public:
     /** Create Encoder instance
     @param int_a Pin to be used as InterruptIn! Be careful, as not all pins on all platforms may be used as InterruptIn.
     */
 
-    EncoderPower(PinName int_a);
+    ManualSwitch(PinName int_a);
     /** Request position
     @returns current position in encoder counts
     */
