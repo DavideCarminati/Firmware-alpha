@@ -1,28 +1,28 @@
-#ifndef _BATTERY_H_
-#define _BATTERY_H_
+#ifndef _ENCODERPOWER_H_
+#define _ENCODERPOWER_H_
 
 #include "mbed.h"
 #include "rtwtypes.h"
 
-/** Battery class.
- *  Class to be used to define the use of the battery conditioned by the state of an switch
+/** EncoderPower class.
+ *  Class to be used to define the use of the EncoderPower conditioned by the state of an switch
  * Example:
  * @code
  * #include "mbed.h"
- * #include "Battery.hpp"
+ * #include "EncoderPower.hpp"
  *
- *   Battery bat(PTBsomething);
+ *   EncoderPower bat(PTBsomething);
 
  * @endcode
  */
-class Battery
+class EncoderPower
 {
     public:
     /** Create Encoder instance
     @param int_a Pin to be used as InterruptIn! Be careful, as not all pins on all platforms may be used as InterruptIn.
     */
 
-    Battery(PinName int_a);
+    EncoderPower(PinName int_a);
     /** Request position
     @returns current position in encoder counts
     */
