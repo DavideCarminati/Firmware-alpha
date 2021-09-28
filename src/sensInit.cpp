@@ -132,12 +132,14 @@ void EncoderRead(void)
 {
     //Are encoders ON? If not, reset their positions
     val = switchEnc.getState();
-    if (val == 1) {ledPin = 1;} 
-    else {ledPin = 0;}     
+    if (val == 1) {ledPin = 1;}
+    
+    else {
+        ledPin = 0;     
         encoderL.Reset(true);   // True is for resetting the encoder timer too
         encoderR.Reset(true);   // True is for resetting the encoder timer too
-        
-    
+    }
+
     posL = -encoderL.getPosition()*360/(1920);
     posR = encoderR.getPosition()*360/(1920);
     Kalman_filter_conv_U.pos_l = posL;
