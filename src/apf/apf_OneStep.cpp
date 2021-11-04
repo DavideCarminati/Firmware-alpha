@@ -36,7 +36,7 @@ void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
         // Save FPU context here (if necessary)
         // Re-enable timer or interrupt here
         // Set model inputs here
-
+        // TODO AZZERARE POSIZIONE QUANDO SI SPEGNE IL ROBOT
         APF_conver_U.psi_est = atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]);
         APF_conver_U.Vx_est = odom.vx*cos(atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]))+odom.vy*sin(atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3])); // Vx in body frame
         APF_conver_U.X_est = odom.x;
@@ -45,8 +45,8 @@ void apf(RT_MODEL_APF_conver_T *const APF_conver_M)
         // Step the model
         APF_conver_step(APF_conver_M, &APF_conver_U, &APF_conver_Y);
         // printf("%f %f \n", APF_conver_Y.PWM_l/2, APF_conver_Y.PWM_r/2);
-        leftMotor.Move(APF_conver_Y.PWM_l);  //TODO this is a limit for speed. Change to have fast dynamics
-        rightMotor.Move(APF_conver_Y.PWM_r); 
+        leftMotor.Move(APF_conver_Y.PWM_l/3);  //TODO this is a limit for speed. Change to have fast dynamics
+        rightMotor.Move(APF_conver_Y.PWM_r/3); 
 
         // //printf("PWM: %f, %f pos: %f %f ang: %f \n", APF_conver_Y.PWM_l, APF_conver_Y.PWM_r, odom.x, odom.y, APF_conver_U.psi_est);
         // Get model outputs here
