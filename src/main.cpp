@@ -23,8 +23,8 @@
 #include "prognostic.hpp"
 #include "massStorage.hpp"
 #include "ekfInit.hpp"
-#include "apfInit.hpp"
-
+// #include "apfInit.hpp"
+#include "APF_SMC/APF_SMC_Init.hpp"
 #include "TankMotor.hpp"
 
 #include "Thread.h"
@@ -45,7 +45,7 @@ const char* Navi_thread_name = "Navigator";
 const char* prognostic_thread_name = "Prognostic";
 const char* sdcard_thread_name = "SDStorage";
 const char* ekfInit_thread_name = "ekfInit";
-const char* apfInit_thread_name = "apfInit";
+const char* apfInit_thread_name = "APF_SMC_Init";
 
 
 Serial* serial = new Serial(USBTX,USBRX,115200);
@@ -70,7 +70,7 @@ Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
 Thread Prognostic(osPriorityNormal,8092,nullptr,prognostic_thread_name);
 Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name);
 Thread EKFInit(osPriorityNormal,8092,nullptr,ekfInit_thread_name);
-Thread APFInit(osPriorityNormal,8092,nullptr,apfInit_thread_name);
+Thread APF_SMC_Init(osPriorityNormal,8092,nullptr,apfInit_thread_name);
 
 /** Defining semaphores for synchronization purposes
  * 
@@ -119,8 +119,8 @@ Mutex led_lock;
 ExtU_Kalman_filter_conv_T Kalman_filter_conv_U;// External inputs
 ExtY_Kalman_filter_conv_T Kalman_filter_conv_Y;// External outputs
 
-ExtU_APF_conver_T APF_conver_U; // External inputs
-ExtY_APF_conver_T APF_conver_Y; // External outputs
+ExtU_APF_SMC_T APF_SMC_U; // External inputs
+ExtY_APF_SMC_T APF_SMC_Y; // External outputs
 
 real_T debug_psi_ref;
 real_T debug_vel_ref;
@@ -150,7 +150,7 @@ int main()
   //Prognostic.start(prognostic);
   ThisThread::sleep_for(5000);
   EKFInit.start(ekfInit);
-  APFInit.start(apfInit);
+  APF_SMC_Init.start(APF_SMC_Init);
 
  
   CommandLineInterface.start(callback(cli2,serial));

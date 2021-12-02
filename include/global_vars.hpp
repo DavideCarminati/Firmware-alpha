@@ -12,7 +12,7 @@
 #include "EthernetInterface.h"
 #include "FXOS8700CQ.h"
 #include "Kalman_filter_conv.h"
-#include "APF_conver.h"
+#include "APF_SMC/APF_SMC.h"
 #include "Imu/ADXL345_I2C.h"
 
 #include "Imu/ADXL345_I2C.h"
@@ -115,8 +115,8 @@ extern ExtY_Kalman_filter_conv_T Kalman_filter_conv_Y;// External outputs
 #ifndef APF_TASK
 #define APF_TASK
 
-extern ExtU_APF_conver_T APF_conver_U; // External inputs
-extern ExtY_APF_conver_T APF_conver_Y; // External outputs
+extern ExtU_APF_SMC_T APF_SMC_U; // External inputs
+extern ExtY_APF_SMC_T APF_SMC_Y; // External outputs
 
 #endif
 
