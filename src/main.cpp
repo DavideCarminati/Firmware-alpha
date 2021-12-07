@@ -19,7 +19,7 @@
 #include "outportInit.hpp"
 #include "cli2.hpp"
 #include "UDPMavlink.hpp"
-#include "navigator.hpp"
+// #include "navigator.hpp"
 #include "prognostic.hpp"
 #include "massStorage.hpp"
 #include "ekfInit.hpp"
@@ -41,7 +41,7 @@ const char* outportInit_thread_name = "outportInit";
 const char* cli_thread_name = "cli";
 const char* UDPMavlink_thread_name = "UDPMavlink";
 const char* UDP_PIL_thread_name = "UDPPIL";
-const char* Navi_thread_name = "Navigator";
+// const char* Navi_thread_name = "Navigator";
 const char* prognostic_thread_name = "Prognostic";
 const char* sdcard_thread_name = "SDStorage";
 const char* ekfInit_thread_name = "ekfInit";
@@ -66,7 +66,7 @@ Thread SensorInit(osPriorityNormal,8092,nullptr,sensInit_thread_name);
 Thread OutputPortInit(osPriorityNormal,16184,nullptr,outportInit_thread_name);
 Thread CommandLineInterface(osPriorityNormal,8092,nullptr,cli_thread_name);
 Thread UDPMavlinkComm(osPriorityNormal,16184,nullptr,UDPMavlink_thread_name);
-Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
+// Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
 Thread Prognostic(osPriorityNormal,8092,nullptr,prognostic_thread_name);
 Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name);
 Thread EKFInit(osPriorityNormal,8092,nullptr,ekfInit_thread_name);
@@ -88,8 +88,8 @@ Servo servo1(PTC2);
 /** Defining global inputs/outputs of the controller feedback_control.cpp
  * 
  */ 
-ExtU_PI_contr_T PI_contr_U;     // External inputs
-ExtY_PI_contr_T PI_contr_Y;     // External outputs
+// ExtU_PI_contr_T PI_contr_U;     // External inputs
+// ExtY_PI_contr_T PI_contr_Y;     // External outputs
 
 /** Defining global mavlink messages declared in global_msgs.hpp
  * 

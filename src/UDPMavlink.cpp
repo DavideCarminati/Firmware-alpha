@@ -10,7 +10,7 @@
 #include "global_msgs.hpp"
 #include <algorithm>
 #include <iterator>
-
+#include "sensInit.hpp"
 #include "UDPMavlink.hpp"
 #include "Imu/ADXL345_I2C.h"
 
@@ -88,8 +88,8 @@ void UDPMavlink()
                         mavlink_msg_odometry_decode(&msgIn,&odom);
                         // printf("\033[11;1H");
 
-                        printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", (float)epochUDP, APF_SMC_Y.PWM_l, APF_SMC_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, encoders.distance[0], encoders.distance[1], debug_psi_ref, debug_vel_ref);
-                        //printf("psi filter %f, psi mag %f \n", atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, Kalman_filter_conv_U.psi_mag*180/PI);
+                        // printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", (float)epochUDP, APF_SMC_Y.PWM_l, APF_SMC_Y.PWM_r, odom.x, odom.y, odom.vx, odom.vy, atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, encoders.distance[0], encoders.distance[1], debug_psi_ref, debug_vel_ref);
+                        //printf("psi filter %f, psi mag %f \n", atan2(2*odom.q[3]*odom.q[0], 1 - 2*pow(odom.q[3],2))*180/PI, VblesU.psi_mag*180/PI);
                         break;
 
                     // case MAVLINK_MSG_ID_IMU:
@@ -118,16 +118,16 @@ void UDPMavlink()
 
 // INTERNAL IMU //////////////
         time_t sec = 0;//time(NULL);
-        // Kalman_filter_conv_U.X_rs=odom.x;
-        // Kalman_filter_conv_U.Y_rs=odom.y;
-        // Kalman_filter_conv_U.q0_rs=odom.q[0];
-        // Kalman_filter_conv_U.q1_rs=odom.q[1];
-        // Kalman_filter_conv_U.q2_rs=odom.q[2];
-        // Kalman_filter_conv_U.q3_rs=odom.q[3];
+        // VblesU.X_rs=odom.x;
+        // VblesU.Y_rs=odom.y;
+        // VblesU.q0_rs=odom.q[0];
+        // VblesU.q1_rs=odom.q[1];
+        // VblesU.q2_rs=odom.q[2];
+        // VblesU.q3_rs=odom.q[3];
         // float psi_rs;
         // psi_rs= atan2(2*(odom.q[0]*odom.q[3]+odom.q[1]*odom.q[2]),1-2*(pow(odom.q[2],2)+pow(odom.q[3],2)));
-        // Kalman_filter_conv_U.Vx_rs=odom.vx*cos(psi_rs)+odom.vy*sin(psi_rs);
-        // Kalman_filter_conv_U.Vy_rs=odom.vy*cos(psi_rs)-odom.vx*sin(psi_rs);
+        // VblesU.Vx_rs=odom.vx*cos(psi_rs)+odom.vy*sin(psi_rs);
+        // VblesU.Vy_rs=odom.vy*cos(psi_rs)-odom.vx*sin(psi_rs);
         
 
         imu_k64.time_boot_ms = sec;
@@ -145,9 +145,9 @@ void UDPMavlink()
         imu_k64.zacc = -(int16_t)accz; 
 
         // zmag is q4 for imu ros message, signs are for the reference frame
-        quat_w = sin(Kalman_filter_conv_U.psi_mag/2)*10000;
+        quat_w = sin(VblesU.psi_mag/2)*10000;
         imu_k64.zmag = (int16_t)quat_w; // TODO: change variable name when ekf is not used
-        //printf("Quaternion: %d  Angle: %f quat_w: %f \n", imu_k64.zmag, Kalman_filter_conv_U.psi_mag*180/PI, quat_w);
+        //printf("Quaternion: %d  Angle: %f quat_w: %f \n", imu_k64.zmag, VblesU.psi_mag*180/PI, quat_w);
         // Following variables in SCALED_IMU MAVLINK message are used to sent COVARIANCE values
         imu_k64.xmag = (int16_t)2.2e-06*10^7;   // Covariance for ax
         imu_k64.ymag = (int16_t)1.7e-06*10^7;   // Covariance for ay
@@ -182,7 +182,7 @@ void UDPMavlink()
         // zmag is q4 for imu ros message, signs are for the reference frame
         quat_w = 0;
         imu_ext.zmag = 0; // TODO: change variable name when ekf is not used
-        //printf("Quaternion: %d  Angle: %f quat_w: %f \n", imu_k64.zmag, Kalman_filter_conv_U.psi_mag*180/PI, quat_w);
+        //printf("Quaternion: %d  Angle: %f quat_w: %f \n", imu_k64.zmag, VblesU.psi_mag*180/PI, quat_w);
         // Following variables in SCALED_IMU MAVLINK message are used to sent COVARIANCE values
         imu_ext.xmag = 0;   // Covariance for ax
         imu_ext.ymag = 0;   // Covariance for ay
@@ -208,8 +208,8 @@ void UDPMavlink()
 /////////////////////////////////////////////
 
         encoders.time_usec = sec;
-        encoders.distance[0] = Kalman_filter_conv_U.pos_l*0.02*PI/180;
-        encoders.distance[1] = Kalman_filter_conv_U.pos_r*0.02*PI/180;
+        encoders.distance[0] = VblesU.pos_l*0.02*PI/180;
+        encoders.distance[1] = VblesU.pos_r*0.02*PI/180;
 
         mavlink_msg_wheel_distance_encode(SYS_ID,COMP_ID,&encodersOut,&encoders);
         mavlink_msg_to_send_buffer((uint8_t*) &out_buf,&encodersOut);

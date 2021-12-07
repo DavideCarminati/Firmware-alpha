@@ -48,7 +48,6 @@ ManualSwitch switchEnc(PTD3);
 // DigitalIn batteryOn(PTD3, PullUp);
 DigitalOut ledPin(PTD2);
 
-
 FILE *f_calib;
 
 float roll,pitch,mag_norm;
@@ -142,8 +141,8 @@ void EncoderRead(void)
 
     posL = -encoderL.getPosition()*360/(1920);
     posR = encoderR.getPosition()*360/(1920);
-    Kalman_filter_conv_U.pos_l = posL;
-    Kalman_filter_conv_U.pos_r = posR;
+    VblesU.pos_l = posL;
+    VblesU.pos_r = posR;
     
     speedL = encoderL.getSpeed()*60; // rpm
     speedR = encoderR.getSpeed()*60;
@@ -153,7 +152,7 @@ void EncoderRead(void)
     //     encoderL.Reset(true);
     // printf("battery level:%d\n", bat.getState());
     // }
-    int secs = puttyTimer.read_ms();
+    // int secs = puttyTimer.read_ms();
     // printf("\033[13;1H");
     // printf("Encoder position: %d  %d\n",Kalman_filter_conv_U.pos_l, Kalman_filter_conv_U.pos_r);
     // printf("time %d, pwm left,right: %f, %f X Y Vx Vy psi %f %f %f %f %f Vref %f psiref %f\n", 
@@ -179,7 +178,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     roll = atan2(-accmagValues.ay,sqrt(accmagValues.ax*accmagValues.ax + accmagValues.az*accmagValues.az));
     // feedback_control_U.psi_est = atan2(-accmagValues.my*cos(roll) - accmagValues.mz*sin(roll),accmagValues.mx*cos(pitch) \
     //                             + accmagValues.my*sin(pitch)*sin(roll) - accmagValues.mz*sin(pitch)*cos(roll))*180/3.14;
-    PI_contr_U.psi_odom = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
+    // PI_contr_U.psi_odom = atan2(magValues_filt[1],magValues_filt[0])*180/3.14;
     // printf("yaw: %f\n",feedback_control_U.psi_est);
     // printf("ax: %.2f ay: %.2f az: %.2f pitch: %.2f roll: %.2f yaw: %.2f mx: %.2f my: %.2f mz: %.2f\n", \
     //         accmagValues.ax, accmagValues.ay, accmagValues.az, pitch*180/3.14, roll*180/3.14, feedback_control_U.psi_est, accmagValues.mx, accmagValues.my, accmagValues.mz);
@@ -189,9 +188,9 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     // printf("acc read: %f servo read: %f\n", feedback_control_U.reference,feedback_control_U.estimated);
     // printf("%f\n", accmagValues.ax);
     // TODO Control sign Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);//*180/3.14;
-    Kalman_filter_conv_U.psi_mag = atan2(magValues_filt[1],magValues_filt[0]);
-    Kalman_filter_conv_U.ax = accmagValues.ax*9.81;
-    Kalman_filter_conv_U.ay = accmagValues.ay*9.81;
+    VblesU.psi_mag = atan2(magValues_filt[1],magValues_filt[0]);
+    VblesU.ax = accmagValues.ax*9.81;
+    VblesU.ay = accmagValues.ay*9.81;
     // // Internal IMU data
     // wait(0.1);
     // printf("Internal IMU data:\n");
@@ -326,59 +325,4 @@ void refreshParamFileSD(void)
 
 
 
-
-
-
-// FIXME DEAD CODE!!
-// void writeOnSD(void)
-// {
-//     mbed_event_queue()->cancel(id_calib);
-//     printf("Writing vals...\n");
-//     magCal.getExtremes(minMag, maxMag);
-//     fflush(stdout);
-//     f_calib = fopen("/fs/calib.txt","a+");
-//     printf("%s\n", (!f_calib ? "Fail :(" : "OK"));
-//     fflush(stdout);
-//     rewind(f_calib);
-//     long line_begin = ftell(f_calib); // Beginning of the line
-//     while(!feof(f_calib)) // Now writing into the file on the SD card
-//     {
-//         printf("Getting char... \n");
-//         temp_char = fgetc(f_calib);
-//         fflush(stdout);
-//         if (temp_char == '#' || temp_char == '\t')  // Skip the line
-//         {
-//             fgets(f_buff_disc,100,f_calib); // Discard the line
-//             line_begin = ftell(f_calib);    // Set new beginning of the line
-//             printf("Line discarded\n");
-//             // memset(f_buff,0,sizeof(f_buff));
-//             fflush(stdout);
-//         }
-//         else // Here I look for the field I'm interested in and I fill it with data
-//         {
-//             fseek(f_calib,line_begin,SEEK_SET);
-//             fgets(f_buff, 100, f_calib);
-//             // FIXME Since opening file as a+ allows output oper to file reposition the cursor at the end of the file, I have to do ftell() here and 
-//             // a fseek() right before the fprintf which write on the file in the if below! BUT I cannot overwrite things... I can only append! So the
-//             // best way is to completely rewrite the params file each time a modification occurs, implementing this function in mass storage.
-//             printf(f_buff);
-//             printf("qui\n");
-//             fflush(stdout);
-//             if (!strcmp(f_buff,"Magnetometer extremes [minXYZ; maxXYZ]\n"))
-//             {
-//                 fprintf(f_calib,"\t%.3e %.3e %.3e\n",minMag[0], minMag[1], minMag[2]);
-//                 fprintf(f_calib,"\t%.3e %.3e %.3e\n", maxMag[0], maxMag[1], maxMag[2]);
-//                 line_begin = ftell(f_calib);
-//                 // fflush(stdout);
-//                 printf("done\n");
-//                 fflush(stdout);
-//                 break;
-
-//             }
-//         }
-//     }
-//     fclose(f_calib); // Important!
-//     calib_led = 1;
-//     queue.dispatch();           // Re-dispatch the sensor queue
-// }
 

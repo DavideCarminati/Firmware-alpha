@@ -7,13 +7,12 @@
 
 #include <mbed.h>
 #include "common/mavlink.h"
-#include "PI_contr.h"
 #include "Servo.h"
 #include "EthernetInterface.h"
 #include "FXOS8700CQ.h"
-#include "Kalman_filter_conv.h"
 #include "APF_SMC/APF_SMC.h"
 #include "Imu/ADXL345_I2C.h"
+#include "sensInit.hpp"
 
 #include "Imu/ADXL345_I2C.h"
 
@@ -40,8 +39,8 @@
  * This allows to keep the Firmware unchanged.
  */
 
-extern ExtU_PI_contr_T PI_contr_U;     // External inputs
-extern ExtY_PI_contr_T PI_contr_Y;     // External outputs
+// extern ExtU_PI_contr_T PI_contr_U;     // External inputs
+// extern ExtY_PI_contr_T PI_contr_Y;     // External outputs
 
 #endif
 
@@ -104,11 +103,19 @@ extern mavlink_set_position_target_local_ned_t setpointsTrajectoryPlanner;
 
 #endif
 
-#ifndef EKF_TASK
-#define EKF_TASK
+// #ifndef EKF_TASK
+// #define EKF_TASK
 
-extern ExtU_Kalman_filter_conv_T Kalman_filter_conv_U;// External inputs
-extern ExtY_Kalman_filter_conv_T Kalman_filter_conv_Y;// External outputs
+// // extern ExtU_Kalman_filter_conv_T Kalman_filter_conv_U;// External inputs
+// // extern ExtY_Kalman_filter_conv_T Kalman_filter_conv_Y;// External outputs
+
+// #endif
+
+#ifndef SSINIT_TASK
+#define SSINIT_TASK
+
+extern SensinitU_Variables VblesU;// External inputs
+extern SensinitY_Variables VblesY;// External outputs
 
 #endif
 
