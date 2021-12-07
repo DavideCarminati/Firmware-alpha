@@ -73,7 +73,31 @@ typedef struct {
   real_T ox;                           // '<Root>/ox'
   real_T oy;                           // '<Root>/oy'
 } ExtU_APF_SMC_T;
+// External outputs (root outports fed by signals with default storage)
+typedef struct{
+  real_T X;                            // '<Root>/X'
+  real_T Y;                            // '<Root>/Y'
+  real_T psi;                          // '<Root>/psi '
+  real_T Vx;                           // '<Root>/Vx '
+  real_T Vy;                           // '<Root>/Vy '
+}SensinitY_Variables;
 
+
+typedef struct{
+  real_T pos_l;                        // '<Root>/pos_l'
+  real_T pos_r;                        // '<Root>/pos_r'
+  real_T psi_mag;                      // '<Root>/psi_mag'
+  real_T ax;                           // '<Root>/ax'
+  real_T ay;                           // '<Root>/ay'
+  real_T X_rs;                         // '<Root>/X_rs'
+  real_T Y_rs;                         // '<Root>/Y_rs'
+  real_T Vx_rs;                        // '<Root>/Vx_rs'
+  real_T Vy_rs;                        // '<Root>/Vy_rs'
+  real_T q0_rs;                        // '<Root>/q0_rs'
+  real_T q1_rs;                        // '<Root>/q1_rs'
+  real_T q2_rs;                        // '<Root>/q2_rs'
+  real_T q3_rs;                        // '<Root>/q3_rs'
+} SensinitU_Variables;
 // External outputs (root outports fed by signals with default storage)
 typedef struct {
   real_T Vx_cmd;                       // '<Root>/Vx_cmd'

@@ -62,7 +62,6 @@ int32_t posL, posR;
 int32_t val;
 float speedL, speedR;
 Data2 imuextValues, data_test;
-
 EventQueue queue;
 // EventQueue SDaccessQueue(8096);
 Event<void(void)> accmagreadEvent(&queue,AccMagRead);

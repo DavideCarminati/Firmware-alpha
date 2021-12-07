@@ -22,7 +22,7 @@
 // #include "navigator.hpp"
 #include "prognostic.hpp"
 #include "massStorage.hpp"
-#include "ekfInit.hpp"
+// #include "ekfInit.hpp"
 // #include "apfInit.hpp"
 #include "APF_SMC/APF_SMC_Init.hpp"
 #include "TankMotor.hpp"
@@ -44,7 +44,7 @@ const char* UDP_PIL_thread_name = "UDPPIL";
 // const char* Navi_thread_name = "Navigator";
 const char* prognostic_thread_name = "Prognostic";
 const char* sdcard_thread_name = "SDStorage";
-const char* ekfInit_thread_name = "ekfInit";
+// const char* ekfInit_thread_name = "ekfInit";
 const char* apfInit_thread_name = "APF_SMC_Init";
 
 
@@ -69,8 +69,8 @@ Thread UDPMavlinkComm(osPriorityNormal,16184,nullptr,UDPMavlink_thread_name);
 // Thread Navigator(osPriorityNormal,16184,nullptr,Navi_thread_name);
 Thread Prognostic(osPriorityNormal,8092,nullptr,prognostic_thread_name);
 Thread SDStorage(osPriorityNormal,8092,nullptr,sdcard_thread_name);
-Thread EKFInit(osPriorityNormal,8092,nullptr,ekfInit_thread_name);
-Thread APF_SMC_Init(osPriorityNormal,8092,nullptr,apfInit_thread_name);
+// Thread EKFInit(osPriorityNormal,8092,nullptr,ekfInit_thread_name);
+Thread APFSMCInit(osPriorityNormal,8092,nullptr,apfInit_thread_name);
 
 /** Defining semaphores for synchronization purposes
  * 
@@ -116,8 +116,8 @@ UDPSocket socket;
  */
 Mutex led_lock;
 
-ExtU_Kalman_filter_conv_T Kalman_filter_conv_U;// External inputs
-ExtY_Kalman_filter_conv_T Kalman_filter_conv_Y;// External outputs
+SensinitU_Variables VblesU;// External inputs
+SensinitY_Variables VblesY;// External outputs
 
 ExtU_APF_SMC_T APF_SMC_U; // External inputs
 ExtY_APF_SMC_T APF_SMC_Y; // External outputs
@@ -149,8 +149,8 @@ int main()
   //Navigator.start(navigator);
   //Prognostic.start(prognostic);
   ThisThread::sleep_for(5000);
-  EKFInit.start(ekfInit);
-  APF_SMC_Init.start(APF_SMC_Init);
+  // EKFInit.start(ekfInit);
+  APFSMCInit.start(APF_SMC_Init);
 
  
   CommandLineInterface.start(callback(cli2,serial));

@@ -42,8 +42,8 @@ void apf(RT_MODEL_APF_SMC_T *const APF_SMC_M)
         APF_SMC_U.ox = 10;
         APF_SMC_U.oy = 10;
 
-        APF_SMC_U.psi_est = atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]);
-        APF_SMC_U.Vx_est = odom.vx*cos(atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]))+odom.vy*sin(atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3])); // Vx in body frame
+        APF_SMC_U.psi = atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]);
+        APF_SMC_U.Vx = odom.vx*cos(atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3]))+odom.vy*sin(atan2(2*odom.q[0]*odom.q[3],1-2*odom.q[3]*odom.q[3])); // Vx in body frame
         APF_SMC_U.X_est = odom.x;
         APF_SMC_U.Y_est = odom.y;
 

@@ -14,7 +14,6 @@
 #include "Imu/ADXL345_I2C.h"
 #include "sensInit.hpp"
 
-#include "Imu/ADXL345_I2C.h"
 
 #ifndef UDP_BUFFER
 #define UDP_BUFFER
