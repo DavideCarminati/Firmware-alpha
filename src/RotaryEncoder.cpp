@@ -77,3 +77,14 @@ void Encoder::timeouthandler(void)
     m_speed  = 0;
     zero_speed = true;
 }
+
+void Encoder::Reset(bool speed)
+{
+    m_speed_enabled = speed;
+    if(m_speed_enabled)
+        EncoderTimer.start();
+    m_position = 0;
+    m_speed = 0;
+    zero_speed = false;
+
+}

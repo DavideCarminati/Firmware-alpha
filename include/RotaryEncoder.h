@@ -2,6 +2,7 @@
 #define _ENCODER_H_
 
 #include "mbed.h"
+#include "rtwtypes.h"
 
 /** Encoder class.
  *  Used to read out incremental position encoder. Decodes position in X2 configuration.
@@ -36,10 +37,13 @@ class Encoder
     @returns current position in encoder counts
     */
     int32_t getPosition(){return m_position;}
+    int32_t getPinB(){return pin_b;} // Returns the value of the digital Inp in pin B
+    int32_t getPinA(){return pin_a;}
     /** Overwrite position
     @param pos position to be written
     */
     void    setPosition(int32_t pos){m_position = pos;}
+    void Reset(bool speed=true);
     /** Request speed
     @returns current speed
     */
