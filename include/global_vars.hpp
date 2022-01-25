@@ -80,6 +80,13 @@ extern Data accmagValues;
 
 #endif
 
+#ifndef ACCMAGSpkf_VALUES
+#define ACCMAGSpkf_VALUES
+
+extern Data accmagValuesSpkf;
+
+#endif
+
 #ifndef ATTITUDE_VALUES
 #define ATTITUDE_VALUES
 
