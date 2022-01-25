@@ -21,7 +21,7 @@
 
 #include "Imu/ADXL345_I2C.h"
 #include "Imu/ITG3200.h"
-// #include "ManualSwitch.hpp"
+#include "ManualSwitch.hpp"
 
 #define FXOS8700CQ_FREQ 50 //!< Frequency at which the sensor is interrogated
 #define ACCIMU_FREQ 50
@@ -42,6 +42,8 @@ Encoder encoderR(PTC1, PTC8, true);
 ITG3200 gyro(PTE25,PTE24, 0x68);
 
 ADXL345_I2C imu(PTE25,PTE24);
+ManualSwitch switchEnc(PTD3);
+DigitalOut ledPin(PTD2);
 
 FILE *f_calib;
 
@@ -131,6 +133,17 @@ void postSensorEvent(void)
 
 void EncoderRead(void)
 {
+
+    //Are encoders ON? If not, reset their positions
+    val = switchEnc.getState();
+    if (val == 1) {ledPin = 1;}
+    
+    else {
+        ledPin = 0;     
+        encoderL.Reset(true);   // True is for resetting the encoder timer too
+        encoderR.Reset(true);   // True is for resetting the encoder timer too
+    }
+    
     posL = -encoderL.getPosition()*360/(2*1920);
     posR = encoderR.getPosition()*360/(2*1920);
     distanceValues.posL = posL;
