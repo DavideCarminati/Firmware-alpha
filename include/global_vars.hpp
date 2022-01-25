@@ -80,10 +80,10 @@ extern Data accmagValues;
 
 #endif
 
-#ifndef ACCMAGSpkf_VALUES
-#define ACCMAGSpkf_VALUES
+#ifndef IMUEXT_VALUES
+#define IMUEXT_VALUES
 
-extern Data accmagValuesSpkf;
+extern Data2 imuextValues;
 
 #endif
 

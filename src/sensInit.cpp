@@ -50,9 +50,15 @@ float magValues[3], magValues_filt[3], minExtremes[3], maxExtremes[3], minMag[3]
 int measurements_count = 0, id_calib;
 char f_buff[100], f_buff_disc[100], temp_char;
 float mag_extremes[6];
+int16_t readings[3];
+// char cmd[2];
 
 int32_t posL, posR;
+int32_t val;
 float speedL, speedR;
+Data2 imuextValues, data_test;
+
+
 
 
 EventQueue queue;
