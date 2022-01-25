@@ -56,7 +56,7 @@ int16_t readings[3];
 int32_t posL, posR;
 int32_t val;
 float speedL, speedR;
-Data2 imuextValues, data_test;
+Data2 imuextValues;
 
 
 
