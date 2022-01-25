@@ -23,8 +23,8 @@
 #include "Imu/ITG3200.h"
 // #include "ManualSwitch.hpp"
 
-#define FXOS8700CQ_FREQ 200 //!< Frequency at which the sensor is interrogated
-#define ACCIMU_FREQ 100
+#define FXOS8700CQ_FREQ 50 //!< Frequency at which the sensor is interrogated
+#define ACCIMU_FREQ 50
 
 // using namespace events;
 // using namespace rtos;
@@ -109,12 +109,17 @@ void postSensorEvent(void)
 {
     // Write here the sensor read events to post them into the queue!
     accmagreadEvent.period(FXOS8700CQ_FREQ); 
-    accmagreadEvent.delay(200);
+    accmagreadEvent.delay(50);
     accmagreadEvent.post();
     // queue.call_every(200,AccMagRead);
-    encoderEvent.period(100);
-    encoderEvent.delay(200);
+    encoderEvent.period(50);
+    encoderEvent.delay(50);
     encoderEvent.post();
+
+
+    accimureadEvent.period(ACCIMU_FREQ); 
+    accimureadEvent.delay(50);
+    accimureadEvent.post();
 
     puttyTimer.start();
 }
@@ -184,7 +189,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);  // WARNING: signs are different because a shift of range has been performed
     Kalman_filter_conv_U.ax = -accmagValues.ax*9.81;                              // WARNING: signs are different because axis orientation
     Kalman_filter_conv_U.ay = accmagValues.ay*9.81;
-    printf("ax %f ay %f az %f\n", accmagValues.ax*1000, accmagValues.ay*1000, accmagValues.az*1000);
+    //printf("ax %f ay %f az %f\n", accmagValues.ax*1000, accmagValues.ay*1000, accmagValues.az*1000);
     irq.rise(calib_irq_handle);
 }
 
@@ -202,7 +207,7 @@ void AccImuRead(void)
     //Full resolution, +/-16g, 4mg/LSB.
     imu.setDataFormatControl(0x0B);
     //3.2kHz data rate.
-    imu.setDataRate(ADXL345_100HZ);
+    imu.setDataRate(ADXL345_50HZ);
     //Measurement mode.
     imu.setPowerControl(0x08);
     //////////////////////////////////////////
@@ -252,7 +257,7 @@ void AccImuRead(void)
 
     imuextValues.ax = ((float)readings[1]-7.444)/256.916;
     imuextValues.ay = (-(float)readings[0]-1.299)/257.108;
-    imuextValues.az = ((float)readings[2]+-0.8159)/253.396;
+    imuextValues.az = ((float)readings[2]+0.8159)/253.396;
     imuextValues.gx = gyro.getGyroY()/gyro_resol;
     imuextValues.gy = -gyro.getGyroX()/gyro_resol;
     imuextValues.gz = gyro.getGyroZ()/gyro_resol;

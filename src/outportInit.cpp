@@ -72,8 +72,8 @@ void postServoEvent(void)
     servowriteEvent.delay(500);
     // servowriteEvent.post();
 
-    motorwriteEvent.delay(4000);
-    motorwriteEvent.period(10);
+    motorwriteEvent.delay(100);
+    motorwriteEvent.period(50);
     motorwriteEvent.post();
     // printf("\033[2;60Hpost");
 
@@ -144,12 +144,12 @@ void MotorWrite(void)
     leftMotor.Move(left_pwm);
     rightMotor.Move(right_pwm);
 
-    // printf("t %d, pwm left, right  %d, %d pos left, right %f, %f, acc %f, %f, %f, gyr, %f, %f, %f\n", secs, left_pwm, right_pwm, distanceValues.posL , distanceValues.posR,imuextValues.ax,
-    //                                                                                                                                 imuextValues.ay,
-    //                                                                                                                                 imuextValues.az,
-    //                                                                                                                                 imuextValues.gx,
-    //                                                                                                                                 imuextValues.gy,
-    //                                                                                                                                 imuextValues.gz);
+    printf("t %d, pwm left, right  %d, %d pos left, right %f, %f, acc %f, %f, %f, gyr, %f, %f, %f, mag %f, %f, %f \n", secs, left_pwm, right_pwm, distanceValues.posL , distanceValues.posR,imuextValues.ax,
+                                                                                                                                    imuextValues.ay,
+                                                                                                                                    imuextValues.az,
+                                                                                                                                    imuextValues.gx,
+                                                                                                                                    imuextValues.gy,
+                                                                                                                                    imuextValues.gz, accmagValues.mx , accmagValues.my, accmagValues.mz );
 
     // leftMotor.Move(7000);
     // rightMotor.Move(7000);
