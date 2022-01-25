@@ -19,8 +19,12 @@
 #include <Thread.h>
 #include <rtos.h>
 
+#include "Imu/ADXL345_I2C.h"
+#include "Imu/ITG3200.h"
+// #include "ManualSwitch.hpp"
 
 #define FXOS8700CQ_FREQ 200 //!< Frequency at which the sensor is interrogated
+#define ACCIMU_FREQ 200
 
 // using namespace events;
 // using namespace rtos;
@@ -33,6 +37,11 @@ DigitalOut calib_led(LED_GREEN,1), controllerLedSensorThread(LED_BLUE,1);
 
 Encoder encoderL(PTB18, PTB19, true);
 Encoder encoderR(PTC1, PTC8, true);
+
+
+ITG3200 gyro(PTE25,PTE24, 0x68);
+
+ADXL345_I2C imu(PTE25,PTE24);
 
 FILE *f_calib;
 
@@ -51,6 +60,7 @@ EventQueue queue;
 Event<void(void)> accmagreadEvent(&queue,AccMagRead);
 Event<void(void)> calibrationEvent(mbed_event_queue(),calibration);
 Event<void(void)> encoderEvent(&queue, EncoderRead);
+Event<void(void)> accimureadEvent(&queue,AccImuRead);
 
 const char* sdcard_access_thread_name = "SDStorageAccess";
 Thread SDStorageAccess(osPriorityNormal,16184,nullptr,sdcard_access_thread_name);
@@ -171,6 +181,83 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     //printf("ax %f ay %f az %f\n", accmagValues.ax*1000, accmagValues.ay*1000, accmagValues.az*1000);
     irq.rise(calib_irq_handle);
 }
+
+void AccImuRead(void) 
+{
+    ////////// Print ID of I²C devices connected
+    // printf("ITG3200 gyro DevID 0x%02X\n",gyro.getWhoAmI());
+    // printf("FXOS8700CQ DevID0x%02X\n",accmag.get_who_am_i());
+    // printf("ADXL345 acc DevID0x%02X\n",imu.getDeviceID());
+    ////////////////////////////////////////
+
+    // External imu configuration ///////////
+    //Go into standby mode to configure the device.
+    imu.setPowerControl(0x00);
+    //Full resolution, +/-16g, 4mg/LSB.
+    imu.setDataFormatControl(0x0B);
+    //3.2kHz data rate.
+    imu.setDataRate(ADXL345_3200HZ);
+    //Measurement mode.
+    imu.setPowerControl(0x08);
+    //////////////////////////////////////////
+    // External accelerom data
+    // wait(0.1);
+    // printf("External IMU data:\n");
+    imu.getOutput(readings);
+    // //13-bit, sign extended values.
+    // // Typical resolution is 256 == 1g
+    
+    float accel_resol = 256;
+    // printf("acc_x: %f g, acc_y: %f g, acc_z: %f g\n", (float)readings[0]/accel_resol, (float)readings[1]/accel_resol, (float)readings[2]/accel_resol);
+
+    // wait(0.1);
+    // External gyro data
+    // Units are degrees per second
+    float gyro_resol = 14.375; //LSB per º/second
+    // printf("gyr_x: %f, gyr_y: %f , gyr_z: %f \n", gyro.getGyroX()/gyro_resol, gyro.getGyroY()/gyro_resol, gyro.getGyroZ()/gyro_resol);
+    // data_test.ax = (float)readings[0]/accel_resol;
+    // data_test.ay = (float)readings[1]/accel_resol;
+    // data_test.az = (float)readings[2]/accel_resol;
+    // data_test.gx = gyro.getGyroX()/gyro_resol;
+    // data_test.gy = gyro.getGyroY()/gyro_resol;
+    // data_test.gz = gyro.getGyroZ()/gyro_resol;
+    // imuextValues.ax = data_test.ax;
+    // imuextValues.ay = data_test.ay;
+    // imuextValues.az = data_test.az;
+    // imuextValues.gx = data_test.gx;
+    // imuextValues.gx = data_test.gy;
+    // imuextValues.gx = data_test.gz;
+
+    // if (batteryOn== true)
+    //     ledPin = 1;
+    // else 
+    // ledPin = 0;
+
+
+// off_x 7.444
+// off_y 1.299
+// off_z -0.8159
+
+// gain_x -256.916
+// gain_y 257.108
+// gain_z 253.396
+
+
+
+    imuextValues.ax = ((float)readings[1]-7.444)/256.916;
+    imuextValues.ay = (-(float)readings[0]-1.299)/257.108;
+    imuextValues.az = ((float)readings[2]+-0.8159)/253.396;
+    imuextValues.gx = gyro.getGyroY()/gyro_resol;
+    imuextValues.gy = -gyro.getGyroX()/gyro_resol;
+    imuextValues.gz = gyro.getGyroZ()/gyro_resol;
+    //printf("%f ,    %f ,     %f %f ,    %f %f ,   %f %f,    %f %f\n", imuextValues.gx, imuextValues.gy, imuextValues.gz,Kalman_filter_conv_U.psi_mag*180/3.14, imuextValues.ax*9.81, -accmagValues.ax*9.81, imuextValues.ay*9.81, accmagValues.ay*9.81, imuextValues.az*9.81,   -accmagValues.az*9.81);
+
+
+    
+    
+    //printf("ax: %.2f ay: %.2f az: %.2f \n", ax_2, ay_2, az_2);
+}
+
 
 // Interrupt handler that starts the calibration
 void calib_irq_handle(void)
