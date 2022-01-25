@@ -13,8 +13,9 @@
 #include "FXOS8700CQ.h"
 #include "Kalman_filter_conv.h"
 #include "APF_conver.h"
-#include "APF_SMC/APF_SMC.h"
 #include "Imu/ADXL345_I2C.h"
+#include "Imu/ITG3200.h"
+
 #ifndef UDP_BUFFER
 #define UDP_BUFFER
 

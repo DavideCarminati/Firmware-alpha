@@ -24,7 +24,7 @@
 // #include "ManualSwitch.hpp"
 
 #define FXOS8700CQ_FREQ 200 //!< Frequency at which the sensor is interrogated
-#define ACCIMU_FREQ 200
+#define ACCIMU_FREQ 100
 
 // using namespace events;
 // using namespace rtos;
@@ -184,7 +184,7 @@ void AccMagRead(void) // Event to copy sensor value from its register to extern 
     Kalman_filter_conv_U.psi_mag = -atan2(magValues_filt[1],-magValues_filt[0]);  // WARNING: signs are different because a shift of range has been performed
     Kalman_filter_conv_U.ax = -accmagValues.ax*9.81;                              // WARNING: signs are different because axis orientation
     Kalman_filter_conv_U.ay = accmagValues.ay*9.81;
-    //printf("ax %f ay %f az %f\n", accmagValues.ax*1000, accmagValues.ay*1000, accmagValues.az*1000);
+    printf("ax %f ay %f az %f\n", accmagValues.ax*1000, accmagValues.ay*1000, accmagValues.az*1000);
     irq.rise(calib_irq_handle);
 }
 
@@ -202,7 +202,7 @@ void AccImuRead(void)
     //Full resolution, +/-16g, 4mg/LSB.
     imu.setDataFormatControl(0x0B);
     //3.2kHz data rate.
-    imu.setDataRate(ADXL345_3200HZ);
+    imu.setDataRate(ADXL345_100HZ);
     //Measurement mode.
     imu.setPowerControl(0x08);
     //////////////////////////////////////////

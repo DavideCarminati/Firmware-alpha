@@ -30,6 +30,9 @@
 #include <Thread.h>
 #include <rtos.h>
 
+#include "Imu/ADXL345_I2C.h"
+#include "Imu/ITG3200.h"
+
 float pos = 75.0/180;
 float delta_pos = 0.01;
 int signs, signt, right_pwm=0, left_pwm=0;
@@ -70,7 +73,7 @@ void postServoEvent(void)
     // servowriteEvent.post();
 
     motorwriteEvent.delay(4000);
-    motorwriteEvent.period(200);
+    motorwriteEvent.period(10);
     motorwriteEvent.post();
     // printf("\033[2;60Hpost");
 
@@ -141,7 +144,12 @@ void MotorWrite(void)
     leftMotor.Move(left_pwm);
     rightMotor.Move(right_pwm);
 
-    printf("t %d, pwm left, right  %d, %d pos left, right %f, %f\n", secs, left_pwm, right_pwm, distanceValues.posL , distanceValues.posR);
+    // printf("t %d, pwm left, right  %d, %d pos left, right %f, %f, acc %f, %f, %f, gyr, %f, %f, %f\n", secs, left_pwm, right_pwm, distanceValues.posL , distanceValues.posR,imuextValues.ax,
+    //                                                                                                                                 imuextValues.ay,
+    //                                                                                                                                 imuextValues.az,
+    //                                                                                                                                 imuextValues.gx,
+    //                                                                                                                                 imuextValues.gy,
+    //                                                                                                                                 imuextValues.gz);
 
     // leftMotor.Move(7000);
     // rightMotor.Move(7000);
