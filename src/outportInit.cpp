@@ -35,7 +35,7 @@
 
 float pos = 75.0/180;
 float delta_pos = 0.01;
-int signs, signt, right_pwm=0, left_pwm=0;
+int signs=0, signt=0, right_pwm=0, left_pwm=0;
 Timer encoderTimer;
 
 // Servo servo2(PTC3); ///< The PIN enable for PWM is PTC10.
@@ -123,33 +123,44 @@ void MotorWrite(void)
     //  rightMotor.Move(rc.chan2_raw);
    
     // MODE 2: 
-    signs = 1;
-    signt = 1;
+    // signs = 1;
+    // signt = 1;
 
     if (rc.chan3_raw == 1)
       {
         signs = -1; 
+      }
+      else
+      {
+        signs = 1;
       }
     
     if (rc.chan4_raw == 1)
       { 
         signt = -1; 
       }
+      else
+      {
+        signt = 1;
+      }
 
-    left_pwm = signs*rc.chan1_raw+signt*rc.chan2_raw;
-    right_pwm = signs*rc.chan1_raw-signt*rc.chan2_raw;
+    // left_pwm = signs*rc.chan1_raw+signt*rc.chan2_raw;
+    // right_pwm = signs*rc.chan1_raw-signt*rc.chan2_raw;
+
+    left_pwm = (rc.chan3_raw - 2)*rc.chan1_raw;
+    right_pwm = (rc.chan4_raw - 2)*rc.chan2_raw;
 
     int secs = encoderTimer.read_ms();
 
     leftMotor.Move(left_pwm);
     rightMotor.Move(right_pwm);
 
-    printf("t %d, pwm left, right  %d, %d pos left, right %f, %f, acc %f, %f, %f, gyr, %f, %f, %f, mag %f, %f, %f \n", secs, left_pwm, right_pwm, distanceValues.posL , distanceValues.posR,imuextValues.ax,
-                                                                                                                                    imuextValues.ay,
-                                                                                                                                    imuextValues.az,
-                                                                                                                                    imuextValues.gx,
-                                                                                                                                    imuextValues.gy,
-                                                                                                                                    imuextValues.gz, accmagValues.mx , accmagValues.my, accmagValues.mz );
+    // printf("t %d, pwm left, right  %d, %d pos left, right %f, %f, acc %f, %f, %f, gyr, %f, %f, %f, mag %f, %f, %f \n", secs, left_pwm, right_pwm, distanceValues.posL , distanceValues.posR,imuextValues.ax,
+    //                                                                                                                                 imuextValues.ay,
+    //                                                                                                                                 imuextValues.az,
+    //                                                                                                                                 imuextValues.gx,
+    //                                                                                                                                 imuextValues.gy,
+    //                                                                                                                                 imuextValues.gz, accmagValues.mx , accmagValues.my, accmagValues.mz );
 
     // leftMotor.Move(7000);
     // rightMotor.Move(7000);

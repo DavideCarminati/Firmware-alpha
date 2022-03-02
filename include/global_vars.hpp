@@ -108,6 +108,8 @@ extern Attitude attitudeValues;
 struct Distance {
     float posL;
     float posR;
+    float speedL;
+    float speedR;
 };
 
 extern Distance distanceValues;

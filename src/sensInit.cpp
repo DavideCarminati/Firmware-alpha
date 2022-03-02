@@ -55,7 +55,7 @@ float mag_extremes[6];
 int16_t readings[3];
 // char cmd[2];
 
-int32_t posL, posR;
+float posL, posR;
 int32_t val;
 float speedL, speedR;
 Data2 imuextValues;
@@ -144,12 +144,14 @@ void EncoderRead(void)
         encoderR.Reset(true);   // True is for resetting the encoder timer too
     }
     
-    posL = -encoderL.getPosition()*360/(2*1920);
-    posR = encoderR.getPosition()*360/(2*1920);
+    posL = -encoderL.getPosition()*360/(2*1920) * 2*PI/180;
+    posR = encoderR.getPosition()*360/(2*1920) * 2*PI/180;
     distanceValues.posL = posL;
     distanceValues.posR = posR;
     speedL = encoderL.getSpeed()*60; // rpm
     speedR = encoderR.getSpeed()*60;
+    distanceValues.speedL = speedL/60*0.0215; // m/s
+    distanceValues.speedR = speedR/60*0.0215; // m/s
     Kalman_filter_conv_U.pos_l = posL;
     Kalman_filter_conv_U.pos_r = posR;
     // time_t secs = time(NULL);
